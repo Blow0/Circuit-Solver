@@ -21,6 +21,11 @@ int main()
 	unsigned int elementNegNode;
 	double elementVal;
 
+	//Controlled Sources temporary variables
+	string controlType;
+	unsigned int controlPosNode;
+	unsigned int controlNegNode;
+
 	//Ask user for nodes and elements count
 	cout << "Enter the number of nodes: ";
 	cin >> nodes;
@@ -81,6 +86,22 @@ int main()
 				matrix[nodes + vSrc - 1][nodes + voltageSrc] = elementVal;
 				}
 				break;
+			case 'C': //Controlled Current Source 
+			case 'c': 
+				cin >> controlType >> controlPosNode >> controlNegNode;
+
+				controlPosNode--;
+				controlNegNode--;
+
+				switch (controlType[0])
+				{
+				case 'V': //Voltage controls
+					matrix[elementNegNode][controlPosNode] +=  elementVal;
+					matrix[elementNegNode][controlNegNode] += -elementVal;
+					matrix[elementPosNode][controlPosNode] += -elementVal;
+					matrix[elementPosNode][controlNegNode] +=  elementVal;
+					break;
+				}
 		}
 
 	}
