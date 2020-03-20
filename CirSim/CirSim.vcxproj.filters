@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\20111\Downloads\CirSim.cpp">
+    <ClCompile Include="CirSim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

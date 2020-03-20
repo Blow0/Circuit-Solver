@@ -86,7 +86,7 @@ int main()
 				matrix[nodes + vSrc - 1][nodes + voltageSrc] = elementVal;
 				}
 				break;
-			case 'C': //Controlled Current Source 
+			case 'C': //Controlled Source 
 			case 'c': 
 				cin >> controlType >> controlPosNode >> controlNegNode;
 
@@ -95,13 +95,35 @@ int main()
 
 				switch (controlType[0])
 				{
-				case 'V': //Voltage controls
-					matrix[elementNegNode][controlPosNode] +=  elementVal;
-					matrix[elementNegNode][controlNegNode] += -elementVal;
-					matrix[elementPosNode][controlPosNode] += -elementVal;
-					matrix[elementPosNode][controlNegNode] +=  elementVal;
+				case 'V': //Voltage controls the source
+				case 'v':
+					switch (elementType[1]) 
+					{
+					case 'I': //Current source
+					case 'i':
+						matrix[elementPosNode][controlPosNode] += -elementVal;
+						matrix[elementPosNode][controlNegNode] += elementVal;
+						matrix[elementNegNode][controlPosNode] += elementVal;
+						matrix[elementNegNode][controlNegNode] += -elementVal;
+						break;
+					case 'V': //Voltage source
+					case 'v':
+						if (vSrc <= voltageSrc)
+						{
+							vSrc++;
+							matrix[nodes + vSrc - 1][elementPosNode] =  1;
+							matrix[elementPosNode][nodes + vSrc - 1] = -1;
+							matrix[nodes + vSrc - 1][elementNegNode] = -1;
+							matrix[elementNegNode][nodes + vSrc - 1] =  1;
+							matrix[nodes + vSrc - 1][controlPosNode] = -elementVal;
+							matrix[nodes + vSrc - 1][controlNegNode] =  elementVal;
+						}
+						break;
+					}
 					break;
+				
 				}
+
 		}
 
 	}
