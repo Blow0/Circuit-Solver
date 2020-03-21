@@ -1,54 +1,39 @@
 #include "complex.h"
+#include<cmath>
 
-void Complex::toPolar()
+//Constructors
+Complex::Complex() : m_real(0), m_imaginary(0) {}
+Complex::Complex(double real, double img) : m_real(real), m_imaginary(img)
 {
-	m_mag = sqrt(m_real * m_real + m_img * m_img);
-	m_phase = (float) tan(m_img / m_real);
+
 }
 
-void Complex::toCartesian()
+//Copy constructor
+Complex::Complex(const Complex& n) : m_real(n.m_real), m_imaginary(n.m_imaginary) {}
+
+//Setters
+inline void Complex::setCartesian(double mag, float phase)
 {
-	m_real = m_mag * cos(m_phase);
-	m_img  = m_mag * cos(m_phase);
+	setReal(mag * cos(phase));
+	setImg(mag * sin(phase));
 }
 
-Complex Complex::toComplex(char elementType, double elementVal, unsigned long omega = 1)
+//Operator Overloading
+void Complex::operator + (Complex n)
 {
-	Complex cmplx;
-	elementVal = omega * elementVal;
-
-	switch (elementType)
-	{
-	case 'R':
-	case 'r':
-		cmplx.setComplex(elementVal, 0, elementVal, 0);
-		break;
-	case 'L':
-	case 'l':
-		cmplx.setComplex(0, elementVal, elementVal, 90.0f);
-		break;
-	case 'C':
-	case 'c':
-		elementVal = 1 / elementVal;
-		cmplx.setComplex(0, elementVal, elementVal, -90.0f);
-		break;
-	}
-
-	return cmplx;
+	this->m_real += n.m_real;
+	this->m_imaginary += n.m_imaginary;
 }
-
-Complex Complex::toComplex(char elementType, double elementVal, float phase)
+void  Complex::operator - (Complex n)
 {
-	Complex cmplx;
-	switch (elementType)
-	{
-	case 'I':
-	case 'i':
-	case 'V':
-	case 'v':
-		cmplx.setPolar(elementVal, phase);
-		break;
-	}
-	return cmplx;
+	this->m_real -= n.m_real;
+	this->m_imaginary -= n.m_imaginary;
 }
+Complex  Complex::operator * (Complex n)
+{
+	Complex n1;
+	n1.m_real = (this->m_real * n.m_real) - (this->m_imaginary * n.m_imaginary);
+	n1.m_imaginary = (this->m_real * n.m_imaginary) + (this->m_imaginary * n.m_real);
 
+	return n1;
+}

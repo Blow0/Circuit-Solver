@@ -4,13 +4,12 @@
 #include<iostream>
 #include "complex.h"
 
-using namespace std;
 
 class Element : public Complex
 {
 private:
 	//Members
-	string m_label;
+	std::string m_label;
 	unsigned int m_posNode;
 	unsigned int m_negNode;
 	float m_current;
@@ -18,20 +17,19 @@ private:
 
 public:
 	//Constructors
-	Element() : m_label(" "), m_posNode(0), m_negNode(0), m_current(0), m_voltageDiff(0) {}
-	Element(const string& label, const unsigned int& posNode, const unsigned int& negNode, const float& current, const float& vDiff)
-		: m_label(label), m_posNode(posNode), m_negNode(negNode), m_current(current), m_voltageDiff(vDiff) {}
+	Element();
+	Element(std::string label, unsigned int posNode, unsigned int negNode);
 
 	//Setters
-	void setLabel(const string& label) { m_label = label; }
-	void setNodes(const unsigned int& posNode, const unsigned int& negNode) { setPosNode(posNode); setNegNode(negNode); }
-	void setPosNode(const unsigned int& posNode) { m_posNode = posNode; }
-	void setNegNode(const unsigned int& negNode) { m_negNode = negNode; }
-	void setCurrent(const float& current) { m_current = current; }
-	void setVoltageDiff(const float& vDiff) { m_voltageDiff = vDiff; }
+	inline void setLabel(std::string label) { m_label = label; }
+	inline void setNodes(unsigned int posNode, unsigned int negNode) { setPosNode(posNode); setNegNode(negNode); }
+	inline void setPosNode(unsigned int posNode) { m_posNode = posNode; }
+	inline void setNegNode(unsigned int negNode) { m_negNode = negNode; }
+	inline void setCurrent(float current) { m_current = current; }
+	inline void setVoltageDiff(float vDiff) { m_voltageDiff = vDiff; }
 
 	//Getters
-	string getLabel() const { return m_label; }
+	std::string getLabel() const { return m_label; }
 	unsigned int getPosNode() const { return m_posNode; }
 	unsigned int getNegNode() const { return m_negNode; }
 	float getcurrent() const { return m_current; }
@@ -40,9 +38,8 @@ public:
 	//Helpers
 	virtual bool isSeries(const Element& element1) = 0;
 	virtual bool isParallel(const Element& element1, const Element& element2) = 0;
-	virtual void calcSeries(const bool& isSeries, const Element& element1) = 0;
-	virtual void calcParallel(const bool& isParallel, const Element& element1) = 0;
-	virtual void printElement() = 0;
+	virtual void calcSeries(bool isSeries, const Element& element1) = 0;
+	virtual void calcParallel( bool isParallel, const Element& element1) = 0;
 };
 
 class Resistor : public Element
@@ -52,23 +49,17 @@ private:
 
 public: 
 	//Constructors
-	Resistor() : m_val(0) {}
-	Resistor(const string& label,const unsigned int& posNode, const unsigned int& negNode, const double& val):
-		m_val(val) 
-	{
-		setLabel(label);
-		setNodes(posNode, negNode);
-		setComplex(val, 0, val, 0);
-	}
+	Resistor();
+	Resistor(std::string label, unsigned int posNode, unsigned int negNode, double val);
 
 	//Setters
-	void setAttributes(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val)
+	void setAttributes(std::string label, unsigned int posNode, unsigned int negNode, double val, unsigned long freq = 1)
 	{
 		setLabel(label);
 		setNodes(posNode, negNode);
 		setVal(val);
 	}
-	void setVal(const double& val) { m_val = val; setComplex(val, 0, val, 0); }
+	void setVal(const double& val) { m_val = val; setComplex(val, 0); }
 
 	//Getters
 	double getVal() const { return m_val; }
@@ -82,25 +73,18 @@ private:
 	unsigned long m_freq;
 public:
 	//Constructors
-	Capacitor() : m_val(0), m_freq(1) {}
-	Capacitor(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const unsigned long& freq = 1)
-		: m_freq(freq)
-	{
-		m_val = 1 / (val * freq);
-		setLabel(label);
-		setNodes(posNode, negNode);
-		setComplex(0, -m_val, m_val, -90.0f);
-	}
+	Capacitor();
+	Capacitor(std::string label, unsigned int posNode, unsigned int negNode, double val, unsigned long freq = 1);
 
 	//Setters
-	void setAttributes(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const unsigned long& freq)
+	void setAttributes(std::string label, unsigned int posNode, unsigned int negNode, double val, unsigned long freq = 1)
 	{
 		setLabel(label);
 		setNodes(posNode, negNode);
 		setFreq(freq);
 		setVal(val);
 	}
-	void setVal(const double& val) { m_val = 1/(val* m_freq); setComplex(0, -m_val, m_val, -90.0f); }
+	void setVal(const double& val) { m_val = 1/(val* m_freq); setComplex(0, -m_val); }
 	void setFreq(const unsigned long& freq) { m_freq = freq; }
 	//Getters
 	double getVal() const { return m_val; }
@@ -113,25 +97,18 @@ private:
 	unsigned long m_freq;
 public:
 	//Constructors
-	Inductor() : m_val(0), m_freq(1) {}
-	Inductor(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const unsigned long& freq = 1)
-		: m_freq(freq)
-	{
-		m_val = val * freq;
-		setLabel(label);
-		setNodes(posNode, negNode);
-		setComplex(0, m_val, m_val, 90.0f);
-	}
+	Inductor();
+	Inductor(std::string label, unsigned int posNode, unsigned int negNode, double val, unsigned long freq = 1);
 
 	//Setters
-	void setAttributes(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const unsigned long& freq)
+	void setAttributes(std::string label, unsigned int posNode, unsigned int negNode, double val, unsigned long freq = 1)
 	{
 		setLabel(label);
 		setNodes(posNode, negNode);
 		setFreq(freq);
 		setVal(val);
 	}
-	void setVal(const double& val) { m_val = val * m_freq; setComplex(0, m_val, m_val, 90.0f); }
+	void setVal(const double& val) { m_val = val * m_freq; setComplex(0, m_val); }
 	void setFreq(const unsigned long& freq) { m_freq = freq; }
 	//Getters
 	double getVal() const { return m_val; }
@@ -144,22 +121,15 @@ private:
 
 public:
 	//Constructors
-	Source() : m_val(0) { setPhase(0); }
-	Source(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
-		: m_val(val)
-	{
-		setLabel(label);
-		setNodes(posNode, negNode);
-		setPolar(val, phase);
-	}
+	Source();
+	Source(std::string label, unsigned int posNode, unsigned int negNode, double val, float phase);
 
 	//Setters
-	void setAttributes(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
+	void setAttributes(std::string label, unsigned int posNode, unsigned int negNode, double val, float phase)
 	{
 		setLabel(label);
 		setNodes(posNode, negNode);
-		setPhase(phase);
-		setPolar(val, phase);
+		setCartesian(val, phase);
 		setVal(val);
 	}
 	void setVal(const double& val) { m_val = val; }
@@ -167,11 +137,6 @@ public:
 	//Getters
 	double getVal() const { return m_val; }
 
-	//Helpers
-	void printElement()
-	{
-		cout << getMagnitude() <<"<"<<getPhase();
-	}
 };
 
 class VoltageSource : public Source
@@ -180,12 +145,8 @@ class VoltageSource : public Source
 
 public:
 	//Constructor
-	VoltageSource() : Source() { m_voltagSourcesCount++; }
-	VoltageSource(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
-		: Source(label, posNode, negNode, val, phase) 
-	{
-		m_voltagSourcesCount++;
-	}
+	VoltageSource();
+	VoltageSource(std::string label, unsigned int posNode, unsigned int negNode, double val, float phase);
 
 	//Getters
 	static unsigned int getVoltageSrcCount() { return m_voltagSourcesCount; }
@@ -197,12 +158,8 @@ class CurrentCSource : public Source
 
 public:
 	//Constructor
-	CurrentCSource() : Source() { m_currentControlledCount++; }
-	CurrentCSource(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
-		: Source(label, posNode, negNode, val, phase) 
-	{
-		m_currentControlledCount++;
-	}
+	CurrentCSource();
+	CurrentCSource(std::string label, unsigned int posNode, unsigned int negNode, double val, float phase);
 
 	//Getters
 	static unsigned int getCurrentContrlCount() { return m_currentControlledCount; }
