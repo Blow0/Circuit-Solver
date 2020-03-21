@@ -137,15 +137,15 @@ public:
 	double getVal() const { return m_val; }
 };
 
-class Sources : public Element 
+class Source : public Element 
 {
 private:
 	double m_val;
 
 public:
 	//Constructors
-	Sources() : m_val(0) { setPhase(0); }
-	Sources(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
+	Source() : m_val(0) { setPhase(0); }
+	Source(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
 		: m_val(val)
 	{
 		setLabel(label);
@@ -172,5 +172,40 @@ public:
 	{
 		cout << getMagnitude() <<"<"<<getPhase();
 	}
+};
+
+class VoltageSource : public Source
+{
+	static unsigned int m_voltagSourcesCount;
+
+public:
+	//Constructor
+	VoltageSource() : Source() { m_voltagSourcesCount++; }
+	VoltageSource(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
+		: Source(label, posNode, negNode, val, phase) 
+	{
+		m_voltagSourcesCount++;
+	}
+
+	//Getters
+	static unsigned int getVoltageSrcCount() { return m_voltagSourcesCount; }
+};
+
+class CurrentCSource : public Source
+{
+	static unsigned int m_currentControlledCount;
+
+public:
+	//Constructor
+	CurrentCSource() : Source() { m_currentControlledCount++; }
+	CurrentCSource(const string& label, const unsigned int& posNode, const unsigned int& negNode, const double& val, const float& phase)
+		: Source(label, posNode, negNode, val, phase) 
+	{
+		m_currentControlledCount++;
+	}
+
+	//Getters
+	static unsigned int getCurrentContrlCount() { return m_currentControlledCount; }
+
 };
 #endif
