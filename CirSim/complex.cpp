@@ -1,39 +1,52 @@
 #include "complex.h"
-#include<cmath>
 
 //Constructors
-Complex::Complex() : m_real(0), m_imaginary(0) {}
-Complex::Complex(double real, double img) : m_real(real), m_imaginary(img)
-{
+Complex::Complex() : m_real(0.0), m_imag(0.0) {}
+Complex::Complex(double real) : m_real(real), m_imag(0.0) {}
+Complex::Complex(double real, double imag) : m_real(real), m_imag(imag) {}
+Complex::Complex(const Complex& complex) : m_real(complex.m_real), m_imag(complex.m_imag) {}
 
+//Methods
+void Complex::invert()
+{
+	double mag = getMagnitude();
+	m_real /= mag;
+	m_imag /= -mag;
+}
+void Complex::normalize()
+{
+	double mag = getMagnitude();
+	m_real /= mag;
+	m_imag /= mag;
+}
+void Complex::complement()
+{
+	m_imag = -m_imag;
 }
 
-//Copy constructor
-Complex::Complex(const Complex& n) : m_real(n.m_real), m_imaginary(n.m_imaginary) {}
-
-//Setters
-inline void Complex::setCartesian(double mag, float phase)
+//Operations
+Complex Complex::operator-() const
 {
-	setReal(mag * cos(phase));
-	setImg(mag * sin(phase));
+	return Complex(-m_real, -m_imag);
 }
-
-//Operator Overloading
-void Complex::operator + (Complex n)
+Complex Complex::operator+(const Complex& rhs) const
 {
-	this->m_real += n.m_real;
-	this->m_imaginary += n.m_imaginary;
+	return Complex(m_real + rhs.m_real, m_imag + rhs.m_imag);
 }
-void  Complex::operator - (Complex n)
+Complex Complex::operator-(const Complex& rhs) const
 {
-	this->m_real -= n.m_real;
-	this->m_imaginary -= n.m_imaginary;
+	return Complex(m_real - rhs.m_real, m_imag - rhs.m_imag);
 }
-Complex  Complex::operator * (Complex n)
+Complex Complex::operator*(const Complex& rhs) const
 {
-	Complex n1;
-	n1.m_real = (this->m_real * n.m_real) - (this->m_imaginary * n.m_imaginary);
-	n1.m_imaginary = (this->m_real * n.m_imaginary) + (this->m_imaginary * n.m_real);
-
-	return n1;
+	return Complex((m_real * rhs.m_real) - (m_imag * rhs.m_imag), (m_real * rhs.m_imag) + (m_imag * rhs.m_real));
+}
+Complex Complex::operator/(const Complex& rhs) const
+{
+	return ((*this) * rhs.getComplement()) / rhs.getMagnitude();
+}
+void Complex::operator=(const Complex& rhs)
+{
+	m_real = rhs.m_real;
+	m_imag = rhs.m_imag;
 }
