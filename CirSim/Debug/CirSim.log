@@ -1,2 +1,3 @@
-﻿  complex.cpp
-  CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe
+﻿  element.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\element.cpp(18,35): error C2677: binary '[': no global operator found which takes type 'std::string' (or there is no acceptable conversion)
+D:\Backup\SoftwareLab2020\CirSim\CirSim\element.cpp(32,35): error C2677: binary '[': no global operator found which takes type 'std::string' (or there is no acceptable conversion)
