@@ -8,14 +8,14 @@
 
 class Node;
 
-enum class ElementType { Resistor };
+enum class ElementType { Resistor, Capacitor, Inductor };
 
 class Element
 {
 private: //Members
 	std::string m_name;
 	ElementType m_type;
-
+	static Element* element;
 	static std::map<std::string, Element*> elementsMap;
 	
 private: //Constructors
@@ -33,6 +33,7 @@ public: //Getters
 
 public: //Map Methods
 	static bool isFound(std::string elementName);
+	static unsigned int getMapSize();
 	static Element* createElement(std::string elementName);
 	static void eraseElement(std::string elementName);
 };
