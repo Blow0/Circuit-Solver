@@ -34,10 +34,10 @@ int main()
 		cin >> elementType;
 		if (elementType == "end")
 			break;
-		element = Element::createElement(elementType);
+		//element = Element::createElement(elementType);
 	}
 
-	elements = Element::getMapSize();
+	//elements = Element::getMapSize();
 
 	//Decrement gndNode by 1
 //	gndNode--;

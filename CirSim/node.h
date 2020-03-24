@@ -1,21 +1,32 @@
 #ifndef _NODE_H
 #define _NODE_H
 
+#include <map>
 #include <list>
 #include <string>
+#include "complex.h"
 
-typedef long double Complex;
 class Element;
 
 class Node
 {
+private: //Nodes Map
+	static std::map<std::string, Node*> nodesMap;
+
 private:
 	std::string m_name;
 	std::list<Element*> m_elements;
 	Complex m_nodalVoltage;
 	Complex m_flowCurrent;
 
-public: //Constructors
+public: //Static Nodes Map Methods
+	static inline bool nodeExists(std::string nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
+	static inline size_t getNodesCount() { return nodesMap.size(); }
+
+public: //Static Node Creation
+	static Node* createNode(std::string nodeName);
+
+private: //Constructors
 	Node(const std::string& name);
 	~Node();
 
@@ -23,8 +34,7 @@ public: //Computers
 	void computeFlowCurrent();
 
 public: //Logic
-	inline bool equals(const Node& rhs) const;
-	inline bool operator==(const Node& rhs) const;
+	inline bool operator==(const Node& rhs) const { return rhs.m_name == m_name; }
 
 public: //Linked Elements
 	bool linkElement(Element* element);
