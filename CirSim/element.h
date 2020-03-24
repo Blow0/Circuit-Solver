@@ -3,19 +3,22 @@
 
 #include <string>
 #include <list>
+#include <map>
 #include "complex.h"
 
 class Node;
 
-enum class ElementType { Resistor };
+enum class ElementType { Resistor, Capacitor, Inductor };
 
 class Element
 {
 private: //Members
 	std::string m_name;
 	ElementType m_type;
-
-public: //Constructors
+	static Element* element;
+	static std::map<std::string, Element*> elementsMap;
+	
+private: //Constructors
 	Element(const std::string& name, ElementType type);
 	~Element();
 
@@ -27,6 +30,12 @@ public: //Getters
 
 	Element(const Element&) = delete;
 	void operator=(const Element&) = delete;
+
+public: //Map Methods
+	static bool isFound(std::string elementName);
+	static unsigned int getMapSize();
+	static Element* createElement(std::string elementName);
+	static void eraseElement(std::string elementName);
 };
 
 #endif //_ELEMENT_H

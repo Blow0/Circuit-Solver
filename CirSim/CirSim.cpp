@@ -1,6 +1,8 @@
 #include<iostream>
 #include <string>
 #include <memory.h>
+#include "element.h"
+#include "complex.h"
 
 using namespace std;
 
@@ -25,20 +27,22 @@ int main()
 	string controlType;
 	unsigned int controlPosNode;
 	unsigned int controlNegNode;
+	Element* element;
+	//Take Input from user until he enters "end"
+	while (1)
+	{
+		cin >> elementType;
+		if (elementType == "end")
+			break;
+		element = Element::createElement(elementType);
+	}
 
-	//Ask user for nodes and elements count
-	cout << "Enter the number of nodes: ";
-	cin >> nodes;
-	cout << "Enter The Ground Node: ";
-	cin >> gndNode;
-	cout << "Enter the number of Vsources: ";
-	cin >> voltageSrc;
-	cout << "Enter the number of elements: ";
-	cin >> elements;
+	elements = Element::getMapSize();
 
 	//Decrement gndNode by 1
-	gndNode--;
-
+//	gndNode--;
+	/*
+	
 	//Create matrix (Two dimensional array)
 	double** matrix = new double*[nodes + voltageSrc];
 	for (unsigned int i = 0; i < nodes + voltageSrc; i++)
@@ -153,6 +157,7 @@ int main()
 	for (unsigned int i = 0; i < nodes; i++)
 		delete[] matrix[i];
 	delete[] matrix;
+	*/
 	return 0;
 }
 
