@@ -43,7 +43,7 @@ public: //Linked Elements
 	inline const std::list<Element*>& getElements() const { return m_elements; }
 
 public: //Setters
-	inline void setName(const std::string& name) { m_name = name; }
+	inline void setName(const std::string& name) { nodesMap.erase(m_name); m_name = name; nodesMap.emplace(m_name, this); }
 
 public: //Getters
 	inline const std::string& getName() const { return m_name; }
