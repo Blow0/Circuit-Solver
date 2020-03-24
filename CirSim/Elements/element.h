@@ -4,7 +4,7 @@
 #include <map>
 #include <list>
 #include <string>
-#include "complex.h"
+#include "../Math/complex.h"
 
 class Node;
 
@@ -29,10 +29,6 @@ public: //Static Elements Map Methods
 
 protected: //Static Element Creation
 	static Element* createElement(std::string elementName, ElementType elementType);
-
-public: //Virtual Methods
-	virtual Complex getVoltageDiff() const { return 0.0; }
-	virtual Complex getCurrent() const { return 0.0; }
 
 public: //Logic
 	inline bool operator==(const Element& rhs) const { return rhs.m_name == m_name; }

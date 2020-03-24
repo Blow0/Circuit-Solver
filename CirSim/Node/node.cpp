@@ -1,12 +1,14 @@
 #include "node.h"
-#include "element.h"
+#include "../Elements/element.h"
 
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
 
 //Constructors
 Node::Node(const std::string& name)
-	:m_name(name)
+	: m_name(name)
+	, m_nodalVoltage(0.0)
+	, m_flowCurrent(0.0)
 {
 }
 
@@ -16,14 +18,13 @@ Node::~Node()
 	nodesMap.erase(m_name);
 }
 
-//Computers
 void Node::computeFlowCurrent()
 {
-	m_flowCurrent = 0.0;
+	/*m_flowCurrent = 0.0;
 	for (Element* element : m_elements)
 	{
 		m_flowCurrent = m_flowCurrent + element->getCurrent();
-	}
+	}*/
 }
 
 //Elements
