@@ -2,7 +2,7 @@
 #define _ELEMENT_H
 
 #define SMALL_RES 0.0001
-#define big_or_zero(x)  ((x) >= DBL_EPSILON ? 0.0 : 0.0001)
+#define small_or_zero(x)  ((x) >= DBL_EPSILON ? 0.0 : 0.0001)
 #define check_not_zero(x) ((x) >= DBL_EPSILON ? (x) : 0.0001)
 
 #include <map>
@@ -20,7 +20,7 @@ protected: //Elements Map
 private: //Members
 	std::string m_name;
 	ElementType m_type;
-	
+
 protected: //Constructors
 	Element(const std::string& name, ElementType type);
 	~Element();
