@@ -1,7 +1,6 @@
 #ifndef _INDUCTOR_H
 #define _INDUCTOR_H
 
-#include <string>
 #include "element.h"
 #include "../Node/node.h"
 
@@ -26,8 +25,10 @@ public: //Getters
 	inline double getInductance() const { return m_inductance; }
 	inline Node* getPosNode() const { return m_posNode; }
 	inline Node* getNegNode() const { return m_negNode; }
+	inline Complex getImpedance(double angularFrequency) const { return Complex(0.0, abs(angularFrequency) * m_inductance); }
+	inline Complex getAdmittance(double angularFrequency) const { return Complex(small_or_zero(abs(angularFrequency) * m_inductance), abs(angularFrequency) * m_inductance).getInverse(); }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() / Complex(small_or_zero(abs(angularFrequency) * m_inductance), abs(angularFrequency) * m_inductance); }
+	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
 };
 
 #endif //_INDUCTOR_H
