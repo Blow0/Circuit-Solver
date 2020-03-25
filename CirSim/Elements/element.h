@@ -20,7 +20,7 @@ protected: //Elements Map
 private: //Members
 	std::string m_name;
 	ElementType m_type;
-
+	
 protected: //Constructors
 	Element(const std::string& name, ElementType type);
 	~Element();

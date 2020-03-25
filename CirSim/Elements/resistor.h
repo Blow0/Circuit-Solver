@@ -25,10 +25,11 @@ public: //Getters
 	inline double getResistance() const { return m_resistance; }
 	inline Node* getPosNode() const { return m_posNode; }
 	inline Node* getNegNode() const { return m_negNode; }
-	inline Complex getImpedance(double angularFrequency) const { return m_resistance; }
-	inline Complex getAdmittance(double angularFrequency) const { return 1.0 / m_resistance; }
+	inline Complex getImpedance() const { return m_resistance; }
+	inline Complex getAdmittance() const { return 1.0 / m_resistance; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
+	inline Complex getDissipatedPower() const { return getVoltageDiff() * getCurrent().getComplement(); }
 };
 
 #endif //_RESISTOR_H

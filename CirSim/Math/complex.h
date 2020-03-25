@@ -2,6 +2,7 @@
 #define _COMPLEX_H
 
 #include <math.h>
+#include <exception>
 
 class Complex
 {
@@ -20,18 +21,18 @@ public: //Setters
 	inline void setPolar	(double magnitude, double phase) { m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
 	inline void setReal		(double real)					 { m_real = real; }
 	inline void setImag		(double imag)					 { m_imag = imag; }
-	inline void setMagnitude(double magnitude)				 { double ratio = magnitude / getMagnitude(); m_real *= ratio; m_imag *= ratio; }
-	inline void setPhase	(double phase)					 { double mag = getMagnitude(); m_real = mag * cos(phase); m_imag = mag * sin(phase); }
+	inline void setMagnitude(double magnitude)				 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
+	inline void setPhase	(double phase)					 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }
 	inline double  getImag()		 const { return m_imag; }
-	inline double  getMagnitude()	 const { return sqrt(m_real * m_real + m_imag * m_imag);  }
-	inline double  getMagnitudeSqr() const { return m_real * m_real + m_imag * m_imag;		  }
-	inline double  getPhase()		 const { return atan(m_imag / m_real);					  }
-	inline Complex getNormalized()	 const { return Complex(m_real, m_imag) / getMagnitude(); }
-	inline Complex getComplement()	 const { return Complex(m_real, -m_imag);				  }
-	inline Complex getInverse()		 const { return getComplement().getNormalized();		  }
+	inline double  getMagnitude()	 const { return sqrt(getMagnitudeSqr()); }
+	inline double  getMagnitudeSqr() const { return m_real * m_real + m_imag * m_imag; }
+	inline double  getPhase()		 const { return atan(m_imag / m_real); }
+	inline Complex getComplement()	 const { return Complex(m_real, -m_imag); }
+	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) / (mag >= DBL_EPSILON ? mag : 1.0); }
+	inline Complex getInverse()		 const { return getComplement().getNormalized(); }
 
 public: //Methods
 	inline void invert();
@@ -41,40 +42,42 @@ public: //Methods
 public: //Logic
 	inline bool operator!=(const Complex& rhs) const { return (rhs.m_real != m_real || rhs.m_imag != m_imag); }
 	inline bool operator==(const Complex& rhs) const { return (rhs.m_real == m_real && rhs.m_imag == m_imag); }
-	inline bool operator> (const Complex& rhs) const { return (rhs.getMagnitude() > getMagnitude());			}
-	inline bool operator< (const Complex& rhs) const { return (rhs.getMagnitude() < getMagnitude());			}
-	inline bool operator>=(const Complex& rhs) const { return (rhs.getMagnitude() >= getMagnitude());			}
-	inline bool operator<=(const Complex& rhs) const { return (rhs.getMagnitude() <= getMagnitude());			}
+	inline bool operator> (const Complex& rhs) const { return (rhs.getMagnitude() > getMagnitude());  }
+	inline bool operator< (const Complex& rhs) const { return (rhs.getMagnitude() < getMagnitude());  }
+	inline bool operator>=(const Complex& rhs) const { return (rhs.getMagnitude() >= getMagnitude()); }
+	inline bool operator<=(const Complex& rhs) const { return (rhs.getMagnitude() <= getMagnitude()); }
 
 public: //Operations
-	inline Complex operator-() const;
+	inline Complex operator- () const;
 	inline Complex operator+ (const Complex& rhs) const;
 	inline Complex operator- (const Complex& rhs) const;
 	inline Complex operator* (const Complex& rhs) const;
 	inline Complex operator* (double rhs) const;
 	inline Complex operator/ (const Complex& rhs) const;
 	inline Complex operator/ (double rhs) const;
-	inline void	operator= (const Complex& rhs);
-	inline void	operator+=(const Complex& rhs);
-	inline void	operator-=(const Complex& rhs);
-	inline void	operator*=(const Complex& rhs);
-	inline void	operator*=(double rhs);
-	inline void	operator/=(const Complex& rhs);
-	inline void	operator/=(double rhs);
+	inline void	   operator= (const Complex& rhs);
+	inline void	   operator+=(const Complex& rhs);
+	inline void	   operator-=(const Complex& rhs);
+	inline void	   operator*=(const Complex& rhs);
+	inline void	   operator*=(double rhs);
+	inline void	   operator/=(const Complex& rhs);
+	inline void	   operator/=(double rhs);
 };
 
 //Methods
 void Complex::invert()
 {
-	double mag = getMagnitude();
-	m_real /= mag;
-	m_imag /= -mag;
+	complement();
+	normalize();
 }
 void Complex::normalize()
 {
 	double mag = getMagnitude();
-	m_real /= mag;
-	m_imag /= mag;
+	if (mag >= DBL_EPSILON)
+	{
+		m_real /= mag;
+		m_imag /= mag;
+	}
 }
 void Complex::complement()
 {
@@ -106,11 +109,18 @@ Complex Complex::operator*(double rhs) const
 }
 Complex Complex::operator/(const Complex& rhs) const
 {
-	return ((*this) * rhs.getComplement()) / rhs.getMagnitude();
+	double rhsMag = rhs.getMagnitude();
+	if (rhsMag >= DBL_EPSILON)
+		return ((*this) * rhs.getComplement()) / rhsMag;
+	else
+		throw std::runtime_error("Can't divide by Zero.");
 }
 Complex Complex::operator/(double rhs) const
 {
-	return Complex(m_real, m_imag) * (1.0 / rhs);
+	if (rhs >= DBL_EPSILON)
+		return Complex(m_real, m_imag) * (1.0 / rhs);
+	else
+		throw std::runtime_error("Can't divide by Zero.");
 }
 void Complex::operator=(const Complex& rhs)
 {
@@ -139,12 +149,21 @@ void Complex::operator*=(double rhs)
 }
 void Complex::operator/=(const Complex& rhs)
 {
-	(*this) *= rhs.getComplement() / rhs.getMagnitude();
+	double rhsMag = rhs.getMagnitude();
+	if (rhsMag >= DBL_EPSILON)
+		(*this) *= rhs.getComplement() / rhs.getMagnitude();
+	else
+		throw std::runtime_error("Can't divide by Zero.");
 }
 void Complex::operator/=(double rhs)
 {
-	m_real /= rhs;
-	m_imag /= rhs;
+	if (rhs >= DBL_EPSILON)
+	{
+		m_real /= rhs;
+		m_imag /= rhs;
+	}
+	else
+		throw std::runtime_error("Can't divide by Zero.");
 }
 
 #endif //_COMPLEX_H
