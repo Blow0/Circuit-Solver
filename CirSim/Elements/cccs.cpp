@@ -1,8 +1,5 @@
 #include "cccs.h"
 
-//Static Member definition
-unsigned int VoltageSource::voltageSourceCount = 0;
-
 //Constructors
 CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor = 1, double controlCurrent, double phase)
 	: Element(cccsName, ElementType::CCCS)

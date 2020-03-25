@@ -1,7 +1,5 @@
 #include "ccvs.h"
 
-//Static Member definition
-unsigned int VoltageSource::voltageSourceCount = 0;
 
 //Constructors
 CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 0, double controlCurrent, double phase)
