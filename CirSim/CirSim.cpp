@@ -1,7 +1,6 @@
 #include<iostream>
 #include <string>
 #include <memory.h>
-#include "element.h"
 #include "complex.h"
 
 using namespace std;
@@ -27,17 +26,6 @@ int main()
 	string controlType;
 	unsigned int controlPosNode;
 	unsigned int controlNegNode;
-	Element* element;
-	//Take Input from user until he enters "end"
-	while (1)
-	{
-		cin >> elementType;
-		if (elementType == "end")
-			break;
-		element = Element::createElement(elementType);
-	}
-
-	elements = Element::getMapSize();
 
 	//Decrement gndNode by 1
 //	gndNode--;

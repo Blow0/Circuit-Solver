@@ -1,39 +1,30 @@
 #include "node.h"
+#include "../Elements/element.h"
+
+//Nodes Map
+std::map<std::string, Node*> Node::nodesMap;
 
 //Constructors
 Node::Node(const std::string& name)
-	:m_name(name)
+	: m_name(name)
+	, m_nodalVoltage(0.0)
+	, m_flowCurrent(0.0)
 {
-
 }
 
 Node::~Node()
 {
+	//Remove node from elements
+	nodesMap.erase(m_name);
 }
 
-//Computers
 void Node::computeFlowCurrent()
 {
-	/*
-	m_flowCurrent = 0;
-	for (Element* var : m_elements)
+	/*m_flowCurrent = 0.0;
+	for (Element* element : m_elements)
 	{
-		m_flowCurrent += var.getCurrent() * (var.getPosNode().equals(this) ? 1.0 : -1.0);
-	}
-	*/
-}
-
-//Logic
-bool Node::equals(const Node& rhs) const
-{
-	//Compare names. Be careful!!
-	return rhs.m_name == m_name;
-}
-
-bool Node::operator==(const Node& rhs) const
-{
-	//Compare names. Be careful!!
-	return rhs.m_name == m_name;
+		m_flowCurrent = m_flowCurrent + element->getCurrent();
+	}*/
 }
 
 //Elements
@@ -77,4 +68,15 @@ bool Node::isElementLinked(const Element* element)
 	}
 	//Didn't find element.
 	return false;
+}
+
+//Static Node Creation
+Node* Node::createNode(std::string nodeName)
+{
+	if (nodeExists(nodeName))
+		return nodesMap[nodeName];
+
+	Node* node = new Node(nodeName);
+	nodesMap.emplace(nodeName, node);
+	return node;
 }
