@@ -29,6 +29,7 @@ public: //Getters
 	inline Complex getAdmittance(double angularFrequency) const { return Complex(0.0, abs(angularFrequency) * m_capacitance); }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
+	inline Complex getStoredPower(double angularFrequency) const { return getVoltageDiff() * getCurrent(angularFrequency).getComplement(); }
 };
 
 #endif //_CAPACITOR_H
