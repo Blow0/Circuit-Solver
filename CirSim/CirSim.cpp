@@ -27,6 +27,19 @@ int main()
 	unsigned int controlPosNode;
 	unsigned int controlNegNode;
 
+	/*Element* element;
+	//Take Input from user until he enters "end"
+	while (1)
+	{
+		cin >> elementType;
+		if (elementType == "end")
+			break;
+		element = Element::createElement(elementType);
+	}
+
+	elements = Element::getMapSize();
+	
+	*/
 	//Decrement gndNode by 1
 //	gndNode--;
 	/*
