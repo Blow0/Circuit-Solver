@@ -1,2 +1,11 @@
-﻿  element.cpp
+﻿  CirSim.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(23,15): warning C4101: 'elementNegNode': unreferenced local variable
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(22,15): warning C4101: 'elementPosNode': unreferenced local variable
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(29,15): warning C4101: 'controlNegNode': unreferenced local variable
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(18,15): warning C4101: 'gndNode': unreferenced local variable
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(24,9): warning C4101: 'elementVal': unreferenced local variable
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(28,15): warning C4101: 'controlPosNode': unreferenced local variable
+  element.cpp
+  Generating Code...
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(15,15): warning C4101: 'nodes': unreferenced local variable
   CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

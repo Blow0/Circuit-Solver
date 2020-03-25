@@ -1,4 +1,5 @@
 #include "element.h"
+#include<iostream>
 
 //Constructors
 Element::Element(const std::string& name, ElementType type)
@@ -9,7 +10,7 @@ Element::Element(const std::string& name, ElementType type)
 
 Element::~Element()
 {
-	delete element;
+	eraseElement(m_name);
 }
 
 Element* Element::element;
@@ -37,22 +38,6 @@ Element* Element::createElement(std::string elementName)
 		element = new Element(elementName, ElementType::Resistor);
 		elementsMap[elementName] = element;
 
-		switch (elementName[0])
-		{
-		case 'R':
-		case 'r':
-			elementsMap[elementName]->m_type = ElementType::Resistor;
-			break;
-		case 'C':
-		case 'c':
-			elementsMap[elementName]->m_type = ElementType::Capacitor;
-			break;
-		case 'L':
-		case 'l':
-			elementsMap[elementName]->m_type = ElementType::Inductor;
-			break;
-		}
-
 		return element;
 	}
 }
@@ -60,4 +45,9 @@ void Element::eraseElement(std::string elementName)
 {
 	if (isFound(elementName)) //Avoid deleting uncreated elements
 		elementsMap.erase(elementName);
+}
+
+void Element::clean()
+{
+	delete element;
 }

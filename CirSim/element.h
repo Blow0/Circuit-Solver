@@ -2,7 +2,6 @@
 #define _ELEMENT_H
 
 #include <string>
-#include <list>
 #include <map>
 #include "complex.h"
 
@@ -35,7 +34,9 @@ public: //Map Methods
 	static bool isFound(std::string elementName);
 	static unsigned int getMapSize();
 	static Element* createElement(std::string elementName);
-	static void eraseElement(std::string elementName);
+	static void clean();
+
+	void eraseElement(std::string elementName);
 };
 
 #endif //_ELEMENT_H

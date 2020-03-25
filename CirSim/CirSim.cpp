@@ -38,7 +38,7 @@ int main()
 	}
 
 	elements = Element::getMapSize();
-
+	
 	//Decrement gndNode by 1
 //	gndNode--;
 	/*
