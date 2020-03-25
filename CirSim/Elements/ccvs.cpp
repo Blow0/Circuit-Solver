@@ -2,12 +2,12 @@
 
 
 //Constructors
-CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 0, double controlCurrent, double phase)
+CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 0, Complex controlCurrent)
 	: Element(ccvsName, ElementType::CCVS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent*cos(phase), controlCurrent*sin(phase))
+	, m_controlCurrent(controlCurrent)
 	, m_factor(factor)
 {
 	m_posNode->linkElement(this);
@@ -16,12 +16,12 @@ CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double fac
 	m_voltage = m_controlCurrent * m_factor;
 }
 
-CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase)
+CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
 	: Element(ccvsName, ElementType::CCVS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent* cos(phase), controlCurrent* sin(phase))
+	, m_controlCurrent(controlCurrent)
 	, m_factor(1)
 {
 	m_posNode->linkElement(this);
@@ -38,24 +38,24 @@ CCVS::~CCVS()
 }
 
 //Static Voltage Source Creation 
-CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 1, double controlCurrent, double phase)
+CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 1, Complex controlCurrent)
 {
 	std::string name = "ccvs" + ccvsName;
 	if (elementExists(name))
 		return (CCVS*)elementsMap[name];
 
-	CCVS* ccvs = new CCVS(ccvsName, posNode, negNode, factor, controlCurrent, phase);
+	CCVS* ccvs = new CCVS(ccvsName, posNode, negNode, factor, controlCurrent);
 	elementsMap.emplace(name, ccvs);
 	return ccvs;
 }
 
-CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase)
+CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
 {
 	std::string name = "ccvs" + ccvsName;
 	if (elementExists(name))
 		return (CCVS*)elementsMap[name];
 
-	CCVS* ccvs = new CCVS(ccvsName, posNode, negNode, factor, controlCurrent, phase);
+	CCVS* ccvs = new CCVS(ccvsName, posNode, negNode, factor, controlCurrent);
 	elementsMap.emplace(name, ccvs);
 	return ccvs;
 }

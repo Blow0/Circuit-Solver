@@ -21,11 +21,11 @@ private: //Members
 	Complex m_controlCurrent;
 
 public: //Static Current controlled Voltage Source creation
-	static CCCS* createCCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, double controlCurrent, double phase);
-	static CCCS* createCCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase);
+	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
+	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
 private: //Constructors
-	CCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, double controlCurrent, double phase);
-	CCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase);
+	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
+	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
 	~CCCS();
 
 public: //Setters
@@ -37,6 +37,7 @@ public: //Getters
 	inline Node* getnegNode() const { return m_negNode; }
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltage() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
+	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
 };
 
 #endif // !_CCCS_H

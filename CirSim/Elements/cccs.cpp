@@ -1,12 +1,12 @@
 #include "cccs.h"
 
 //Constructors
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor = 1, double controlCurrent, double phase)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
 	: Element(cccsName, ElementType::CCCS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent* cos(phase), controlCurrent* sin(phase))
+	, m_controlCurrent(controlCurrent)
 	, m_factor(factor)
 {
 	m_posNode->linkElement(this);
@@ -15,12 +15,12 @@ CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double fac
 	m_current = m_controlCurrent * m_factor;
 }
 
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
 	: Element(cccsName, ElementType::CCCS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent* cos(phase), controlCurrent* sin(phase))
+	, m_controlCurrent(controlCurrent)
 	, m_factor(1)
 {
 	m_posNode->linkElement(this);
@@ -37,24 +37,24 @@ CCCS::~CCCS()
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor = 1, double controlCurrent, double phase)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor = 1, Complex controlCurrent)
 {
-	std::string name = "cccs" + ccvsName;
+	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
 		return (CCCS*)elementsMap[name];
 
-	CCCS* cccs = new CCCS(ccvsName, posNode, negNode, factor, controlCurrent, phase);
+	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent);
 	elementsMap.emplace(name, cccs);
 	return cccs;
 }
 
-CCCS* CCCS::createCCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
 {
-	std::string name = "cccs" + ccvsName;
+	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
 		return (CCCS*)elementsMap[name];
 
-	CCCS* cccs = new CCCS(ccvsName, posNode, negNode, factor, controlCurrent, phase);
+	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent);
 	elementsMap.emplace(name, cccs);
 	return cccs;
 }
