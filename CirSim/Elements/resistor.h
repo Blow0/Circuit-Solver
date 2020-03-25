@@ -28,7 +28,7 @@ public: //Getters
 	inline Complex getImpedance(double angularFrequency) const { return m_resistance; }
 	inline Complex getAdmittance(double angularFrequency) const { return 1.0 / m_resistance; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline Complex getCurrent() const { return getVoltageDiff() * m_resistance; }
+	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
 };
 
 #endif //_RESISTOR_H

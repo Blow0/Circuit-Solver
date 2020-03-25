@@ -10,7 +10,7 @@
 #include <string>
 #include "../Math/complex.h"
 
-enum class ElementType { Resistor, Capacitor, Inductor };
+enum class ElementType { Resistor, Capacitor, Inductor, VS, CS, VCVS, VCCS, CCVS, CCCS};
 
 class Element
 {
