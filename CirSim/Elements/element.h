@@ -34,7 +34,7 @@ public: //Logic
 
 public: //Setters
 	inline void setName(const std::string& name) { elementsMap.erase(m_name); m_name = name; elementsMap.emplace(m_name, this); }
-
+	inline void setType(const ElementType type) { m_type = type; }
 public: //Getters
 	inline const std::string& geName() const { return m_name; }
 	inline ElementType getType() const { return m_type; }

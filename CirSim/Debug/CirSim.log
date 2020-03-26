@@ -1,2 +1,5 @@
-﻿  CirSim.cpp
+﻿  currentsource.cpp
+  vcvs.cpp
+  node.cpp
+  Generating Code...
   CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

@@ -1,7 +1,7 @@
 #include "cccs.h"
 
 //Constructors
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent)
 	: Element(cccsName, ElementType::CCCS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
@@ -12,10 +12,9 @@ CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double fac
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
 
-	m_current = m_controlCurrent * m_factor;
 }
 
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent)
 	: Element(cccsName, ElementType::CCCS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
@@ -25,8 +24,6 @@ CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex fa
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
-
-	m_current = m_controlCurrent * factor;
 }
 
 CCCS::~CCCS()
@@ -37,7 +34,7 @@ CCCS::~CCCS()
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
@@ -48,7 +45,7 @@ CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode
 	return cccs;
 }
 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))

@@ -7,14 +7,14 @@
 
 class VoltageSource : public Element
 {
-private: //Members
+protected: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 	Complex m_supplyVoltage;
 	Complex m_current;
 	Complex m_internalImpedance;
 
-private: //Static Members
+protected: //Static Members
 	static std::list <VoltageSource*> m_voltageSources;
 
 public: //Static Voltage Source creation

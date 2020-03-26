@@ -31,8 +31,6 @@ int main()
 
 	//Controlled Sources temporary variables
 	string controlSource;
-	string controlPosNode;
-	string controlNegNode;
 	double magnitude;
 	double phase;
 	Complex controlElement(.6,.8);
@@ -52,16 +50,12 @@ int main()
 		case 'R':
 		{
 		Resistor * resistor = Resistor::createResistor(elementType, *elementPosNode, *elementNegNode, elementVal);
-		elementPosNode->linkElement((Resistor*)resistor);
-		elementNegNode->linkElement((Resistor*)resistor);
 		break;
 		}
 		case 'L':
 		case 'l':
 		{
 			Inductor* inductor = Inductor::createInductor(elementType, *elementPosNode, *elementNegNode, elementVal);
-			elementPosNode->linkElement((Inductor*)inductor);
-			elementNegNode->linkElement((Inductor*)inductor);
 			break;
 		}
 		case 'C':
@@ -75,9 +69,7 @@ int main()
 				{
 				cin >> magnitude >> phase;
 				controlElement.setPolar(magnitude, phase);
-				CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
-				elementPosNode->linkElement((CCVS*)ccvs);
-				elementNegNode->linkElement((CCVS*)ccvs);
+				//CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 				break;
 				}
 				case 'C':
@@ -85,9 +77,7 @@ int main()
 				{
 					cin >> magnitude >> phase;
 					controlElement.setPolar(magnitude, phase);
-					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
-					elementPosNode->linkElement((CCCS*)cccs);
-					elementNegNode->linkElement((CCCS*)cccs);
+				//	CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					break;
 				}
 				}
@@ -101,15 +91,11 @@ int main()
 					cin >>phase;
 					controlElement.setPolar(elementVal, phase);
 					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
-					elementPosNode->linkElement((CurrentSource*)currentsource);
-					elementNegNode->linkElement((CurrentSource*)currentsource);
 					break;
 				}
 				default:
 				{
 				Capacitor* capacitor = Capacitor::createCapacitor(elementType, *elementPosNode, *elementNegNode, elementVal);
-				elementPosNode->linkElement((Capacitor*)capacitor);
-				elementNegNode->linkElement((Capacitor*)capacitor);
 				break;
 				}
 				}
@@ -127,9 +113,7 @@ int main()
 				{
 					cin >> magnitude >> phase;
 					controlElement.setPolar(magnitude, phase);
-					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
-					elementPosNode->linkElement((VCVS*)vcvs);
-					elementNegNode->linkElement((VCVS*)vcvs);
+					//VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					break;
 				}
 				case 'C':
@@ -137,9 +121,7 @@ int main()
 				{
 					cin >> magnitude >> phase;
 					controlElement.setPolar(magnitude, phase);
-					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
-					elementPosNode->linkElement((VCCS*)vccs);
-					elementNegNode->linkElement((VCCS*)vccs);
+				//	VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					break;
 				}
 				}
@@ -154,8 +136,6 @@ int main()
 					cin >> phase;
 					controlElement.setPolar(elementVal, phase);
 					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
-					elementPosNode->linkElement((VoltageSource*)voltagesource);
-					elementNegNode->linkElement((VoltageSource*)voltagesource);
 					break;
 				}
 			}

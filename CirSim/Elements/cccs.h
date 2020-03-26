@@ -9,8 +9,6 @@
 class CCCS : public Element, public CurrentControlledSource
 {
 private: //Members
-	Node* m_controlPosNode;
-	Node* m_controlNegNode;
 	Node* m_posNode;
 	Node* m_negNode;
 
@@ -18,18 +16,18 @@ private: //Members
 	Complex m_voltage; //Will be calculated
 	//Controlling element
 	double m_factor;
-	Complex m_controlCurrent;
+	Element* m_controlCurrent;
 
 public: //Static Current controlled Voltage Source creation
-	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
+	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent);
+	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent);
 private: //Constructors
-	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
+	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent);
+	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent);
 	~CCCS();
 
 public: //Setters
-	inline void setFactor(Complex factor) { m_voltage = factor * m_controlCurrent; }
+	inline void setFactor(Complex factor) {  }
 	inline void setCurrent(Complex current) { m_current = current; }
 
 public: //Getters
@@ -38,6 +36,9 @@ public: //Getters
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltage() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
+
+	CCCS(const CCCS&) = delete;
+	void operator=(const CCCS&) = delete;
 };
 
 #endif // !_CCCS_H

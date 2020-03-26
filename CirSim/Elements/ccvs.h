@@ -37,6 +37,9 @@ public: //Getters
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltage() const { return m_voltage; }
 	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
+
+	CCVS(const CCVS&) = delete;
+	void operator=(const CCVS&) = delete;
 };
 
 #endif // !_CCVS_H
