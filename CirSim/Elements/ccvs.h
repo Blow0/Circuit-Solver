@@ -20,11 +20,11 @@ private: //Members
 	Complex m_controlCurrent;
 
 public: //Static Current controlled Voltage Source creation
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, double controlCurrent, double phase);
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
 private: //Constructors
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, double controlCurrent, double phase);
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, double controlCurrent, double phase);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
 	~CCVS();
 
 public: //Setters
@@ -36,6 +36,7 @@ public: //Getters
 	inline Node* getnegNode() const { return m_negNode; }
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltage() const { return m_voltage; }
+	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
 };
 
 #endif // !_CCVS_H

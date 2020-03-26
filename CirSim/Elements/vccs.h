@@ -1,12 +1,10 @@
-#ifndef _CCCS_H
-#define _CCCS_H
+#ifndef _VCCS_H
+#define _VCCS_H
 
 #include "element.h"
-#include "voltagesource.h"
-#include "currentcontrolled.h"
 #include "../Node/node.h"
 
-class CCCS : public Element, public CurrentControlledSource
+class VCCS : public Element
 {
 private: //Members
 	Node* m_controlPosNode;
@@ -14,22 +12,21 @@ private: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 
-	Complex m_current; 
+	Complex m_current;
 	Complex m_voltage; //Will be calculated
 	//Controlling element
 	double m_factor;
-	Complex m_controlCurrent;
+	Complex m_controlVoltage;
 
 public: //Static Current controlled Voltage Source creation
-	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
+	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage);
+	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage);
 private: //Constructors
-	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
-	~CCCS();
+	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage);
+	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage);
+	~VCCS();
 
 public: //Setters
-	inline void setFactor(Complex factor) { m_voltage = factor * m_controlCurrent; }
 	inline void setCurrent(Complex current) { m_current = current; }
 
 public: //Getters
@@ -40,4 +37,4 @@ public: //Getters
 	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
 };
 
-#endif // !_CCCS_H
+#endif

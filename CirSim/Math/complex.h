@@ -3,6 +3,9 @@
 
 #include <math.h>
 #include <exception>
+#include <stdexcept>
+
+#define PI 3.14159265359
 
 class Complex
 {
@@ -18,11 +21,19 @@ public: //Constructors
 
 public: //Setters
 	inline void setCartesian(double real, double imag)		 { m_real = real; m_imag = imag; }
-	inline void setPolar	(double magnitude, double phase) { m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
 	inline void setReal		(double real)					 { m_real = real; }
 	inline void setImag		(double imag)					 { m_imag = imag; }
 	inline void setMagnitude(double magnitude)				 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
+	inline void setPolar	(double magnitude, double phase) 
+	{
+		toRadians(phase);
+		m_real = magnitude * cos(phase);
+		m_imag = magnitude * sin(phase); 	
+	}
 	inline void setPhase	(double phase)					 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
+
+private: //Helpers
+	inline void toRadians(double phase) { phase *= PI / 180.0; }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }

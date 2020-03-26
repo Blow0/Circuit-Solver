@@ -20,12 +20,33 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CirSim.cpp" />
-    <ClCompile Include="complex.cpp" />
-    <ClCompile Include="element.cpp" />
+    <ClCompile Include="Elements\capacitor.cpp" />
+    <ClCompile Include="Elements\cccs.cpp" />
+    <ClCompile Include="Elements\ccvs.cpp" />
+    <ClCompile Include="Elements\currentcontrolled.cpp" />
+    <ClCompile Include="Elements\currentsource.cpp" />
+    <ClCompile Include="Elements\element.cpp" />
+    <ClCompile Include="Elements\inductor.cpp" />
+    <ClCompile Include="Elements\resistor.cpp" />
+    <ClCompile Include="Elements\vccs.cpp" />
+    <ClCompile Include="Elements\vcvs.cpp" />
+    <ClCompile Include="Elements\voltagesource.cpp" />
+    <ClCompile Include="Node\node.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="complex.h" />
-    <ClInclude Include="element.h" />
+    <ClInclude Include="Elements\capacitor.h" />
+    <ClInclude Include="Elements\cccs.h" />
+    <ClInclude Include="Elements\ccvs.h" />
+    <ClInclude Include="Elements\currentcontrolled.h" />
+    <ClInclude Include="Elements\currentsource.h" />
+    <ClInclude Include="Elements\element.h" />
+    <ClInclude Include="Elements\inductor.h" />
+    <ClInclude Include="Elements\resistor.h" />
+    <ClInclude Include="Elements\vccs.h" />
+    <ClInclude Include="Elements\vcvs.h" />
+    <ClInclude Include="Elements\voltagesource.h" />
+    <ClInclude Include="Math\complex.h" />
+    <ClInclude Include="Node\node.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

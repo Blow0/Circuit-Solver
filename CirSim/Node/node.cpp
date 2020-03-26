@@ -30,12 +30,8 @@ void Node::computeFlowCurrent()
 //Elements
 bool Node::linkElement(Element* element)
 {
-	for (std::list<Element*>::iterator it = m_elements.begin(); it != m_elements.end(); it++)
-	{
-		//Found element already.
-		if (element == (*it))
-			return false;
-	}
+	if (Node::isElementLinked(element))
+		return false;
 	//Didn't find element. Add it.
 	m_elements.push_back(element);
 	return true;
