@@ -12,7 +12,6 @@
 #include "Elements/cccs.h"
 #include "Elements/ccvs.h"
 
-#define PI 3.14159265359
 
 using namespace std;
 
@@ -75,7 +74,6 @@ int main()
 				case 'v':
 				{
 				cin >> magnitude >> phase;
-				phase *= PI / 180.0;
 				controlElement.setPolar(magnitude, phase);
 				CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 				elementPosNode->linkElement((CCVS*)ccvs);
@@ -86,7 +84,6 @@ int main()
 				case 'c':
 				{
 					cin >> magnitude >> phase;
-					phase *= PI / 180.0;
 					controlElement.setPolar(magnitude, phase);
 					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					elementPosNode->linkElement((CCCS*)cccs);
@@ -102,7 +99,6 @@ int main()
 				case 's':
 				{
 					cin >>phase;
-					phase *= PI / 180.0;
 					controlElement.setPolar(elementVal, phase);
 					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					elementPosNode->linkElement((CurrentSource*)currentsource);
@@ -130,7 +126,6 @@ int main()
 				case 'v':
 				{
 					cin >> magnitude >> phase;
-					phase *= PI / 180.0;
 					controlElement.setPolar(magnitude, phase);
 					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					elementPosNode->linkElement((VCVS*)vcvs);
@@ -141,7 +136,6 @@ int main()
 				case 'c':
 				{
 					cin >> magnitude >> phase;
-					phase *= PI / 180.0;
 					controlElement.setPolar(magnitude, phase);
 					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
 					elementPosNode->linkElement((VCCS*)vccs);
@@ -158,7 +152,6 @@ int main()
 				case 'S': //VS voltage source
 				case 's':
 					cin >> phase;
-					phase *= PI / 180.0;
 					controlElement.setPolar(elementVal, phase);
 					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					elementPosNode->linkElement((VoltageSource*)voltagesource);
