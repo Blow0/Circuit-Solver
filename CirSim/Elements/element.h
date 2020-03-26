@@ -27,6 +27,13 @@ protected: //Constructors
 
 public: //Static Elements Map Methods
 	static inline bool elementExists(std::string elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
+	static inline Element* getElement(std::string elementName)
+	{
+		if (elementExists(elementName))
+			return elementsMap[elementName];
+		else
+			return nullptr;
+	}
 	static inline size_t getElementsCount() { return elementsMap.size(); }
 
 public: //Logic

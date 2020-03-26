@@ -2,32 +2,27 @@
 
 
 //Constructors
-CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
+CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent)
 	: Element(ccvsName, ElementType::CCVS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent)
 	, m_factor(factor)
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
 
-	m_voltage = m_controlCurrent * m_factor;
 }
 
-CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
+CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent)
 	: Element(ccvsName, ElementType::CCVS)
 	, CurrentControlledSource()
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent)
 	, m_factor(1)
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
-
-	m_voltage = m_controlCurrent * factor;
 }
 
 CCVS::~CCVS()
@@ -38,7 +33,7 @@ CCVS::~CCVS()
 }
 
 //Static Voltage Source Creation 
-CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
+CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent)
 {
 	std::string name = "ccvs" + ccvsName;
 	if (elementExists(name))
@@ -49,7 +44,7 @@ CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode
 	return ccvs;
 }
 
-CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
+CCVS* CCVS::createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent)
 {
 	std::string name = "ccvs" + ccvsName;
 	if (elementExists(name))

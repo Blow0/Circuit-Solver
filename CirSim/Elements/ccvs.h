@@ -17,14 +17,14 @@ private: //Members
 	Complex m_current; //Will be calculated
 	//Controlling element
 	double m_factor;
-	Complex m_controlCurrent;
+	Element* m_controlCurrent;
 
 public: //Static Current controlled Voltage Source creation
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent);
 private: //Constructors
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent);
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Element* controlCurrent);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent);
 	~CCVS();
 
 public: //Setters
