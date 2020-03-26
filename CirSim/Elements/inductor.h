@@ -30,6 +30,9 @@ public: //Getters
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
 	inline Complex getStoredPower(double angularFrequency) const { return getVoltageDiff() * getCurrent(angularFrequency).getComplement(); }
+
+	Inductor(const Inductor&) = delete;
+	void operator=(const Inductor&) = delete;
 };
 
 #endif //_INDUCTOR_H

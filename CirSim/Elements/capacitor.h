@@ -30,6 +30,9 @@ public: //Getters
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
 	inline Complex getStoredPower(double angularFrequency) const { return getVoltageDiff() * getCurrent(angularFrequency).getComplement(); }
+
+	Capacitor(const Capacitor&) = delete;
+	void operator=(const Capacitor&) = delete;
 };
 
 #endif //_CAPACITOR_H

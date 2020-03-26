@@ -2,12 +2,12 @@
 
 
 //Constructors
-CurrentSource::CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex current)
+CurrentSource::CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance)
 	: Element(currentSrcName, ElementType::CS)
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_current(current)
-	, m_voltage(0, 0)
+	, m_supplyCurrent(supplyCurrent)
+	, m_internalAdmittance(internalAdmittance)
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
@@ -21,13 +21,13 @@ CurrentSource::~CurrentSource()
 }
 
 //Static Voltage Source Creation 
-CurrentSource* CurrentSource::createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex current)
+CurrentSource* CurrentSource::createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance)
 {
 	std::string name = "cs" + currentSrcName;
 	if (elementExists(name))
 		return (CurrentSource*)elementsMap[name];
 
-	CurrentSource* currentsource = new CurrentSource(currentSrcName, posNode, negNode, current);
+	CurrentSource* currentsource = new CurrentSource(currentSrcName, posNode, negNode, supplyCurrent, internalAdmittance);
 	elementsMap.emplace(name, currentsource);
 	return currentsource;
 }

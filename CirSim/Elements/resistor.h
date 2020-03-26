@@ -30,6 +30,9 @@ public: //Getters
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
 	inline Complex getDissipatedPower() const { return getVoltageDiff() * getCurrent().getComplement(); }
+
+	Resistor(const Resistor&) = delete;
+	void operator=(const Resistor&) = delete;
 };
 
 #endif //_RESISTOR_H
