@@ -37,7 +37,7 @@ CCCS::~CCCS()
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor = 1, Complex controlCurrent)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))

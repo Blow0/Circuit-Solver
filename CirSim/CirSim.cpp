@@ -2,6 +2,17 @@
 #include <string>
 #include <memory.h>
 #include "complex.h"
+#include "Elements/resistor.h"
+#include "Elements/capacitor.h"
+#include "Elements/inductor.h"
+#include "Elements//currentsource.h"
+#include "Elements/voltagesource.h"
+#include "Elements/vcvs.h"
+#include "Elements/vccs.h"
+#include "Elements/cccs.h"
+#include "Elements/ccvs.h"
+
+#define PI 3.14159265359
 
 using namespace std;
 
@@ -10,155 +21,155 @@ double* SolveSystem(double** matrix, unsigned int size);
 
 int main()
 {
-	//Nodes and elements count
-	unsigned int nodes;
-	unsigned int voltageSrc = 0, vSrc = 0;
-	unsigned int elements;
-	unsigned int gndNode;
+	//Nodes 
+	unsigned int gndNode = 0;
 
 	//Element temporary variables
 	string elementType;
-	unsigned int elementPosNode;
-	unsigned int elementNegNode;
+	string posNode;
+	string negNode;
 	double elementVal;
 
 	//Controlled Sources temporary variables
-	string controlType;
-	unsigned int controlPosNode;
-	unsigned int controlNegNode;
-
-	/*Element* element;
+	string controlSource;
+	string controlPosNode;
+	string controlNegNode;
+	double magnitude;
+	double phase;
+	Complex controlElement(.6,.8);
 	//Take Input from user until he enters "end"
 	while (1)
 	{
 		cin >> elementType;
 		if (elementType == "end")
 			break;
-		element = Element::createElement(elementType);
-	}
+		cin >> posNode >> negNode >> elementVal;
+		Node* elementPosNode = Node::createNode(posNode);
+		Node* elementNegNode = Node::createNode(negNode);
 
-	elements = Element::getMapSize();
-	
-	*/
-	//Decrement gndNode by 1
-//	gndNode--;
-	/*
-	
-	//Create matrix (Two dimensional array)
-	double** matrix = new double*[nodes + voltageSrc];
-	for (unsigned int i = 0; i < nodes + voltageSrc; i++)
-	{
-		matrix[i] = new double[nodes + voltageSrc + 1];
-		memset(matrix[i], 0, (nodes + voltageSrc + 1) * sizeof(double));
-	}
-
-	//Ask user to enter elements
-	cout << "Enter elements data:" << endl;
-
-	//Loop over elements count
-	for (unsigned int i = elements; i > 0; i--)
-	{
-		//Get element data from input
-		cin >> elementType >> elementPosNode >> elementNegNode >> elementVal;
-		elementPosNode--;
-		elementNegNode--;
-
-		//Inject element into matrix based on its type
 		switch (elementType[0])
 		{
-			case 'R':
-			case 'r':
-				elementVal = 1 / elementVal;
-				matrix[elementPosNode][elementPosNode] += elementVal;
-				matrix[elementPosNode][elementNegNode] -= elementVal;
-				matrix[elementNegNode][elementPosNode] -= elementVal;
-				matrix[elementNegNode][elementNegNode] += elementVal;
-				break;
-			case 'I':
-			case 'i':
-				matrix[elementPosNode][nodes + voltageSrc] += elementVal;
-				matrix[elementNegNode][nodes + voltageSrc] -= elementVal;
-				break;
-			case 'V':
-			case 'v':
-				if (vSrc <= voltageSrc)
-				{
-				vSrc++;
-				matrix[nodes + vSrc - 1][elementPosNode] =  1;
-				matrix[elementPosNode][nodes + vSrc - 1] = -1;
-				matrix[nodes + vSrc - 1][elementNegNode] = -1;
-				matrix[elementNegNode][nodes + vSrc - 1] =  1;
-				matrix[nodes + vSrc - 1][nodes + voltageSrc] = elementVal;
-				}
-				break;
-			case 'C': //Controlled Source 
-			case 'c': 
-				cin >> controlType >> controlPosNode >> controlNegNode;
-
-				controlPosNode--;
-				controlNegNode--;
-
-				switch (controlType[0])
-				{
-				case 'V': //Voltage controls the source
-				case 'v':
-					switch (elementType[1]) 
-					{
-					case 'I': //Current source
-					case 'i':
-						matrix[elementPosNode][controlPosNode] += -elementVal;
-						matrix[elementPosNode][controlNegNode] += elementVal;
-						matrix[elementNegNode][controlPosNode] += elementVal;
-						matrix[elementNegNode][controlNegNode] += -elementVal;
-						break;
-					case 'V': //Voltage source
-					case 'v':
-						if (vSrc <= voltageSrc)
-						{
-							vSrc++;
-							matrix[nodes + vSrc - 1][elementPosNode] =  1;
-							matrix[elementPosNode][nodes + vSrc - 1] = -1;
-							matrix[nodes + vSrc - 1][elementNegNode] = -1;
-							matrix[elementNegNode][nodes + vSrc - 1] =  1;
-							matrix[nodes + vSrc - 1][controlPosNode] = -elementVal;
-							matrix[nodes + vSrc - 1][controlNegNode] =  elementVal;
-						}
-						break;
-					}
-					break;
-				
-				}
-
+		case 'r':
+		case 'R':
+		{
+		Resistor * resistor = Resistor::createResistor(elementType, *elementPosNode, *elementNegNode, elementVal);
+		elementPosNode->linkElement((Resistor*)resistor);
+		elementNegNode->linkElement((Resistor*)resistor);
+		break;
 		}
-
+		case 'L':
+		case 'l':
+		{
+			Inductor* inductor = Inductor::createInductor(elementType, *elementPosNode, *elementNegNode, elementVal);
+			elementPosNode->linkElement((Inductor*)inductor);
+			elementNegNode->linkElement((Inductor*)inductor);
+			break;
+		}
+		case 'C':
+		case 'c':
+		{
+			if (elementType.size() > 2)
+				switch (elementType[2])
+				{
+				case 'V': //CCVS
+				case 'v':
+				{
+				cin >> magnitude >> phase;
+				phase *= PI / 180.0;
+				controlElement.setPolar(magnitude, phase);
+				CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
+				elementPosNode->linkElement((CCVS*)ccvs);
+				elementNegNode->linkElement((CCVS*)ccvs);
+				break;
+				}
+				case 'C':
+				case 'c':
+				{
+					cin >> magnitude >> phase;
+					phase *= PI / 180.0;
+					controlElement.setPolar(magnitude, phase);
+					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
+					elementPosNode->linkElement((CCCS*)cccs);
+					elementNegNode->linkElement((CCCS*)cccs);
+					break;
+				}
+				}
+			else
+			{
+				switch (elementType[1])
+				{
+				case 'S':
+				case 's':
+				{
+					cin >>phase;
+					phase *= PI / 180.0;
+					controlElement.setPolar(elementVal, phase);
+					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
+					elementPosNode->linkElement((CurrentSource*)currentsource);
+					elementNegNode->linkElement((CurrentSource*)currentsource);
+					break;
+				}
+				default:
+				{
+				Capacitor* capacitor = Capacitor::createCapacitor(elementType, *elementPosNode, *elementNegNode, elementVal);
+				elementPosNode->linkElement((Capacitor*)capacitor);
+				elementNegNode->linkElement((Capacitor*)capacitor);
+				break;
+				}
+				}
+			}
+		}
+		case 'V':
+		case 'v':
+		{
+			if (elementType.size() > 2)
+			{
+				switch (elementType[2])
+				{
+				case 'V': // VCVS
+				case 'v':
+				{
+					cin >> magnitude >> phase;
+					phase *= PI / 180.0;
+					controlElement.setPolar(magnitude, phase);
+					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
+					elementPosNode->linkElement((VCVS*)vcvs);
+					elementNegNode->linkElement((VCVS*)vcvs);
+					break;
+				}
+				case 'C':
+				case 'c':
+				{
+					cin >> magnitude >> phase;
+					phase *= PI / 180.0;
+					controlElement.setPolar(magnitude, phase);
+					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlElement);
+					elementPosNode->linkElement((VCCS*)vccs);
+					elementNegNode->linkElement((VCCS*)vccs);
+					break;
+				}
+				}
+			}
+				
+			else
+			{
+				switch (elementType[1])
+				{
+				case 'S': //VS voltage source
+				case 's':
+					cin >> phase;
+					phase *= PI / 180.0;
+					controlElement.setPolar(elementVal, phase);
+					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
+					elementPosNode->linkElement((VoltageSource*)voltagesource);
+					elementNegNode->linkElement((VoltageSource*)voltagesource);
+					break;
+				}
+			}
+		}
+		}
 	}
 
-	//Set the row (equation) related to gndNode [VGND = 0]
-	for (unsigned int j = 0; j < nodes + voltageSrc + 1; j++)
-		matrix[gndNode][j] = 0;
-	matrix[gndNode][gndNode] = 1;
-
-	//Get solutions
-	double* solutions = SolveSystem(matrix, nodes + voltageSrc);
-
-	//Print solutions
-	for (unsigned int i = 0; i < nodes; i++)
-		cout << "V(" << i + 1 << ") = " << solutions[i] << endl;
-	for (unsigned int i = nodes; i < nodes + voltageSrc; i++)
-	{
-		cout << "I(" << i + 1 << ") = " << solutions[i] << endl;
-	}
-	//Pause program until user presses a key
-	system("pause");
-	
-	//Delete solutions
-	delete[] solutions;
-
-	//Delete matrix
-	for (unsigned int i = 0; i < nodes; i++)
-		delete[] matrix[i];
-	delete[] matrix;
-	*/
 	return 0;
 }
 

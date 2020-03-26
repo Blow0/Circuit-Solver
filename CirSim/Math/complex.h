@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <exception>
+#include <stdexcept>
 
 class Complex
 {

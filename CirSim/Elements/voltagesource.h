@@ -1,6 +1,7 @@
 #ifndef _VOLTAGESOURCE_H
 #define _VOLTAGESOURCE_H
 
+#include <list>
 #include "element.h"
 #include "../Node/node.h"
 
@@ -12,8 +13,9 @@ private: //Members
 	Complex m_voltage;
 	Complex m_current; //Will be calculated
 
+
 private: //Static Members
-	static unsigned int voltageSourceCount;
+	static std::list <VoltageSource*> m_voltageSources;
 
 public: //Static Voltage Source creation
 	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex voltage);
@@ -34,7 +36,7 @@ public: //Getters
 	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
 
 public: //Static Methods
-	static inline unsigned int getVoltageSrcsCount() { return voltageSourceCount; }
+	static inline unsigned int getVoltageSrcsCount() { return m_voltageSources.size(); }
 
 };
 

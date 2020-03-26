@@ -28,7 +28,7 @@ public: //Getters
 	inline Node* getposNode() const { return m_posNode; }
 	inline Node* getnegNode() const { return m_negNode; }
 	inline Complex getCurrent() const { return m_current; }
-	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage - m_negNode->getNodalVoltage; }
+	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
 
 };
