@@ -2,6 +2,7 @@
 #define _CURRENTSOURCE_H
 
 #include "element.h"
+#include "resistor.h"
 #include "../Node/node.h"
 
 class CurrentSource : public Element
@@ -9,28 +10,32 @@ class CurrentSource : public Element
 private: //Members
 	Node* m_posNode;
 	Node* m_negNode;
-	Complex m_current;
-	Complex m_voltage; //Will be calculated
-
+	Complex m_supplyCurrent;
+	Complex m_internalAdmittance;
 
 public: //Static Voltage Source creation
-	static CurrentSource* createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex current);
+	static CurrentSource* createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
 
 private: //Constructors
-	CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex current);
+	CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
 	~CurrentSource();
 
 public: //Setters
-	inline void setVoltage(Complex voltage) { m_voltage = voltage; }
-	inline void setCurrent(Complex current) { m_current = current; }
+	inline void setSupplyCurrent(Complex supplyCurrent) { m_supplyCurrent = supplyCurrent; }
+	inline void setInternalAdmittance(Complex internalAdmittance) { m_internalAdmittance = internalAdmittance; }
 
 public: //Getters
 	inline Node* getposNode() const { return m_posNode; }
 	inline Node* getnegNode() const { return m_negNode; }
-	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
+	inline Complex getCurrent() const { return (m_supplyCurrent - getVoltageDiff() * m_internalAdmittance); }
+	inline Complex getSupplyCurrent() const { return m_supplyCurrent; }
+	inline Complex getPowerSupplied() const { return m_supplyCurrent * getVoltageDiff(); }
+	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
+	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 
+	CurrentSource(const CurrentSource&) = delete;
+	void operator=(const CurrentSource&) = delete;
 };
 
 #endif // !_CURRENTSOURCE_H
