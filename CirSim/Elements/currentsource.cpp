@@ -1,6 +1,6 @@
 #include "currentsource.h"
 
-
+size_t m_currentControlledCount = 0;
 //Constructors
 CurrentSource::CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance)
 	: Element(currentSrcName, ElementType::CS)

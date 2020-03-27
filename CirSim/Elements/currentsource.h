@@ -13,6 +13,8 @@ private: //Members
 	Complex m_supplyCurrent;
 	Complex m_internalAdmittance;
 
+protected:
+	static size_t m_currentControlledCount;
 public: //Static Voltage Source creation
 	static CurrentSource* createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
 
@@ -23,6 +25,9 @@ protected: //Constructors
 public: //Setters
 	inline virtual void setSupplyCurrent(Complex supplyCurrent) { m_supplyCurrent = supplyCurrent; }
 	inline void setInternalAdmittance(Complex internalAdmittance) { m_internalAdmittance = internalAdmittance; }
+
+public: //Static Getter
+	static size_t getCurrentControlledCount() { return m_currentControlledCount; }
 
 public: //Getters
 	inline Node* getposNode() const { return m_posNode; }

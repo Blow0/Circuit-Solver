@@ -38,6 +38,17 @@ public: //Getters
 	inline Complex getPowerSupplied() const { return m_current * getSupplyVoltage(); }
 	inline Complex getPowerDissipated() const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
+	size_t getVoltageSourceIndex()
+	{
+		size_t i = 0;
+		for (std::list<VoltageSource*>::iterator it = m_voltageSources.begin(); it != m_voltageSources.end(); it++)
+		{
+			if (*it == this)
+				return i;
+			i++;
+		}
+		return -1;
+	}
 
 public: //Static Methods
 	static inline size_t getVoltageSrcsCount() { return m_voltageSources.size(); }
@@ -50,9 +61,9 @@ private://Helpers
 		size_t posIdx = Node::getIndex(m_posNode);
 		size_t negIdx = Node::getIndex(m_negNode);
 
-		std::list<VoltageSource*>::iterator it = m_voltageSources.begin();
+		
 		//Inject Indep VS
-		for (unsigned int i = 0; i < m_voltageSources.size(); i++)
+		for (unsigned int i = 1; i <= m_voltageSources.size(); i++)
 		{
 			matrix[(nodes + i) * width + posIdx]	=  1;
 			matrix[(nodes + i) * width + negIdx]	= -1;
