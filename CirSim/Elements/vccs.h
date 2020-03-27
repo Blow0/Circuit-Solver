@@ -7,28 +7,29 @@
 class VCCS : public CurrentSource
 {
 private: //Members
-	//Controlling element
-	Complex m_voltageFactor;
 	Node* m_controlPosNode;
 	Node* m_controlNegNode;
-
+	Complex m_voltageFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
+	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
+
 private: //Constructors
-	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
+	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
 	~VCCS();
 
 public: //Setters
-	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor; }
+	inline void setVoltageFactor(Complex voltageFactor) { m_voltageFactor = voltageFactor; }
+
+private: //Blocked Setters
 	inline void setSupplyCurrent(Complex current) { }
 
 public: //Getters
+	inline Complex getSupplyCurrent() const { return m_voltageFactor * getControlVoltage(); }
 	inline Complex getControlVoltage() const { return m_controlPosNode->getNodalVoltage() - m_controlNegNode->getNodalVoltage(); }
-	inline Complex getSupplyCurrent() const { return m_supplyCurrent = m_voltageFactor * getControlVoltage(); }
 
 	VCCS(const VCCS&) = delete;
 	void operator=(const VCCS&) = delete;
 };
 
-#endif
+#endif //_VCCS_H

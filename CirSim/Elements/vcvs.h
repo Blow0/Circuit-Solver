@@ -9,21 +9,21 @@ class VCVS : public VoltageSource
 private: //Members
 	Node* m_controlPosNode;
 	Node* m_controlNegNode;
-
-	//Controlling element
 	Complex m_voltageFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
+	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
+
 private: //Constructors
-	VCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
+	VCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
 	~VCVS();
 
 public: //Setters
-	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor;  }
+	inline void setVoltageFactor(Complex voltageFactor) { m_voltageFactor = voltageFactor;  }
 
-private://Setters
+private: //Blocked Setters
 	inline void setSupplyVoltage(Complex supplyVoltage) {}
+
 public: //Getters
 	inline Complex getSupplyVoltage() const { return m_voltageFactor * getControlVoltage(); }
 	inline Complex getControlVoltage() const { return m_controlPosNode->getNodalVoltage() - m_controlNegNode->getNodalVoltage(); }
@@ -32,4 +32,4 @@ public: //Getters
 	void operator=(const VCVS&) = delete;
 };
 
-#endif // !_VCVS_H
+#endif //_VCVS_H

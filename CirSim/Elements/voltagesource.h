@@ -7,7 +7,7 @@
 
 class VoltageSource : public Element
 {
-protected: //Members
+private: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 	Complex m_supplyVoltage;

@@ -5,8 +5,6 @@
 #include <exception>
 #include <stdexcept>
 
-#define PI 3.14159265359
-
 class Complex
 {
 private: //Memebers
@@ -23,17 +21,9 @@ public: //Setters
 	inline void setCartesian(double real, double imag)		 { m_real = real; m_imag = imag; }
 	inline void setReal		(double real)					 { m_real = real; }
 	inline void setImag		(double imag)					 { m_imag = imag; }
+	inline void setPolar	(double magnitude, double phase) { m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
 	inline void setMagnitude(double magnitude)				 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
-	inline void setPolar	(double magnitude, double phase) 
-	{
-		toRadians(phase);
-		m_real = magnitude * cos(phase);
-		m_imag = magnitude * sin(phase); 	
-	}
 	inline void setPhase	(double phase)					 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
-
-private: //Helpers
-	inline void toRadians(double phase) { phase *= PI / 180.0; }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }
@@ -66,14 +56,13 @@ public: //Operations
 	inline Complex operator* (double rhs) const;
 	inline Complex operator/ (const Complex& rhs) const;
 	inline Complex operator/ (double rhs) const;
-	inline Complex operator =(const Complex& rhs) const;
-	inline void	   operator= (const Complex& rhs);
-	inline void	   operator+=(const Complex& rhs);
-	inline void	   operator-=(const Complex& rhs);
-	inline void	   operator*=(const Complex& rhs);
-	inline void	   operator*=(double rhs);
-	inline void	   operator/=(const Complex& rhs);
-	inline void	   operator/=(double rhs);
+	inline Complex operator= (const Complex& rhs);
+	inline Complex operator+=(const Complex& rhs);
+	inline Complex operator-=(const Complex& rhs);
+	inline Complex operator*=(const Complex& rhs);
+	inline Complex operator*=(double rhs);
+	inline Complex operator/=(const Complex& rhs);
+	inline Complex operator/=(double rhs);
 };
 
 //Methods
@@ -134,44 +123,46 @@ Complex Complex::operator/(double rhs) const
 	else
 		throw std::runtime_error("Can't divide by Zero.");
 }
-Complex Complex::operator=(const Complex& rhs) const
-{
-	return Complex(rhs.m_real, rhs.m_imag);
-}
-void Complex::operator=(const Complex& rhs)
+Complex Complex::operator=(const Complex& rhs)
 {
 	m_real = rhs.m_real;
 	m_imag = rhs.m_imag;
+	return (*this);
 }
-void Complex::operator+=(const Complex& rhs)
+Complex Complex::operator+=(const Complex& rhs)
 {
 	m_real += rhs.m_real;
 	m_imag += rhs.m_imag;
+	return (*this);
 }
-void Complex::operator-=(const Complex& rhs)
+Complex Complex::operator-=(const Complex& rhs)
 {
 	m_real -= rhs.m_real;
 	m_imag -= rhs.m_imag;
+	return (*this);
 }
-void Complex::operator*=(const Complex& rhs)
+Complex Complex::operator*=(const Complex& rhs)
 {
 	m_real = (m_real * rhs.m_real) - (m_imag * rhs.m_imag);
 	m_imag = (m_real * rhs.m_imag) + (m_imag * rhs.m_real);
+	return (*this);
 }
-void Complex::operator*=(double rhs)
+Complex Complex::operator*=(double rhs)
 {
 	m_real *= rhs;
 	m_imag *= rhs;
+	return (*this);
 }
-void Complex::operator/=(const Complex& rhs)
+Complex Complex::operator/=(const Complex& rhs)
 {
 	double rhsMag = rhs.getMagnitude();
 	if (rhsMag >= DBL_EPSILON)
 		(*this) *= rhs.getComplement() / rhs.getMagnitude();
 	else
 		throw std::runtime_error("Can't divide by Zero.");
+	return (*this);
 }
-void Complex::operator/=(double rhs)
+Complex Complex::operator/=(double rhs)
 {
 	if (rhs >= DBL_EPSILON)
 	{
@@ -180,6 +171,7 @@ void Complex::operator/=(double rhs)
 	}
 	else
 		throw std::runtime_error("Can't divide by Zero.");
+	return (*this);
 }
 
 #endif //_COMPLEX_H

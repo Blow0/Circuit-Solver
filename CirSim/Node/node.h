@@ -21,13 +21,6 @@ private:
 
 public: //Static Nodes Map Methods
 	static inline bool nodeExists(std::string nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
-	static inline Node* getNode(std::string nodeName)
-	{
-		if (nodeExists(nodeName))
-			return nodesMap[nodeName];
-		else
-			return nullptr;
-	}
 	static inline size_t getNodesCount() { return nodesMap.size(); }
 
 public: //Static Node Creation
