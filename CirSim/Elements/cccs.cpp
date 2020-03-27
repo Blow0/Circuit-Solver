@@ -3,23 +3,16 @@
 //Constructors
 
 CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance)
-	: Element(cccsName, ElementType::CCCS)
+	: CurrentSource(cccsName, posNode, negNode, 0.0, internalAdmittance)
 	, CurrentControlledSource()
-	, m_posNode(&posNode)
-	, m_negNode(&negNode)
 	, m_controlCurrent(controlCurrent)
 	, m_currentFactor(factor)
-	, m_internalAdmittance(internalAdmittance)
 {
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
+	setType(ElementType::CCCS);
 }
 
 CCCS::~CCCS()
 {
-	m_posNode->unLinkElement(this);
-	m_negNode->unLinkElement(this);
-	m_posNode = m_negNode = nullptr;
 	m_controlCurrent = nullptr;
 }
 

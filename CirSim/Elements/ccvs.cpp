@@ -5,6 +5,7 @@
 CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalImpedance)
 	: VoltageSource(ccvsName, posNode, negNode, 0.0, internalImpedance)
 	, CurrentControlledSource()
+	, m_controlCurrent(controlCurrent)
 	, m_currentFactor(factor)
 {
 	setType(ElementType::CCVS);

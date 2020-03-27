@@ -25,6 +25,8 @@ public: //Setters
 private://Setters
 	inline void setSupplyVoltage(Complex supplyVoltage) {}
 public: //Getters
+	inline Complex getSupplyVoltage() const { return m_voltageFactor * getControlVoltage(); }
+	inline Complex getControlVoltage() const { return m_controlPosNode->getNodalVoltage() - m_controlNegNode->getNodalVoltage(); }
 
 	VCVS(const VCVS&) = delete;
 	void operator=(const VCVS&) = delete;
