@@ -3,20 +3,15 @@
 
 //Constructors
 CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalImpedance)
-	: VoltageSource(ccvsName, posNode, negNode, 0, internalImpedance)
+	: VoltageSource(ccvsName, posNode, negNode, 0.0, internalImpedance)
 	, CurrentControlledSource()
 	, m_currentFactor(factor)
 {
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
 	setType(ElementType::CCVS);
 }
 
 CCVS::~CCVS()
 {
-	m_posNode->unLinkElement(this);
-	m_negNode->unLinkElement(this);
-	m_posNode = m_negNode = nullptr;
 	m_controlCurrent = nullptr;
 }
 

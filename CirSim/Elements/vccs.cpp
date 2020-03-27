@@ -5,12 +5,11 @@ VCCS::VCCS(const std::string& vcvsName, Node& posNode, Node& negNode, Complex fa
 	: Element(vcvsName, ElementType::VCCS)
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
+	, m_supplyCurrent(0.0)
 	, m_voltageFactor(factor)
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
-
-	m_supplyCurrent = (controlPosNode->getNodalVoltage() - controlNegNode->getNodalVoltage()) * factor;
 }
 
 VCCS::~VCCS()

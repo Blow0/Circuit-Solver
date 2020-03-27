@@ -20,9 +20,10 @@ private: //Constructors
 	~VCVS();
 
 public: //Setters
-	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor; setSupplyVoltage(m_voltageFactor * getVoltageDiff()); }
-	inline void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage * m_voltageFactor; }
-	inline void setInternalImpedance(Complex internalImpedance) { m_internalImpedance = internalImpedance; }
+	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor;  }
+
+private://Setters
+	inline void setSupplyVoltage(Complex supplyVoltage) {}
 public: //Getters
 
 	VCVS(const VCVS&) = delete;

@@ -11,7 +11,6 @@ VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, N
 	, m_supplyVoltage(supplyVoltage)
 	, m_current(0.0, 0.0)
 {
-	this->setType(ElementType::VCVS);
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
 }

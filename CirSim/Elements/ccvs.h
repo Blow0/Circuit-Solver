@@ -22,11 +22,11 @@ private: //Constructors
 
 public: //Setters
 	inline void setVoltageFactor(Complex factor) { m_currentFactor = factor;  }
-	inline void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage; }
-	inline void setInternalImpedance(Complex internalImpedance) { m_internalImpedance = internalImpedance; }
+
+private://Setters
+	inline void setSupplyVoltage(Complex supplyVoltage) {}
 
 public: //Getters
-
 
 	CCVS(const CCVS&) = delete;
 	void operator=(const CCVS&) = delete;
