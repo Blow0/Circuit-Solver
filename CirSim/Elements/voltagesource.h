@@ -22,7 +22,7 @@ public: //Static Voltage Source creation
 
 protected: //Constructors
 	VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
-	~VoltageSource();
+	virtual ~VoltageSource();
 
 public: //Setters
 	inline virtual void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage; }

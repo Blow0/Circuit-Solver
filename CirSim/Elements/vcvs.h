@@ -11,19 +11,18 @@ private: //Members
 	Node* m_controlNegNode;
 
 	//Controlling element
-	double m_factor;
+	Complex m_voltageFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
 	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
 private: //Constructors
-	VCVS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
 	VCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
 	~VCVS();
 
 public: //Setters
-	inline void setCurrent(Complex current) { m_current = current; }
-
+	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor; setSupplyVoltage(m_voltageFactor * getVoltageDiff()); }
+	inline void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage * m_voltageFactor; }
+	inline void setInternalImpedance(Complex internalImpedance) { m_internalImpedance = internalImpedance; }
 public: //Getters
 
 	VCVS(const VCVS&) = delete;

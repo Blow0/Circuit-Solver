@@ -16,18 +16,16 @@ private: //Members
 	Complex m_supplyCurrent;
 	Complex m_internalAdmittance;
 	//Controlling element
-	double m_factor;
+	Complex m_voltageFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Node* controlPosNode, Node* controlNegNode);
-	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode);
+	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
 private: //Constructors
-	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Node* controlPosNode, Node* controlNegNode);
-	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode);
+	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
 	~VCCS();
 
 public: //Setters
-	inline void setCurrent(Complex current) { m_supplyCurrent = current; }
+	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor; }
 
 public: //Getters
 	inline Node* getposNode() const { return m_posNode; }
