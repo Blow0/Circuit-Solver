@@ -33,7 +33,7 @@ public: //Setters
 	inline void setPhase	(double phase)					 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
 
 private: //Helpers
-	inline void toRadians(double phase) { phase *= PI / 180.0; }
+	inline void toRadians(double& phase) { phase *= PI / 180.0; }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }
@@ -67,7 +67,7 @@ public: //Operations
 	inline Complex operator/ (const Complex& rhs) const;
 	inline Complex operator/ (double rhs) const;
 	inline Complex operator =(const Complex& rhs) const;
-	inline void	   operator= (const Complex& rhs);
+	//inline void	   operator= (const Complex& rhs);
 	inline void	   operator+=(const Complex& rhs);
 	inline void	   operator-=(const Complex& rhs);
 	inline void	   operator*=(const Complex& rhs);
@@ -138,11 +138,11 @@ Complex Complex::operator=(const Complex& rhs) const
 {
 	return Complex(rhs.m_real, rhs.m_imag);
 }
-void Complex::operator=(const Complex& rhs)
+/*void Complex::operator=(const Complex& rhs)
 {
 	m_real = rhs.m_real;
 	m_imag = rhs.m_imag;
-}
+}*/
 void Complex::operator+=(const Complex& rhs)
 {
 	m_real += rhs.m_real;

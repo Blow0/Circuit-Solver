@@ -1,6 +1,5 @@
 #include "node.h"
 #include "../Elements/element.h"
-
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
 

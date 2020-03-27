@@ -33,7 +33,6 @@ int main()
 	string controlSource;
 	string controlPosNode;
 	string controlNegNode;
-	double magnitude;
 	double phase;
 	Complex controlElement(.6,.8);
 	//Take Input from user until he enters "end"
@@ -72,14 +71,14 @@ int main()
 				case 'V': //CCVS
 				case 'v':
 				{
-					CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource);
+					CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
 					break;
 				}
 				case 'C':
 				case 'c':
 				{
 
-					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource);
+					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
 					break;
 				}
 				}
@@ -117,13 +116,13 @@ int main()
 				case 'V': // VCVS
 				case 'v':
 				{
-					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0);
+					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
 					break;
 				}
 				case 'C':
 				case 'c':
 				{
-					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode);
+					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
 					break;
 				}
 				}
@@ -150,7 +149,6 @@ int main()
 								//Height     *     Width
 	Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 	// [i*width + j]  /2 * 3 = 6 -> j 0 1 2, 3 4 5 j < width, i< height
-
 
 	
 	delete[] matrix;
