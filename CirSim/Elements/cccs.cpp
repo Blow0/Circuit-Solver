@@ -2,28 +2,27 @@
 
 //Constructors
 
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance)
 	: CurrentSource(cccsName, posNode, negNode, 0.0, internalAdmittance)
-	, CurrentControlledSource()
-	, m_controlCurrent(controlCurrent)
-	, m_currentFactor(factor)
+	, m_controlElement(controlElement)
+	, m_currentFactor(currentFactor)
 {
 	setType(ElementType::CCCS);
 }
 
 CCCS::~CCCS()
 {
-	m_controlCurrent = nullptr;
+	m_controlElement = nullptr;
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
 		return (CCCS*)elementsMap[name];
 
-	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent, internalAdmittance);
+	CCCS* cccs = new CCCS(cccsName, posNode, negNode, currentFactor, controlElement, internalAdmittance);
 	elementsMap.emplace(name, cccs);
 	return cccs;
 }

@@ -7,7 +7,7 @@
 
 class CurrentSource : public Element
 {
-protected: //Members
+private: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 	Complex m_supplyCurrent;
@@ -18,7 +18,7 @@ public: //Static Voltage Source creation
 
 protected: //Constructors
 	CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
-	virtual~CurrentSource();
+	virtual ~CurrentSource();
 
 public: //Setters
 	inline virtual void setSupplyCurrent(Complex supplyCurrent) { m_supplyCurrent = supplyCurrent; }
@@ -38,4 +38,4 @@ public: //Getters
 	void operator=(const CurrentSource&) = delete;
 };
 
-#endif // !_CURRENTSOURCE_H
+#endif //_CURRENTSOURCE_H

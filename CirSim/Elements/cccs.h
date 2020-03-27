@@ -2,31 +2,33 @@
 #define _CCCS_H
 
 #include "currentsource.h"
-#include "currentcontrolled.h"
 #include "../Node/node.h"
 
-class CCCS : public CurrentSource, public CurrentControlledSource
+class CCCS : public CurrentSource
 {
 private: //Members
-	//Controlling element
+	Element* m_controlElement;
 	Complex m_currentFactor;
-	Element* m_controlCurrent;
 
 public: //Static Current controlled Voltage Source creation
-	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance);
+	static CCCS* createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance);
+
 private: //Constructors
-	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance = 0);
+	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance = 0);
 	~CCCS();
 
 public: //Setters
-	inline void setFactor(Complex factor) { m_currentFactor = factor; }
+	inline void setCurrentFactor(Complex currentFactor) { m_currentFactor = currentFactor; }
+
+private: //Blocked Setters
 	inline void setSupplyCurrent(Complex supplyCurrent) { }
 
 public: //Getters
-	inline Complex getSupplyCurrent() const { return m_supplyCurrent; } //To be edited currentFactor * ElementCurrent
+	inline Complex getSupplyCurrent() const { return m_currentFactor * getControlCurrent(); }
+	inline Complex getControlCurrent() const { return 0; }
 
 	CCCS(const CCCS&) = delete;
 	void operator=(const CCCS&) = delete;
 };
 
-#endif // !_CCCS_H
+#endif //_CCCS_H
