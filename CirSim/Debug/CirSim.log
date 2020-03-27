@@ -1,14 +1,3 @@
-﻿  CirSim.cpp
-  capacitor.cpp
-  cccs.cpp
-  ccvs.cpp
-  currentsource.cpp
-  element.cpp
-  inductor.cpp
-  resistor.cpp
-  vccs.cpp
-  vcvs.cpp
-  voltagesource.cpp
-  node.cpp
-  Generating Code...
+﻿  node.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Node\node.h(38): warning C4715: 'Node::getIndex': not all control paths return a value
   CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

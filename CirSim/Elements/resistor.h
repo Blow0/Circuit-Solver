@@ -31,6 +31,23 @@ public: //Getters
 	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
 	inline Complex getDissipatedPower() const { return getVoltageDiff() * getCurrent().getComplement(); }
 
+public: //Helpers
+	void inject(Complex* matrix, unsigned int width)
+	{
+		unsigned int posIdx = Node::getIndex(m_posNode);
+		unsigned int negIdx = Node::getIndex(m_negNode);
+
+		unsigned int di[] = { posIdx, posIdx, negIdx, negIdx };
+		unsigned int dj[] = { posIdx, negIdx, negIdx, posIdx };
+
+		unsigned int sign = 1;
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			matrix[di[i] * width + dj[i]] = getAdmittance() * sign;
+			sign *= -1;
+		}
+	}
+
 	Resistor(const Resistor&) = delete;
 	void operator=(const Resistor&) = delete;
 };

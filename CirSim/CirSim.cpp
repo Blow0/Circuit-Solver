@@ -145,7 +145,7 @@ int main()
 	}
 
 	//Get size of Augmented matrix
-	unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() + CurrentControlledSource::getCurrentControlledCount();
+	unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 								//Height     *     Width
 	Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 	// [i*width + j]  /2 * 3 = 6 -> j 0 1 2, 3 4 5 j < width, i< height
