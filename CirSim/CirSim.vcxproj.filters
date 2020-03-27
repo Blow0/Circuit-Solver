@@ -51,9 +51,6 @@
     <ClCompile Include="Elements\vcvs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Elements\currentcontrolled.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Elements\capacitor.h">
@@ -90,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Elements\vcvs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Elements\currentcontrolled.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

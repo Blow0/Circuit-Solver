@@ -31,6 +31,19 @@ public: //Getters
 	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
 	inline Complex getStoredPower(double angularFrequency) const { return getVoltageDiff() * getCurrent(angularFrequency).getComplement(); }
 
+private: //Helpers
+	void inject(Complex* matrix, size_t width, double angularFrequency)
+	{
+		size_t posIdx = Node::getIndex(m_posNode);
+		size_t negIdx = Node::getIndex(m_negNode);
+
+		matrix[posIdx * width + posIdx] +=  getAdmittance(angularFrequency);
+		matrix[posIdx * width + negIdx] += -getAdmittance(angularFrequency);
+		matrix[negIdx * width + posIdx] += -getAdmittance(angularFrequency);
+		matrix[negIdx * width + negIdx] +=  getAdmittance(angularFrequency);
+	}
+
+public:
 	Inductor(const Inductor&) = delete;
 	void operator=(const Inductor&) = delete;
 };

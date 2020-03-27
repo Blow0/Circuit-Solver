@@ -32,10 +32,9 @@ public: //Static Elements Map Methods
 
 public: //Logic
 	inline bool operator==(const Element& rhs) const { return rhs.m_name == m_name; }
-
+	
 public: //Setters
-	inline void setName(const std::string& name) { elementsMap.erase(m_name); m_name = name; elementsMap.emplace(m_name, this); }
-
+	inline virtual void setName(const std::string& name) { elementsMap.erase(m_name); m_name = name; elementsMap.emplace(m_name, this); }
 protected: //Setters
 	inline void setType(const ElementType type) { m_type = type; }
 

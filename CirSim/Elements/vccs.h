@@ -28,6 +28,23 @@ public: //Getters
 	inline Complex getSupplyCurrent() const { return m_voltageFactor * getControlVoltage(); }
 	inline Complex getControlVoltage() const { return m_controlPosNode->getNodalVoltage() - m_controlNegNode->getNodalVoltage(); }
 
+private: //Helpers
+	void inject(Complex* matrix, size_t width, double angularFrequency = 0)
+	{
+		size_t lastRow = width - 1;
+		size_t posIdx = Node::getIndex(getposNode());
+		size_t negIdx = Node::getIndex(getnegNode());
+
+		//Inject Current
+		Complex sum = getInternalAdmittance() + m_voltageFactor;
+		//Inject internal Admittance + voltageFactor
+		matrix[posIdx * width + posIdx] +=  sum;
+		matrix[posIdx * width + negIdx] += -sum;
+		matrix[negIdx * width + posIdx] += -sum;
+		matrix[negIdx * width + negIdx] +=  sum;
+	}
+
+public:
 	VCCS(const VCCS&) = delete;
 	void operator=(const VCCS&) = delete;
 };

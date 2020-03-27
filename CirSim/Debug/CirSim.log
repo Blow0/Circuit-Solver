@@ -3,7 +3,6 @@
   cccs.cpp
   ccvs.cpp
   currentsource.cpp
-  element.cpp
   inductor.cpp
   resistor.cpp
   vccs.cpp
@@ -11,4 +10,5 @@
   voltagesource.cpp
   node.cpp
   Generating Code...
+  LINK : D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe not found or not built by the last incremental link; performing full link
   CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

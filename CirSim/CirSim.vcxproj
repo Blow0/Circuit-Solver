@@ -23,7 +23,6 @@
     <ClCompile Include="Elements\capacitor.cpp" />
     <ClCompile Include="Elements\cccs.cpp" />
     <ClCompile Include="Elements\ccvs.cpp" />
-    <ClCompile Include="Elements\currentcontrolled.cpp" />
     <ClCompile Include="Elements\currentsource.cpp" />
     <ClCompile Include="Elements\element.cpp" />
     <ClCompile Include="Elements\inductor.cpp" />
@@ -37,7 +36,6 @@
     <ClInclude Include="Elements\capacitor.h" />
     <ClInclude Include="Elements\cccs.h" />
     <ClInclude Include="Elements\ccvs.h" />
-    <ClInclude Include="Elements\currentcontrolled.h" />
     <ClInclude Include="Elements\currentsource.h" />
     <ClInclude Include="Elements\element.h" />
     <ClInclude Include="Elements\inductor.h" />

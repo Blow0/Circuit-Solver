@@ -8,6 +8,7 @@ CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex cu
 	, m_currentFactor(currentFactor)
 {
 	setType(ElementType::CCCS);
+	m_currentControlledCount++;
 }
 
 CCCS::~CCCS()
