@@ -7,14 +7,14 @@
 
 class VoltageSource : public Element
 {
-private: //Members
+protected: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 	Complex m_supplyVoltage;
 	Complex m_current;
 	Complex m_internalImpedance;
 
-private: //Static Members
+protected: //Static Members
 	static std::list <VoltageSource*> m_voltageSources;
 
 public: //Static Voltage Source creation
@@ -22,7 +22,7 @@ public: //Static Voltage Source creation
 
 protected: //Constructors
 	VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
-	~VoltageSource();
+	virtual ~VoltageSource();
 
 public: //Setters
 	inline virtual void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage; }
@@ -33,7 +33,7 @@ public: //Getters
 	inline Node* getnegNode() const { return m_negNode; }
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline Complex getSupplyVoltage() const { return m_supplyVoltage; }
+	inline virtual Complex getSupplyVoltage() const { return m_supplyVoltage; }
 	inline Complex getPowerSupplied() const { return m_current * getSupplyVoltage(); }
 	inline Complex getPowerDissipated() const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }

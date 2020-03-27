@@ -66,6 +66,7 @@ public: //Operations
 	inline Complex operator* (double rhs) const;
 	inline Complex operator/ (const Complex& rhs) const;
 	inline Complex operator/ (double rhs) const;
+	inline Complex operator =(const Complex& rhs) const;
 	inline void	   operator= (const Complex& rhs);
 	inline void	   operator+=(const Complex& rhs);
 	inline void	   operator-=(const Complex& rhs);
@@ -132,6 +133,10 @@ Complex Complex::operator/(double rhs) const
 		return Complex(m_real, m_imag) * (1.0 / rhs);
 	else
 		throw std::runtime_error("Can't divide by Zero.");
+}
+Complex Complex::operator=(const Complex& rhs) const
+{
+	return Complex(rhs.m_real, rhs.m_imag);
 }
 void Complex::operator=(const Complex& rhs)
 {

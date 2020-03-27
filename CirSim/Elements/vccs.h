@@ -1,40 +1,34 @@
 #ifndef _VCCS_H
 #define _VCCS_H
 
-#include "element.h"
+#include "currentsource.h"
 #include "../Node/node.h"
 
-class VCCS : public Element
+class VCCS : public CurrentSource
 {
 private: //Members
+	//Controlling element
+	Complex m_voltageFactor;
 	Node* m_controlPosNode;
 	Node* m_controlNegNode;
-	Node* m_posNode;
-	Node* m_negNode;
 
-	Complex m_current;
-	Complex m_voltage; //Will be calculated
-	//Controlling element
-	double m_factor;
-	Complex m_controlVoltage;
 
 public: //Static Current controlled Voltage Source creation
-	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage);
-	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage);
+	static VCCS* createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
 private: //Constructors
-	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage);
-	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage);
+	VCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance);
 	~VCCS();
 
 public: //Setters
-	inline void setCurrent(Complex current) { m_current = current; }
+	inline void setVoltageFactor(Complex factor) { m_voltageFactor = factor; }
+	inline void setSupplyCurrent(Complex current) { }
 
 public: //Getters
-	inline Node* getposNode() const { return m_posNode; }
-	inline Node* getnegNode() const { return m_negNode; }
-	inline Complex getCurrent() const { return m_current; }
-	inline Complex getVoltage() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline double getPowerDelivered() const { return m_current.getMagnitude() * m_voltage.getMagnitude(); }
+	inline Complex getControlVoltage() const { return m_controlPosNode->getNodalVoltage() - m_controlNegNode->getNodalVoltage(); }
+	inline Complex getSupplyCurrent() const { return m_supplyCurrent = m_voltageFactor * getControlVoltage(); }
+
+	VCCS(const VCCS&) = delete;
+	void operator=(const VCCS&) = delete;
 };
 
 #endif

@@ -1,58 +1,28 @@
 #include "vccs.h"
 
 //Constructors
-VCCS::VCCS(const std::string& vcvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage)
-	: Element(vcvsName, ElementType::VCCS)
-	, m_posNode(&posNode)
-	, m_negNode(&negNode)
-	, m_controlVoltage(controlVoltage)
-	, m_factor(factor)
+VCCS::VCCS(const std::string& vcvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance)
+	: CurrentSource(vcvsName, posNode, negNode, 0.0, internalAdmittance)
+	, m_controlPosNode(controlPosNode)
+	, m_controlNegNode(controlNegNode)
+	, m_voltageFactor(factor)
 {
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
-
-	m_current = m_controlVoltage * m_factor;
-}
-
-VCCS::VCCS(const std::string& vcvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage)
-	: Element(vcvsName, ElementType::VCCS)
-	, m_posNode(&posNode)
-	, m_negNode(&negNode)
-	, m_controlVoltage(controlVoltage)
-	, m_factor(1)
-{
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
-
-	m_current = m_controlVoltage * factor;
+	setType(ElementType::VCCS);
 }
 
 VCCS::~VCCS()
 {
-	m_posNode->unLinkElement(this);
-	m_negNode->unLinkElement(this);
-	m_posNode = m_negNode = nullptr;
+	m_controlPosNode = m_controlNegNode = nullptr;
 }
 
 //Static Voltage Source Creation 
-VCCS* VCCS::createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, double factor, Complex controlVoltage)
+VCCS* VCCS::createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Node* controlPosNode, Node* controlNegNode, Complex internalAdmittance)
 {
 	std::string name = "vccs" + ccvsName;
 	if (elementExists(name))
 		return (VCCS*)elementsMap[name];
 
-	VCCS* vccs = new VCCS(ccvsName, posNode, negNode, factor, controlVoltage);
-	elementsMap.emplace(name, vccs);
-	return vccs;
-}
-
-VCCS* VCCS::createVCCS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex factor, Complex controlVoltage)
-{
-	std::string name = "vccs" + ccvsName;
-	if (elementExists(name))
-		return (VCCS*)elementsMap[name];
-
-	VCCS* vccs = new VCCS(ccvsName, posNode, negNode, factor, controlVoltage);
+	VCCS* vccs = new VCCS(ccvsName, posNode, negNode, factor, controlPosNode, controlNegNode, internalAdmittance);
 	elementsMap.emplace(name, vccs);
 	return vccs;
 }

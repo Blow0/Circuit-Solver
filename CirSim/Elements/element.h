@@ -27,6 +27,7 @@ protected: //Constructors
 
 public: //Static Elements Map Methods
 	static inline bool elementExists(std::string elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
+	static inline Element* getElement(std::string elementName){ return elementExists(elementName) ? elementsMap[elementName] : nullptr;}
 	static inline size_t getElementsCount() { return elementsMap.size(); }
 
 public: //Logic
@@ -34,6 +35,9 @@ public: //Logic
 
 public: //Setters
 	inline void setName(const std::string& name) { elementsMap.erase(m_name); m_name = name; elementsMap.emplace(m_name, this); }
+
+protected: //Setters
+	inline void setType(const ElementType type) { m_type = type; }
 
 public: //Getters
 	inline const std::string& geName() const { return m_name; }

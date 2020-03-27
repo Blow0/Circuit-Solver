@@ -7,7 +7,7 @@
 
 class CurrentSource : public Element
 {
-private: //Members
+protected: //Members
 	Node* m_posNode;
 	Node* m_negNode;
 	Complex m_supplyCurrent;
@@ -16,12 +16,12 @@ private: //Members
 public: //Static Voltage Source creation
 	static CurrentSource* createCurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
 
-private: //Constructors
+protected: //Constructors
 	CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance = 0);
-	~CurrentSource();
+	virtual~CurrentSource();
 
 public: //Setters
-	inline void setSupplyCurrent(Complex supplyCurrent) { m_supplyCurrent = supplyCurrent; }
+	inline virtual void setSupplyCurrent(Complex supplyCurrent) { m_supplyCurrent = supplyCurrent; }
 	inline void setInternalAdmittance(Complex internalAdmittance) { m_internalAdmittance = internalAdmittance; }
 
 public: //Getters
@@ -29,7 +29,7 @@ public: //Getters
 	inline Node* getnegNode() const { return m_negNode; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent() const { return (m_supplyCurrent - getVoltageDiff() * m_internalAdmittance); }
-	inline Complex getSupplyCurrent() const { return m_supplyCurrent; }
+	inline virtual Complex getSupplyCurrent() const { return m_supplyCurrent; }
 	inline Complex getPowerSupplied() const { return m_supplyCurrent * getVoltageDiff(); }
 	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }

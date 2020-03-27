@@ -1,60 +1,29 @@
 #include "cccs.h"
 
 //Constructors
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
-	: Element(cccsName, ElementType::CCCS)
+
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance)
+	: CurrentSource(cccsName, posNode, negNode, 0.0, internalAdmittance)
 	, CurrentControlledSource()
-	, m_posNode(&posNode)
-	, m_negNode(&negNode)
 	, m_controlCurrent(controlCurrent)
-	, m_factor(factor)
+	, m_currentFactor(factor)
 {
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
-
-	m_current = m_controlCurrent * m_factor;
-}
-
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
-	: Element(cccsName, ElementType::CCCS)
-	, CurrentControlledSource()
-	, m_posNode(&posNode)
-	, m_negNode(&negNode)
-	, m_controlCurrent(controlCurrent)
-	, m_factor(1)
-{
-	m_posNode->linkElement(this);
-	m_negNode->linkElement(this);
-
-	m_current = m_controlCurrent * factor;
+	setType(ElementType::CCCS);
 }
 
 CCCS::~CCCS()
 {
-	m_posNode->unLinkElement(this);
-	m_negNode->unLinkElement(this);
-	m_posNode = m_negNode = nullptr;
+	m_controlCurrent = nullptr;
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, double factor, Complex controlCurrent)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Element* controlCurrent, Complex internalAdmittance)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
 		return (CCCS*)elementsMap[name];
 
-	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent);
-	elementsMap.emplace(name, cccs);
-	return cccs;
-}
-
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex factor, Complex controlCurrent)
-{
-	std::string name = "cccs" + cccsName;
-	if (elementExists(name))
-		return (CCCS*)elementsMap[name];
-
-	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent);
+	CCCS* cccs = new CCCS(cccsName, posNode, negNode, factor, controlCurrent, internalAdmittance);
 	elementsMap.emplace(name, cccs);
 	return cccs;
 }
