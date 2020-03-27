@@ -27,6 +27,7 @@ public: //Setters
 public: //Getters
 	inline Node* getposNode() const { return m_posNode; }
 	inline Node* getnegNode() const { return m_negNode; }
+	inline Complex getInternalAdmittance() { return m_internalAdmittance; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent() const { return (m_supplyCurrent - getVoltageDiff() * m_internalAdmittance); }
 	inline virtual Complex getSupplyCurrent() const { return m_supplyCurrent; }
@@ -34,6 +35,24 @@ public: //Getters
 	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 
+private: //Helpers
+	void virtual inject(Complex* matrix, size_t width, double angularFrequency = 0)
+	{
+		size_t lastRow = width - 1;
+		size_t posIdx = Node::getIndex(m_posNode);
+		size_t negIdx = Node::getIndex(m_negNode);
+
+		//Inject Current
+		matrix[posIdx * width + lastRow] += -getSupplyCurrent();
+		matrix[negIdx * width + lastRow] +=  getSupplyCurrent();
+		//Inject internal Admittance
+		matrix[posIdx * width + posIdx] +=  m_internalAdmittance;
+		matrix[posIdx * width + negIdx] += -m_internalAdmittance;
+		matrix[negIdx * width + posIdx] += -m_internalAdmittance;
+		matrix[negIdx * width + negIdx] +=  m_internalAdmittance;
+	}
+
+public:
 	CurrentSource(const CurrentSource&) = delete;
 	void operator=(const CurrentSource&) = delete;
 };

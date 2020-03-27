@@ -26,15 +26,16 @@ public: //Static Nodes Map Methods
 
 public: //Static Node Creation
 	static Node* createNode(std::string nodeName);
-	static unsigned int getIndex(Node* node)
+	static size_t getIndex(Node* node)
 	{
-		unsigned int i = 0;
+		size_t i = 0;
 		for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
 		{
 			if (node == it->second)
 				return i;
 			i++;
 		}
+		return -1;
 	}
 private: //Constructors
 	Node(const std::string& name);
