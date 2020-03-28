@@ -21,7 +21,7 @@ Complex* SolveSystem(Complex* matrix, unsigned int height);
 int main()
 {
 	//Nodes 
-	unsigned int gndNode = 0;
+	string gndNode;
 
 	//Element temporary variables
 	string elementType;
@@ -34,14 +34,15 @@ int main()
 	string controlPosNode;
 	string controlNegNode;
 	double phase;
-	Complex controlElement(.6,.8);
+	Complex controlElement(0.8, 0.6);
 	//Take Input from user until he enters "end"
 	while (1)
 	{
-		cin >> elementType;
+		std::cin >> elementType;
 		if (elementType == "end")
 			break;
-		cin >> posNode >> negNode >> elementVal;
+
+		std::cin >> posNode >> negNode >> elementVal;
 		Node* elementPosNode = Node::createNode(posNode);
 		Node* elementNegNode = Node::createNode(negNode);
 
@@ -64,7 +65,7 @@ int main()
 		{
 			if (elementType.size() > 2)
 			{
-				cin >> controlSource;
+				std::cin >> controlSource;
 				Element* controlsource = Element::getElement(controlSource);
 				switch (elementType[2])
 				{
@@ -90,7 +91,7 @@ int main()
 				case 'S':
 				case 's':
 				{
-					cin >>phase;
+					std::cin >>phase;
 					controlElement.setPolar(elementVal, phase);
 					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					break;
@@ -102,13 +103,14 @@ int main()
 				}
 				}
 			}
+			break;
 		}
 		case 'V':
 		case 'v':
 		{
 			if (elementType.size() > 2)
 			{
-				cin >> controlPosNode >> controlNegNode;
+				std::cin >> controlPosNode >> controlNegNode;
 				Node* controlposnode = Node::getNode(controlPosNode);
 				Node* controlnegnode = Node::getNode(controlNegNode);
 				switch (elementType[2])
@@ -134,27 +136,49 @@ int main()
 				{
 				case 'S': //VS voltage source
 				case 's':
-					cin >> phase;
+					std::cin >> phase;
 					controlElement.setPolar(elementVal, phase);
 					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					break;
 				}
 			}
+			break;
 		}
 		}
 	}
-
+	std::cout << "Enter Ground Node ";
+	std::cin >> gndNode;
 	//Get size of Augmented matrix
-	unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
-								//Height     *     Width
-	Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
-	 
-	Element::InjectMatrix(matrix, matrixSize + 1, Node::nodeIndexMap, VoltageSource::voltageIndexMap, 0);
-	Complex* solutions = SolveSystem(matrix, matrixSize);
-	
+	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
+	{
+		unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		//Height     *     Width
+		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 
-	delete[] solutions;
-	delete[] matrix;
+		size_t gndNodeIdx = Node::nodeIndexMap[gndNode];
+		Element::InjectMatrix(matrix, matrixSize + 1, Node::nodeIndexMap, VoltageSource::voltageIndexMap, 0);
+
+		//Set Gnd Equation Vgnd = 0
+		for (unsigned int i = 0; i < matrixSize + 1; i++)
+		{
+			if (i != gndNodeIdx)
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
+			else
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 1.0;
+		}
+
+		Complex* solutions = SolveSystem(matrix, matrixSize);
+
+		for (unsigned int i = 0; i < Node::getNodesCount(); i++)
+		{
+			std::cout << "V[" << i + 1 << "]" << " = ";
+			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
+		}
+
+		delete[] solutions;
+		delete[] matrix;
+	}
+	
 	return 0;
 }
 
