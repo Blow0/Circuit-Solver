@@ -89,7 +89,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 			size_t currentSourcePosIdx = nodeIndexMap[currentSource->getPosNode()->getName()];
 			size_t currentSourceNegIdx = nodeIndexMap[currentSource->getNegNode()->getName()];
 			Complex supplyCurrent = currentFactor * currentSource->getSupplyCurrent();
-			Complex internalAdmittanceFactor = currentFactor * currentSource->getInternalAdmittance();
+			Complex internalAdmittanceFactor = currentFactor * currentSource->getInternalAdmittance(); //It should be factor independent
 			matrix[posIdx * matrixWidth + constRow] += supplyCurrent;
 			matrix[posIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
 			matrix[posIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
@@ -368,7 +368,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::CCCS:
 		{
-			CCCS* cccs = static_cast<CCCS*>(m_controlElement);
+			CCCS* cccs = static_cast<CCCS*>(m_controlElement);//Why this and not cccs? this->get(cccs) ?
 			cccs->injectSupplyCurrentIntoCCCS(matrix, matrixWidth, this, currentFactor, nodeIndexMap, voltageIndexMap, angularFrequency);
 		}
 		break;

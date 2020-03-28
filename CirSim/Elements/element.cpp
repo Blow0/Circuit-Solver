@@ -17,4 +17,12 @@ Element::~Element()
 
 void Element::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	std::map<std::string, Element*> ::iterator it = elementsMap.begin();
+	Element* element;
+	while (it != elementsMap.end())
+	{
+		element = it->second;
+		element->injectIntoMatrix(matrix, matrixWidth, nodeIndexMap, voltageIndexMap, angularFrequency);
+		it++;
+	}
 }
