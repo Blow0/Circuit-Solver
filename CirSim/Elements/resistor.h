@@ -18,8 +18,13 @@ private: //Constructors
 	Resistor(const std::string& resistorName, Node& posNode, Node& negNode, double resistance = 0);
 	~Resistor();
 
+public: //Matrix Operations
+	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+
 public: //Setters
 	inline void setResistance(double resistance) { m_resistance = check_not_zero(abs(resistance)); }
+	inline void setPosNode(Node& posNode) { m_posNode = &posNode; }
+	inline void setNegNode(Node& negNode) { m_negNode = &negNode; }
 
 public: //Getters
 	inline double getResistance() const { return m_resistance; }
@@ -30,18 +35,6 @@ public: //Getters
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
 	inline Complex getDissipatedPower() const { return getVoltageDiff() * getCurrent().getComplement(); }
-
-private: //Helpers
-	void inject(Complex* matrix, unsigned int width, double angularFrequency = 0)
-	{
-		size_t posIdx = Node::getIndex(m_posNode);
-		size_t negIdx = Node::getIndex(m_negNode);
-
-		matrix[posIdx * width + posIdx] +=  getAdmittance();
-		matrix[posIdx * width + negIdx] += -getAdmittance();
-		matrix[negIdx * width + posIdx] += -getAdmittance();
-		matrix[negIdx * width + negIdx] +=  getAdmittance();
-	}
 
 public:
 	Resistor(const Resistor&) = delete;

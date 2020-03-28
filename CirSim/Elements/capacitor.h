@@ -18,8 +18,13 @@ private: //Constructors
 	Capacitor(const std::string& capacitorName, Node& posNode, Node& negNode, double inductance = 0);
 	~Capacitor();
 
+public: //Matrix Operations
+	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+
 public: //Setters
 	inline void setCapacitance(double capacitance) { m_capacitance = abs(capacitance); }
+	inline void setPosNode(Node& posNode) { m_posNode = &posNode; }
+	inline void setNegNode(Node& negNode) { m_negNode = &negNode; }
 
 public: //Getters
 	inline double getCapacitance() const { return m_capacitance; }
@@ -30,18 +35,6 @@ public: //Getters
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline Complex getCurrent(double angularFrequency) const { return getVoltageDiff() * getAdmittance(angularFrequency); }
 	inline Complex getStoredPower(double angularFrequency) const { return getVoltageDiff() * getCurrent(angularFrequency).getComplement(); }
-
-private://Helpers
-	void inject(Complex* matrix, size_t width, double angularFrequency)
-	{
-		size_t posIdx = Node::getIndex(m_posNode);
-		size_t negIdx = Node::getIndex(m_negNode);
-
-		matrix[posIdx * width + posIdx] += getAdmittance(angularFrequency);
-		matrix[posIdx * width + negIdx] += -getAdmittance(angularFrequency);
-		matrix[negIdx * width + posIdx] += -getAdmittance(angularFrequency);
-		matrix[negIdx * width + negIdx] += getAdmittance(angularFrequency);
-	}
 
 public:
 	Capacitor(const Capacitor&) = delete;

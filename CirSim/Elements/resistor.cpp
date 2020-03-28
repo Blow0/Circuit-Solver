@@ -29,3 +29,16 @@ Resistor* Resistor::createResistor(const std::string& resistorName, Node& posNod
 	elementsMap.emplace(name, resistor);
 	return resistor;
 }
+
+//Matrix Operations
+void Resistor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+{
+	size_t posIdx = nodeIndexMap[m_posNode->getName()];
+	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	Complex admittance = getAdmittance();
+
+	matrix[posIdx * matrixWidth + posIdx] += admittance;
+	matrix[posIdx * matrixWidth + negIdx] -= admittance;
+	matrix[negIdx * matrixWidth + posIdx] -= admittance;
+	matrix[negIdx * matrixWidth + negIdx] += admittance;
+}

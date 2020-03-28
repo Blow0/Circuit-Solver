@@ -14,3 +14,7 @@ Element::~Element()
 {
 	elementsMap.erase(m_name);
 }
+
+void Element::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+{
+}

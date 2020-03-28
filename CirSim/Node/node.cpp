@@ -1,5 +1,6 @@
 #include "node.h"
 #include "../Elements/element.h"
+
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
 
@@ -66,7 +67,7 @@ bool Node::isElementLinked(const Element* element)
 }
 
 //Static Node Creation
-Node* Node::createNode(std::string nodeName)
+Node* Node::createNode(const std::string& nodeName)
 {
 	if (nodeExists(nodeName))
 		return nodesMap[nodeName];
