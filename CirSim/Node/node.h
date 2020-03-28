@@ -20,26 +20,19 @@ private:
 	Complex m_flowCurrent;
 
 public: //Static Nodes Map Methods
-	static inline bool nodeExists(std::string nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
+	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
+	static inline Node* getNode(const std::string& nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }
 	static inline size_t getNodesCount() { return nodesMap.size(); }
-	static inline Node* getNode(std::string nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }
 
 public: //Static Node Creation
-	static Node* createNode(std::string nodeName);
-	static size_t getIndex(Node* node)
-	{
-		size_t i = 0;
-		for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
-		{
-			if (node == it->second)
-				return i;
-			i++;
-		}
-		return -1;
-	}
+	static Node* createNode(const std::string& nodeName);
+
 private: //Constructors
 	Node(const std::string& name);
 	~Node();
+
+public: //Matrix Operations
+	void fillFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap) { m_nodalVoltage = vector[nodeIndexMap[m_name]]; }
 
 public: //Computers
 	void computeFlowCurrent();
@@ -60,7 +53,7 @@ public: //Getters
 	inline const std::string& getName() const { return m_name; }
 	inline Complex getNodalVoltage() const { return m_nodalVoltage; }
 	inline Complex getFlowCurrent() const { return m_flowCurrent; }
-	
+
 	Node(const Node&) = delete;
 	void operator=(const Node&) = delete;
 };

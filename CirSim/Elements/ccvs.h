@@ -17,13 +17,19 @@ private: //Constructors
 	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalImpedance = 0);
 	~CCVS();
 
+public: //Matrix Operations
+	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+
 public: //Setters
 	inline void setCurrentFactor(Complex currentFactor) { m_currentFactor = currentFactor;  }
+	inline void setControlElement(Element& controlElement) { m_controlElement = &controlElement; }
 
 private: //Blocked Setters
-	inline void setSupplyVoltage(Complex supplyVoltage) {}
+	inline void setSupplyVoltage(Complex supplyVoltage) { }
 
 public: //Getters
+	inline Element* getControlElement() const { return m_controlElement; }
+	inline Complex getCurrentFactor() const { return m_currentFactor; }
 	inline Complex getSupplyVoltage() const { return m_currentFactor * getControlCurrent(); }
 	inline Complex getControlCurrent() const { return 0; }
 

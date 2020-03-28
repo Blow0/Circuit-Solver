@@ -31,3 +31,20 @@ CurrentSource* CurrentSource::createCurrentSource(const std::string& currentSrcN
 	elementsMap.emplace(name, currentsource);
 	return currentsource;
 }
+
+//Matrix Operations
+void CurrentSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+{
+	size_t posIdx = nodeIndexMap[m_posNode->getName()];
+	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	size_t constRow = matrixWidth - 1;
+
+	Complex supplyCurrent = getSupplyCurrent();
+	Complex internalAdmittance = getInternalAdmittance();
+	matrix[posIdx * matrixWidth + constRow] += supplyCurrent;
+	matrix[negIdx * matrixWidth + constRow] -= supplyCurrent;
+	matrix[posIdx * matrixWidth + posIdx] += internalAdmittance;
+	matrix[posIdx * matrixWidth + negIdx] -= internalAdmittance;
+	matrix[negIdx * matrixWidth + posIdx] -= internalAdmittance;
+	matrix[negIdx * matrixWidth + negIdx] += internalAdmittance;
+}

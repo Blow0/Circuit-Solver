@@ -43,3 +43,21 @@ VoltageSource* VoltageSource::createVoltageSource(const std::string& voltageSrcN
 	m_voltageSources.push_back(voltagesource);
 	return voltagesource;
 }
+
+//Matrix Operations
+void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+{
+	size_t posIdx = nodeIndexMap[m_posNode->getName()];
+	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	size_t constRow = matrixWidth - 1;
+	size_t voltageIdx = voltageIndexMap[m_name];
+
+	Complex supplyVoltage = getSupplyVoltage();
+	Complex internalImpedance = getInternalImpedance();
+	matrix[voltageIdx * matrixWidth + posIdx] = 1;
+	matrix[voltageIdx * matrixWidth + negIdx] = -1;
+	matrix[voltageIdx * matrixWidth + voltageIdx] = internalImpedance;
+	matrix[voltageIdx * matrixWidth + constRow] = supplyVoltage;
+	matrix[posIdx * matrixWidth + voltageIdx] = -1;
+	matrix[negIdx * matrixWidth + voltageIdx] = 1;
+}
