@@ -41,7 +41,7 @@ void CCVS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
-	size_t voltageIdx = voltageIndexMap[m_name];
+	size_t voltageIdx = voltageIndexMap[m_name] + Node::getNodesCount();
 
 	Complex currentFactor = getCurrentFactor();
 	Complex internalImpedance = getInternalImpedance();

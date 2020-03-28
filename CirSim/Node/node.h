@@ -18,7 +18,8 @@ private:
 	std::list<Element*> m_elements;
 	Complex m_nodalVoltage;
 	Complex m_flowCurrent;
-
+public:
+	static std::map<std::string, size_t> nodeIndexMap;
 public: //Static Nodes Map Methods
 	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
 	static inline Node* getNode(const std::string& nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }

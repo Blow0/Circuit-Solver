@@ -16,10 +16,10 @@ protected: //Members
 
 protected: //Static Members
 	static std::list <VoltageSource*> m_voltageSources;
-
+public:
+	static std::map<std::string, size_t> voltageIndexMap;
 public: //Static Voltage Source creation
 	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
-
 protected: //Constructors
 	VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
 	virtual ~VoltageSource();

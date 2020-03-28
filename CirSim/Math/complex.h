@@ -2,6 +2,7 @@
 #define _COMPLEX_H
 
 #include <math.h>
+#include <float.h>
 #include <exception>
 #include <stdexcept>
 
@@ -30,7 +31,7 @@ public: //Getters
 	inline double  getImag()		 const { return m_imag; }
 	inline double  getMagnitude()	 const { return sqrt(getMagnitudeSqr()); }
 	inline double  getMagnitudeSqr() const { return m_real * m_real + m_imag * m_imag; }
-	inline double  getPhase()		 const { return atan(m_imag / m_real); }
+	inline double  getPhase()		 const { double phase = atan(m_imag / m_real);  return isnan(phase)? 0.0 : phase; }
 	inline Complex getComplement()	 const { return Complex(m_real, -m_imag); }
 	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) / (mag >= DBL_EPSILON ? mag : 1.0); }
 	inline Complex getInverse()		 const { return getComplement().getNormalized(); }
@@ -112,7 +113,7 @@ Complex Complex::operator/(const Complex& rhs) const
 {
 	double rhsMag = rhs.getMagnitude();
 	if (rhsMag >= DBL_EPSILON)
-		return ((*this) * rhs.getComplement()) / rhsMag;
+		return ((*this) * rhs.getComplement()) / (rhsMag*rhsMag);
 	else
 		throw std::runtime_error("Can't divide by Zero.");
 }

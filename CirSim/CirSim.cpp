@@ -16,12 +16,12 @@
 using namespace std;
 
 //Solves system of linear equations
-double* SolveSystem(double** matrix, unsigned int size);
+Complex* SolveSystem(Complex* matrix, unsigned int height);
 
 int main()
 {
 	//Nodes 
-	unsigned int gndNode = 0;
+	string gndNode;
 
 	//Element temporary variables
 	string elementType;
@@ -34,14 +34,15 @@ int main()
 	string controlPosNode;
 	string controlNegNode;
 	double phase;
-	Complex controlElement(.6,.8);
+	Complex controlElement(0.8, 0.6);
 	//Take Input from user until he enters "end"
 	while (1)
 	{
-		cin >> elementType;
+		std::cin >> elementType;
 		if (elementType == "end")
 			break;
-		cin >> posNode >> negNode >> elementVal;
+
+		std::cin >> posNode >> negNode >> elementVal;
 		Node* elementPosNode = Node::createNode(posNode);
 		Node* elementNegNode = Node::createNode(negNode);
 
@@ -64,7 +65,7 @@ int main()
 		{
 			if (elementType.size() > 2)
 			{
-				cin >> controlSource;
+				std::cin >> controlSource;
 				Element* controlsource = Element::getElement(controlSource);
 				switch (elementType[2])
 				{
@@ -90,7 +91,7 @@ int main()
 				case 'S':
 				case 's':
 				{
-					cin >>phase;
+					std::cin >>phase;
 					controlElement.setPolar(elementVal, phase);
 					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					break;
@@ -102,13 +103,14 @@ int main()
 				}
 				}
 			}
+			break;
 		}
 		case 'V':
 		case 'v':
 		{
 			if (elementType.size() > 2)
 			{
-				cin >> controlPosNode >> controlNegNode;
+				std::cin >> controlPosNode >> controlNegNode;
 				Node* controlposnode = Node::getNode(controlPosNode);
 				Node* controlnegnode = Node::getNode(controlNegNode);
 				switch (elementType[2])
@@ -134,63 +136,88 @@ int main()
 				{
 				case 'S': //VS voltage source
 				case 's':
-					cin >> phase;
+					std::cin >> phase;
 					controlElement.setPolar(elementVal, phase);
 					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
 					break;
 				}
 			}
+			break;
 		}
 		}
 	}
-
+	std::cout << "Enter Ground Node ";
+	std::cin >> gndNode;
 	//Get size of Augmented matrix
-	unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
-								//Height     *     Width
-	Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
-	// [i*width + j]  /2 * 3 = 6 -> j 0 1 2, 3 4 5 j < width, i< height
+	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
+	{
+		unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		//Height     *     Width
+		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 
+		size_t gndNodeIdx = Node::nodeIndexMap[gndNode];
+		Element::InjectMatrix(matrix, matrixSize + 1, Node::nodeIndexMap, VoltageSource::voltageIndexMap, 0);
+
+		//Set Gnd Equation Vgnd = 0
+		for (unsigned int i = 0; i < matrixSize + 1; i++)
+		{
+			if (i != gndNodeIdx)
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
+			else
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 1.0;
+		}
+
+		Complex* solutions = SolveSystem(matrix, matrixSize);
+
+		for (unsigned int i = 0; i < Node::getNodesCount(); i++)
+		{
+			std::cout << "V[" << i + 1 << "]" << " = ";
+			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
+		}
+
+		delete[] solutions;
+		delete[] matrix;
+	}
 	
-	delete[] matrix;
 	return 0;
 }
 
-double* SolveSystem(double** matrix, unsigned int size)
+Complex* SolveSystem(Complex* matrix, unsigned int height) //Height
 {
-	double tempFactor;
+	Complex tempFactor;
 	unsigned int i, j, k;
-
-	for (i = 0; i < size; i++)
+	unsigned int width = height + 1;
+	for (i = 0; i < height; i++)
 	{
-		for (j = i + 1; j < size; j++)
+		for (j = i + 1; j < height; j++)
 		{
-			if (abs(matrix[i][i]) < abs(matrix[j][i]))
+			if (matrix[i * width + j ].getMagnitude() < matrix[j * width + i].getMagnitude())
 			{
-				for (k = 0; k <= size; k++)
+				for (k = 0; k <= height; k++)
 				{
-					tempFactor = matrix[i][k];
-					matrix[i][k] = matrix[j][k];
-					matrix[j][k] = tempFactor;
+					tempFactor = matrix[i * width + k];
+					matrix[i * width + k] = matrix[j * width + k];
+					matrix[j * width + k] = tempFactor;
 				}
 			}
 		}
 	}
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < height; i++)
 	{
-		for (j = 0; j < size; j++)
+		for (j = 0; j < height; j++)
 		{
 			if (j != i)
 			{
-				tempFactor = matrix[j][i] / matrix[i][i];
-				for (k = i; k < size + 1; k++)
-					matrix[j][k] = matrix[j][k] - tempFactor * matrix[i][k];
+				tempFactor = matrix[j * width + i] / matrix[i * width + i];
+				for (k = i; k < height + 1; k++)
+					matrix[j * width + k] = matrix[j * width + k] - tempFactor * matrix[i * width + k];
 			}
 		}
 	}
 
-	double* solutions = new double[size];
-	for (i = 0; i < size; i++)
-		solutions[i] = matrix[i][size] / matrix[i][i];
+	Complex* solutions = new Complex[height];
+	for (i = 0; i < height; i++)
+		solutions[i] = matrix[i * width + height] / matrix[i * width + i];
 	return solutions;
 }
