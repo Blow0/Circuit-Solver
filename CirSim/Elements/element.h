@@ -29,7 +29,7 @@ public: //Static Elements Map Methods
 	static inline bool elementExists(const std::string& elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
 	static inline Element* getElement(const std::string& elementName) { return elementExists(elementName) ? elementsMap[elementName] : nullptr;}
 	static inline size_t getElementsCount() { return elementsMap.size(); }
-
+	static void InjectMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency);
 public: //Matrix Operations
 	virtual void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
 
@@ -45,7 +45,6 @@ protected: //Setters
 public: //Getters
 	inline const std::string& getName() const { return m_name; }
 	inline ElementType getType() const { return m_type; }
-
 	Element(const Element&) = delete;
 	void operator=(const Element&) = delete;
 };

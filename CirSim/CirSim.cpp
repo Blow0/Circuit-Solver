@@ -16,7 +16,7 @@
 using namespace std;
 
 //Solves system of linear equations
-double* SolveSystem(double** matrix, unsigned int size);
+Complex* SolveSystem(Complex* matrix, unsigned int height);
 
 int main()
 {
@@ -148,49 +148,52 @@ int main()
 	unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 								//Height     *     Width
 	Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
-	// [i*width + j]  /2 * 3 = 6 -> j 0 1 2, 3 4 5 j < width, i< height
-
+	 
+	Element::InjectMatrix(matrix, matrixSize + 1, Node::nodeIndexMap, VoltageSource::voltageIndexMap, 0);
+	Complex* solutions = SolveSystem(matrix, matrixSize);
 	
+
+	delete[] solutions;
 	delete[] matrix;
 	return 0;
 }
 
-double* SolveSystem(double** matrix, unsigned int size)
+Complex* SolveSystem(Complex* matrix, unsigned int height) //Height
 {
-	double tempFactor;
+	Complex tempFactor;
 	unsigned int i, j, k;
-
-	for (i = 0; i < size; i++)
+	unsigned int width = height + 1;
+	for (i = 0; i < height; i++)
 	{
-		for (j = i + 1; j < size; j++)
+		for (j = i + 1; j < height; j++)
 		{
-			if (abs(matrix[i][i]) < abs(matrix[j][i]))
+			if (matrix[i * width + j ].getMagnitude() < matrix[j * width + i].getMagnitude())
 			{
-				for (k = 0; k <= size; k++)
+				for (k = 0; k <= height; k++)
 				{
-					tempFactor = matrix[i][k];
-					matrix[i][k] = matrix[j][k];
-					matrix[j][k] = tempFactor;
+					tempFactor = matrix[i * width + k];
+					matrix[i * width + k] = matrix[j * width + k];
+					matrix[j * width + k] = tempFactor;
 				}
 			}
 		}
 	}
 
-	for (i = 0; i < size; i++)
+	for (i = 0; i < height; i++)
 	{
-		for (j = 0; j < size; j++)
+		for (j = 0; j < height; j++)
 		{
 			if (j != i)
 			{
-				tempFactor = matrix[j][i] / matrix[i][i];
-				for (k = i; k < size + 1; k++)
-					matrix[j][k] = matrix[j][k] - tempFactor * matrix[i][k];
+				tempFactor = matrix[j * width + i] / matrix[i * width + i];
+				for (k = i; k < height + 1; k++)
+					matrix[j * width + k] = matrix[j * width + k] - tempFactor * matrix[i * width + k];
 			}
 		}
 	}
 
-	double* solutions = new double[size];
-	for (i = 0; i < size; i++)
-		solutions[i] = matrix[i][size] / matrix[i][i];
+	Complex* solutions = new Complex[height];
+	for (i = 0; i < height; i++)
+		solutions[i] = matrix[i * width + height] / matrix[i * width + i];
 	return solutions;
 }

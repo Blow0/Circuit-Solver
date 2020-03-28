@@ -3,7 +3,7 @@
 
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
-
+std::map<std::string, size_t> Node::nodeIndexMap;
 //Constructors
 Node::Node(const std::string& name)
 	: m_name(name)
@@ -73,6 +73,7 @@ Node* Node::createNode(const std::string& nodeName)
 		return nodesMap[nodeName];
 
 	Node* node = new Node(nodeName);
+	nodeIndexMap.emplace(nodeName, nodesMap.size());
 	nodesMap.emplace(nodeName, node);
 	return node;
 }
