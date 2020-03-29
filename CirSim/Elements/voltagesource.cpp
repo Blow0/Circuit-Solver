@@ -1,7 +1,7 @@
 #include "voltagesource.h"
 
 //Static Member declaration
-std::list <VoltageSource*> VoltageSource::m_voltageSources;
+std::list <VoltageSource*> VoltageSource::voltageSources;
 //Constructors
 VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
 	: Element(voltageSrcName, ElementType::VS)
@@ -20,11 +20,11 @@ VoltageSource::~VoltageSource()
 	m_negNode->unLinkElement(this);
 	m_posNode = m_negNode = nullptr;
 
-	for (std::list<VoltageSource*>::iterator it = m_voltageSources.begin(); it != m_voltageSources.end(); it++)
+	for (std::list<VoltageSource*>::iterator it = voltageSources.begin(); it != voltageSources.end(); it++)
 	{
 		if (this == *it)
 		{
-			m_voltageSources.erase(it);
+			voltageSources.erase(it);
 			break;
 		}
 	}
@@ -39,7 +39,7 @@ VoltageSource* VoltageSource::createVoltageSource(const std::string& voltageSrcN
 
 	VoltageSource* voltagesource = new VoltageSource(voltageSrcName, posNode, negNode, supplyVoltage, internalImpedance);
 	elementsMap.emplace(name, voltagesource);
-	m_voltageSources.push_back(voltagesource);
+	voltageSources.push_back(voltagesource);
 	return voltagesource;
 }
 

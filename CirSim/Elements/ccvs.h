@@ -7,14 +7,14 @@
 class CCVS : public VoltageSource
 {
 private: //Members
-	Element* m_controlElement;
+	std::string m_controlElement;
 	Complex m_currentFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalImpedance);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalImpedance);
 
 private: //Constructors
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalImpedance = 0);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalImpedance = 0);
 	~CCVS();
 
 public: //Matrix Operations
@@ -22,13 +22,13 @@ public: //Matrix Operations
 
 public: //Setters
 	inline void setCurrentFactor(Complex currentFactor) { m_currentFactor = currentFactor;  }
-	inline void setControlElement(Element& controlElement) { m_controlElement = &controlElement; }
+	inline void setControlElement(const std::string& controlElement) { m_controlElement = controlElement; }
 
 private: //Blocked Setters
 	inline void setSupplyVoltage(Complex supplyVoltage) { }
 
 public: //Getters
-	inline Element* getControlElement() const { return m_controlElement; }
+	inline Element* getControlElement() const { Element* element = Element::getElement(m_controlElement); if (element == nullptr) throw std::runtime_error("CCVS: Couldn't find ControlElement"); return element; }
 	inline Complex getCurrentFactor() const { return m_currentFactor; }
 	inline Complex getSupplyVoltage() const { return m_currentFactor * getControlCurrent(); }
 	inline Complex getControlCurrent() const { return 0; }
