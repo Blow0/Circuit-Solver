@@ -2,7 +2,6 @@
 
 //Static Member declaration
 std::list <VoltageSource*> VoltageSource::m_voltageSources;
-std::map<std::string, size_t> VoltageSource::voltageIndexMap;
 //Constructors
 VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
 	: Element(voltageSrcName, ElementType::VS)
@@ -40,7 +39,6 @@ VoltageSource* VoltageSource::createVoltageSource(const std::string& voltageSrcN
 
 	VoltageSource* voltagesource = new VoltageSource(voltageSrcName, posNode, negNode, supplyVoltage, internalImpedance);
 	elementsMap.emplace(name, voltagesource);
-	voltageIndexMap.emplace(name, m_voltageSources.size());
 	m_voltageSources.push_back(voltagesource);
 	return voltagesource;
 }
@@ -51,7 +49,7 @@ void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
-	size_t voltageIdx = voltageIndexMap[m_name] + Node::getNodesCount();
+	size_t voltageIdx = voltageIndexMap[m_name];
 
 	Complex supplyVoltage = getSupplyVoltage();
 	Complex internalImpedance = getInternalImpedance();

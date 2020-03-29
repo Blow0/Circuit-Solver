@@ -28,12 +28,12 @@ int main()
 	string posNode;
 	string negNode;
 	double elementVal;
+	double phase;
 
 	//Controlled Sources temporary variables
 	string controlSource;
 	string controlPosNode;
 	string controlNegNode;
-	double phase;
 	Complex controlElement(0.8, 0.6);
 	//Take Input from user until he enters "end"
 	while (1)
@@ -146,17 +146,36 @@ int main()
 		}
 		}
 	}
-	std::cout << "Enter Ground Node ";
-	std::cin >> gndNode;
+
 	//Get size of Augmented matrix
 	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
 	{
+
+		std::cout << "Enter Ground Node ";
+		std::cin >> gndNode;
+
+		//IndexMap
+		std::map<std::string, size_t> nodeIndexMap;
+		std::map<std::string, size_t> voltageSourceIndexMap;
+		std::map<std::string, Node*> nodesMap = Node::getNodesMap();
+		std::list<VoltageSource*> voltageSourceList = VoltageSource::getVoltageSourceList();
+		size_t idx = 0;
+		for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+		{
+			nodeIndexMap.emplace(it->first, idx);
+			idx++;
+		}
+		for (std::list<VoltageSource*>::iterator it = voltageSourceList.begin(); it != voltageSourceList.end(); it++)
+		{
+			voltageSourceIndexMap.emplace((*it)->getName(), idx);
+			idx++;
+		}
 		unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 		//Height     *     Width
 		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 
-		size_t gndNodeIdx = Node::nodeIndexMap[gndNode];
-		Element::InjectMatrix(matrix, matrixSize + 1, Node::nodeIndexMap, VoltageSource::voltageIndexMap, 0);
+		size_t gndNodeIdx = nodeIndexMap[gndNode];
+		Element::InjectMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
 
 		//Set Gnd Equation Vgnd = 0
 		for (unsigned int i = 0; i < matrixSize + 1; i++)

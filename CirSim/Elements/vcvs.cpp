@@ -35,7 +35,7 @@ void VCVS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 	size_t controlPosIdx = nodeIndexMap[m_controlPosNode->getName()];
 	size_t controlNegIdx = nodeIndexMap[m_controlNegNode->getName()];
 	size_t constRow = matrixWidth - 1;
-	size_t voltageIdx = voltageIndexMap[m_name] + Node::getNodesCount();
+	size_t voltageIdx = voltageIndexMap[m_name];
 
 	Complex voltageFactor = getVoltageFactor();
 	Complex internalImpedance = getInternalImpedance();
