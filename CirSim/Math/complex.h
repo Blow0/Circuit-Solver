@@ -6,6 +6,8 @@
 #include <exception>
 #include <stdexcept>
 
+#define PI 3.14159265
+
 class Complex
 {
 private: //Memebers
@@ -31,10 +33,11 @@ public: //Getters
 	inline double  getImag()		 const { return m_imag; }
 	inline double  getMagnitude()	 const { return sqrt(getMagnitudeSqr()); }
 	inline double  getMagnitudeSqr() const { return m_real * m_real + m_imag * m_imag; }
-	inline double  getPhase()		 const { double phase = atan(m_imag / m_real);  return isnan(phase)? 0.0 : phase; }
+	inline double  getPhase()		 const { double phase = atan2(m_imag, m_real)*180.0/PI;  return phase; }
 	inline Complex getComplement()	 const { return Complex(m_real, -m_imag); }
 	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) / (mag >= DBL_EPSILON ? mag : 1.0); }
 	inline Complex getInverse()		 const { return getComplement().getNormalized(); }
+
 
 public: //Methods
 	inline void invert();
@@ -113,7 +116,7 @@ Complex Complex::operator/(const Complex& rhs) const
 {
 	double rhsMag = rhs.getMagnitude();
 	if (rhsMag >= DBL_EPSILON)
-		return ((*this) * rhs.getComplement()) / (rhsMag*rhsMag);
+		return ((*this) * rhs.getComplement()) / rhs.getMagnitudeSqr();
 	else
 		throw std::runtime_error("Can't divide by Zero.");
 }
@@ -158,7 +161,7 @@ Complex Complex::operator/=(const Complex& rhs)
 {
 	double rhsMag = rhs.getMagnitude();
 	if (rhsMag >= DBL_EPSILON)
-		(*this) *= rhs.getComplement() / rhs.getMagnitude();
+		(*this) *= rhs.getComplement() / rhs.getMagnitudeSqr();
 	else
 		throw std::runtime_error("Can't divide by Zero.");
 	return (*this);
