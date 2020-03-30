@@ -3,6 +3,7 @@
 
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
+
 //Constructors
 Node::Node(const std::string& name)
 	: m_name(name)

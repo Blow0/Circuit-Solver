@@ -14,13 +14,16 @@ protected: //Members
 	Complex m_current;
 	Complex m_internalImpedance;
 
-protected: //Static Members
-	static std::list <VoltageSource*> m_voltageSources;
+protected: //Static Voltage Sources List
+	static std::list<VoltageSource*> voltageSources;
 
-public://Static List methods
-	static std::list<VoltageSource*> getVoltageSourceList() { return m_voltageSources; }
+public://Static Voltage Sources List methods
+	static inline const std::list<VoltageSource*>& getVoltageSourceList() { return voltageSources; }
+	static inline size_t getVoltageSrcsCount() { return voltageSources.size(); }
+
 public: //Static Voltage Source creation
-	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance);
+	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
+
 protected: //Constructors
 	VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
 	virtual ~VoltageSource();
@@ -45,9 +48,6 @@ public: //Getters
 	inline Complex getPowerSupplied() const { return m_current * getSupplyVoltage(); }
 	inline Complex getPowerDissipated() const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
-
-public: //Static Methods
-	static inline size_t getVoltageSrcsCount() { return m_voltageSources.size(); }
 
 	VoltageSource(const VoltageSource&) = delete;
 	void operator=(const VoltageSource&) = delete;

@@ -10,7 +10,7 @@
 #include "vccs.h"
 
 //Constructors
-CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance)
+CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalAdmittance)
 	: CurrentSource(cccsName, posNode, negNode, 0.0, internalAdmittance)
 	, m_controlElement(controlElement)
 	, m_currentFactor(currentFactor)
@@ -24,7 +24,7 @@ CCCS::~CCCS()
 }
 
 //Static Voltage Source Creation 
-CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, Element* controlElement, Complex internalAdmittance)
+CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalAdmittance)
 {
 	std::string name = "cccs" + cccsName;
 	if (elementExists(name))
@@ -38,18 +38,23 @@ CCCS* CCCS::createCCCS(const std::string& cccsName, Node& posNode, Node& negNode
 //Matrix Operations
 void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::logic_error("CCVS: Couldn't find a Node.");
+
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
+	Element* controlElement = getControlElement();
 
 	Complex currentFactor = getCurrentFactor();
 	Complex internalAdmittance = getInternalAdmittance();
 
-	switch (m_controlElement->getType())
+	switch (controlElement->getType())
 	{
 		case ElementType::Resistor:
 		{
-			Resistor* resistor = static_cast<Resistor*>(m_controlElement);
+			Resistor* resistor = static_cast<Resistor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[resistor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[resistor->getNegNode()->getName()];
 			Complex resistorFactor = currentFactor * resistor->getAdmittance();
@@ -61,7 +66,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::Capacitor:
 		{
-			Capacitor* capacitor = static_cast<Capacitor*>(m_controlElement);
+			Capacitor* capacitor = static_cast<Capacitor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[capacitor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[capacitor->getNegNode()->getName()];
 			Complex capacitorFactor = currentFactor * capacitor->getAdmittance(angularFrequency);
@@ -73,7 +78,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::Inductor:
 		{
-			Inductor* inductor = static_cast<Inductor*>(m_controlElement);
+			Inductor* inductor = static_cast<Inductor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[inductor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[inductor->getNegNode()->getName()];
 			Complex inductorFactor = currentFactor * inductor->getAdmittance(angularFrequency);
@@ -85,11 +90,11 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::CS:
 		{
-			CurrentSource* currentSource = static_cast<CurrentSource*>(m_controlElement);
+			CurrentSource* currentSource = static_cast<CurrentSource*>(controlElement);
 			size_t currentSourcePosIdx = nodeIndexMap[currentSource->getPosNode()->getName()];
 			size_t currentSourceNegIdx = nodeIndexMap[currentSource->getNegNode()->getName()];
 			Complex supplyCurrent = currentFactor * currentSource->getSupplyCurrent();
-			Complex internalAdmittanceFactor = currentFactor * currentSource->getInternalAdmittance(); //It should be factor independent
+			Complex internalAdmittanceFactor = currentFactor * currentSource->getInternalAdmittance();
 			matrix[posIdx * matrixWidth + constRow] += supplyCurrent;
 			matrix[posIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
 			matrix[posIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
@@ -100,7 +105,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::VS:
 		{
-			VoltageSource* voltageSource = static_cast<VoltageSource*>(m_controlElement);
+			VoltageSource* voltageSource = static_cast<VoltageSource*>(controlElement);
 			size_t voltageSourceIdx = voltageIndexMap[voltageSource->getName()];
 			matrix[posIdx * matrixWidth + voltageSourceIdx] -= currentFactor;
 			matrix[negIdx * matrixWidth + voltageSourceIdx] += currentFactor;
@@ -108,7 +113,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::VCVS:
 		{
-			VCVS* vcvs = static_cast<VCVS*>(m_controlElement);
+			VCVS* vcvs = static_cast<VCVS*>(controlElement);
 			size_t vcvsIdx = voltageIndexMap[vcvs->getName()];
 			matrix[posIdx * matrixWidth + vcvsIdx] -= currentFactor;
 			matrix[negIdx * matrixWidth + vcvsIdx] += currentFactor;
@@ -116,7 +121,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::CCVS:
 		{
-			CCVS* ccvs = static_cast<CCVS*>(m_controlElement);
+			CCVS* ccvs = static_cast<CCVS*>(controlElement);
 			size_t ccvsIdx = voltageIndexMap[ccvs->getName()];
 			matrix[posIdx * matrixWidth + ccvsIdx] -= currentFactor;
 			matrix[negIdx * matrixWidth + ccvsIdx] += currentFactor;
@@ -124,7 +129,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::VCCS:
 		{
-			VCCS* vccs = static_cast<VCCS*>(m_controlElement);
+			VCCS* vccs = static_cast<VCCS*>(controlElement);
 			size_t vccsPosIdx = nodeIndexMap[vccs->getPosNode()->getName()];
 			size_t vccsNegIdx = nodeIndexMap[vccs->getNegNode()->getName()];
 			size_t vccsControlPosIdx = nodeIndexMap[vccs->getControlPosNode()->getName()];
@@ -143,7 +148,7 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 		break;
 		case ElementType::CCCS:
 		{
-			CCCS* cccs = static_cast<CCCS*>(m_controlElement);
+			CCCS* cccs = static_cast<CCCS*>(controlElement);
 			cccs->injectSupplyCurrentIntoCCCS(matrix, matrixWidth, this, currentFactor, nodeIndexMap, voltageIndexMap, angularFrequency);
 		}
 		break;
@@ -158,19 +163,27 @@ void CCCS::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::s
 //Matrix Operations Helpers Operations
 void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::logic_error("CCCS: Couldn't find a Node.");
+
+	if (voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
+		throw std::logic_error("CCCS: Couldn't find a Voltage Source.");
+
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
 	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+	Element* controlElement = getControlElement();
 
 	Complex currentFactor = totalCurrentFactor * getCurrentFactor();
 	Complex internalAdmittance = getInternalAdmittance();
 
-	switch (m_controlElement->getType())
+	switch (controlElement->getType())
 	{
 		case ElementType::Resistor:
 		{
-			Resistor* resistor = static_cast<Resistor*>(m_controlElement);
+			Resistor* resistor = static_cast<Resistor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[resistor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[resistor->getNegNode()->getName()];
 			Complex resistorFactor = currentFactor * resistor->getAdmittance();
@@ -180,7 +193,7 @@ void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS
 		break;
 		case ElementType::Capacitor:
 		{
-			Capacitor* capacitor = static_cast<Capacitor*>(m_controlElement);
+			Capacitor* capacitor = static_cast<Capacitor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[capacitor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[capacitor->getNegNode()->getName()];
 			Complex capacitorFactor = currentFactor * capacitor->getAdmittance(angularFrequency);
@@ -190,7 +203,7 @@ void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS
 		break;
 		case ElementType::Inductor:
 		{
-			Inductor* inductor = static_cast<Inductor*>(m_controlElement);
+			Inductor* inductor = static_cast<Inductor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[inductor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[inductor->getNegNode()->getName()];
 			Complex inductorFactor = currentFactor * inductor->getAdmittance(angularFrequency);
@@ -200,7 +213,7 @@ void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS
 		break;
 		case ElementType::CS:
 		{
-			CurrentSource* currentSource = static_cast<CurrentSource*>(m_controlElement);
+			CurrentSource* currentSource = static_cast<CurrentSource*>(controlElement);
 			size_t currentSourcePosIdx = nodeIndexMap[currentSource->getPosNode()->getName()];
 			size_t currentSourceNegIdx = nodeIndexMap[currentSource->getNegNode()->getName()];
 			Complex supplyVoltage = currentFactor * currentSource->getSupplyCurrent();
@@ -212,28 +225,28 @@ void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS
 		break;
 		case ElementType::VS:
 		{
-			VoltageSource* voltageSource = static_cast<VoltageSource*>(m_controlElement);
+			VoltageSource* voltageSource = static_cast<VoltageSource*>(controlElement);
 			size_t voltageSourceIdx = voltageIndexMap[voltageSource->getName()];
 			matrix[voltageIdx * matrixWidth + voltageSourceIdx] = -currentFactor;
 		}
 		break;
 		case ElementType::VCVS:
 		{
-			VCVS* vcvs = static_cast<VCVS*>(m_controlElement);
+			VCVS* vcvs = static_cast<VCVS*>(controlElement);
 			size_t vcvsIdx = voltageIndexMap[vcvs->getName()];
 			matrix[voltageIdx * matrixWidth + vcvsIdx] = -currentFactor;
 		}
 		break;
 		case ElementType::CCVS:
 		{
-			CCVS* ccvs = static_cast<CCVS*>(m_controlElement);
+			CCVS* ccvs = static_cast<CCVS*>(controlElement);
 			size_t ccvsIdx = voltageIndexMap[ccvs->getName()];
 			matrix[voltageIdx * matrixWidth + ccvsIdx] = -currentFactor;
 		}
 		break;
 		case ElementType::VCCS:
 		{
-			VCCS* vccs = static_cast<VCCS*>(m_controlElement);
+			VCCS* vccs = static_cast<VCCS*>(controlElement);
 			size_t vccsPosIdx = nodeIndexMap[vccs->getPosNode()->getName()];
 			size_t vccsNegIdx = nodeIndexMap[vccs->getNegNode()->getName()];
 			size_t vccsControlPosIdx = nodeIndexMap[vccs->getControlPosNode()->getName()];
@@ -248,7 +261,7 @@ void CCCS::injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS
 		break;
 		case ElementType::CCCS:
 		{
-			CCCS* cccs = static_cast<CCCS*>(m_controlElement);
+			CCCS* cccs = static_cast<CCCS*>(controlElement);
 			cccs->injectSupplyCurrentIntoCCVS(matrix, matrixWidth, ccvs, currentFactor, nodeIndexMap, voltageIndexMap, angularFrequency);
 		}
 		break;
@@ -269,12 +282,13 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 
 	Complex currentFactor = totalCurrentFactor * getCurrentFactor();
 	Complex internalAdmittance = getInternalAdmittance();
+	Element* controlElement = getControlElement();
 
-	switch (m_controlElement->getType())
+	switch (controlElement->getType())
 	{
 		case ElementType::Resistor:
 		{
-			Resistor* resistor = static_cast<Resistor*>(m_controlElement);
+			Resistor* resistor = static_cast<Resistor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[resistor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[resistor->getNegNode()->getName()];
 			Complex resistorFactor = currentFactor * resistor->getAdmittance();
@@ -286,7 +300,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::Capacitor:
 		{
-			Capacitor* capacitor = static_cast<Capacitor*>(m_controlElement);
+			Capacitor* capacitor = static_cast<Capacitor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[capacitor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[capacitor->getNegNode()->getName()];
 			Complex capacitorFactor = currentFactor * capacitor->getAdmittance(angularFrequency);
@@ -298,7 +312,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::Inductor:
 		{
-			Inductor* inductor = static_cast<Inductor*>(m_controlElement);
+			Inductor* inductor = static_cast<Inductor*>(controlElement);
 			size_t controlPosIdx = nodeIndexMap[inductor->getPosNode()->getName()];
 			size_t controlNegIdx = nodeIndexMap[inductor->getNegNode()->getName()];
 			Complex inductorFactor = currentFactor * inductor->getAdmittance(angularFrequency);
@@ -310,7 +324,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::CS:
 		{
-			CurrentSource* currentSource = static_cast<CurrentSource*>(m_controlElement);
+			CurrentSource* currentSource = static_cast<CurrentSource*>(controlElement);
 			size_t currentSourcePosIdx = nodeIndexMap[currentSource->getPosNode()->getName()];
 			size_t currentSourceNegIdx = nodeIndexMap[currentSource->getNegNode()->getName()];
 			Complex supplyCurrent = currentFactor * currentSource->getSupplyCurrent();
@@ -325,7 +339,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::VS:
 		{
-			VoltageSource* voltageSource = static_cast<VoltageSource*>(m_controlElement);
+			VoltageSource* voltageSource = static_cast<VoltageSource*>(controlElement);
 			size_t voltageSourceIdx = voltageIndexMap[voltageSource->getName()];
 			matrix[cccsPosIdx  * matrixWidth + voltageSourceIdx] -= currentFactor;
 			matrix[cccsNegIdx  * matrixWidth + voltageSourceIdx] += currentFactor;
@@ -333,7 +347,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::VCVS:
 		{
-			VCVS* vcvs = static_cast<VCVS*>(m_controlElement);
+			VCVS* vcvs = static_cast<VCVS*>(controlElement);
 			size_t vcvsIdx = voltageIndexMap[vcvs->getName()];
 			matrix[cccsPosIdx  * matrixWidth + vcvsIdx] -= currentFactor;
 			matrix[cccsNegIdx  * matrixWidth + vcvsIdx] += currentFactor;
@@ -341,7 +355,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::CCVS:
 		{
-			CCVS* ccvs = static_cast<CCVS*>(m_controlElement);
+			CCVS* ccvs = static_cast<CCVS*>(controlElement);
 			size_t ccvsIdx = voltageIndexMap[ccvs->getName()];
 			matrix[cccsPosIdx  * matrixWidth + ccvsIdx] -= currentFactor;
 			matrix[cccsNegIdx  * matrixWidth + ccvsIdx] += currentFactor;
@@ -349,7 +363,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::VCCS:
 		{
-			VCCS* vccs = static_cast<VCCS*>(m_controlElement);
+			VCCS* vccs = static_cast<VCCS*>(controlElement);
 			size_t vccsPosIdx = nodeIndexMap[vccs->getPosNode()->getName()];
 			size_t vccsNegIdx = nodeIndexMap[vccs->getNegNode()->getName()];
 			size_t vccsControlPosIdx = nodeIndexMap[vccs->getControlPosNode()->getName()];
@@ -368,7 +382,7 @@ void CCCS::injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS
 		break;
 		case ElementType::CCCS:
 		{
-			CCCS* cccs = static_cast<CCCS*>(m_controlElement);//Why this and not cccs? this->get(cccs) ?
+			CCCS* cccs = static_cast<CCCS*>(controlElement);//Why this and not cccs? this->get(cccs) ?
 			cccs->injectSupplyCurrentIntoCCCS(matrix, matrixWidth, this, currentFactor, nodeIndexMap, voltageIndexMap, angularFrequency);
 		}
 		break;
