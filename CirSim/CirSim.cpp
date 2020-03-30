@@ -14,14 +14,17 @@
 #include "Elements/ccvs.h"
 
 //Solves system of linear equations
-Complex* SolveSystem(Complex* matrix, unsigned int height);
+Complex* SolveSystem(Complex* matrix, size_t height);
 
 void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings)
 {
 	size_t pos = -1;
 	size_t nextPos = -1;
 	while ((nextPos = str.find(delimiter, pos + 1)) != std::string::npos)
-		strings.push_back(str.substr(pos + 1, nextPos - pos - 1));
+	{
+		strings.push_back(str.substr(pos + 1, nextPos - pos));
+		pos = nextPos + 1;
+	}
 }
 
 int main()
@@ -42,62 +45,62 @@ int main()
 
 		switch (tokens[0].at(0))
 		{
-			case 'r':
-			case 'R':
-				Resistor::createResistor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-				break;
-			case 'L':
-			case 'l':
-				Inductor::createInductor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-				break;
-			case 'C':
-			case 'c':
+		case 'r':
+		case 'R':
+			Resistor::createResistor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
+			break;
+		case 'L':
+		case 'l':
+			Inductor::createInductor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
+			break;
+		case 'C':
+		case 'c':
+		{
+			if (tokens[0].size() > 1)
 			{
-				if (tokens[0].size() > 1)
+				switch (tokens[0].at(1))
 				{
-					switch (tokens[0].at(1))
-					{
-					case 'V':
-					case 'v':
-						CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-						break;
-					case 'C':
-					case 'c':
-						CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-						break;
-					case 'S':
-					case 's':
-						CurrentSource::createCurrentSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
-						break;
-					}
+				case 'V':
+				case 'v':
+					CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case 'C':
+				case 'c':
+					CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case 'S':
+				case 's':
+					CurrentSource::createCurrentSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
+					break;
 				}
-				else
-					Capacitor::createCapacitor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-				break;
 			}
-			case 'V':
-			case 'v':
+			else
+				Capacitor::createCapacitor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
+			break;
+		}
+		case 'V':
+		case 'v':
+		{
+			if (tokens[0].size() > 1)
 			{
-				if (tokens[0].size() > 1)
+				switch (tokens[0].at(1))
 				{
-					switch (tokens[0].at(1))
-					{
-					case 'V':
-					case 'v':
-						VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-						break;
-					case 'C':
-					case 'c':
-						VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-						break;
-					case 'S':
-					case 's':
-						VoltageSource::createVoltageSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
-						break;
-					}
+				case 'V':
+				case 'v':
+					VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case 'C':
+				case 'c':
+					VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case 'S':
+				case 's':
+					VoltageSource::createVoltageSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
+					break;
 				}
-				break;
 			}
+			break;
+		}
 		}
 	}
 
@@ -126,7 +129,8 @@ int main()
 		}
 		size_t matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 		//Height     *     Width
-		Complex* matrix = new Complex[matrixHeight * (matrixWidth)];
+		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
+
 		size_t gndNodeIdx = nodeIndexMap[gndNode];
 		Element::LoadElementsIntoMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
 
@@ -134,37 +138,23 @@ int main()
 		for (size_t i = 0; i < matrixSize + 1; i++)
 		{
 			if (i != gndNodeIdx)
-				matrix[gndNodeIdx * (matrixWidth) + i] = 0.0;
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
 			else
-				matrix[gndNodeIdx * (matrixWidth) + i] = 1.0;
+				matrix[gndNodeIdx * (matrixSize + 1) + i] = 1.0;
 		}
 
-		for (int i = 0; i < matrixHeight; i++)
-		{
-			for (int j = 0; j < matrixWidth; j++)
-			{
-				cout << matrix[i * matrixWidth + j].getReal()<<" ";
-			}
-			cout << endl;
-		}
-
-		Complex* solutions = SolveSystem(matrix, matrixHeight);
+		Complex* solutions = SolveSystem(matrix, matrixSize);
 
 		for (size_t i = 0; i < Node::getNodesCount(); i++)
 		{
 			std::cout << "V[" << i + 1 << "]" << " = ";
 			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << std::endl;
 		}
-		for (size_t j = i; j < matrixHeight; j++)
-		{
-			cout << "I[" << i << "]" << " = ";
-			cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
-		}
 
 		delete[] solutions;
 		delete[] matrix;
 	}
-	
+
 	return 0;
 }
 
@@ -187,15 +177,6 @@ Complex* SolveSystem(Complex* matrix, size_t height) //Height
 				}
 			}
 		}
-	}
-
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < height+1; j++)
-		{
-			cout << matrix[i * (height+1) + j].getReal() << " ";
-		}
-		cout << endl;
 	}
 
 	for (i = 0; i < height; i++)

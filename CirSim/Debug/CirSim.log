@@ -1,6 +1,110 @@
-﻿  CirSim.cpp
-D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(180,21): warning C4018: '<': signed/unsigned mismatch
-D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(182,22): warning C4018: '<': signed/unsigned mismatch
-D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(231,20): warning C4018: '<': signed/unsigned mismatch
-D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(233,21): warning C4018: '<': signed/unsigned mismatch
-  CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe
+﻿  capacitor.cpp
+  cccs.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): error C2259: 'CCCS': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\cccs.cpp(33): message :         ]
+  ccvs.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): error C2259: 'CCVS': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\ccvs.cpp(33): message :         ]
+  currentsource.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): error C2259: 'CurrentSource': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\currentsource.cpp(30): message :         ]
+  element.cpp
+  inductor.cpp
+  resistor.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\resistor.cpp(58,215): error C2572: 'Resistor::injectCSCurrentControlIntoMatrix': redefinition of default argument: parameter 1
+  vccs.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\resistor.h(24): message : see declaration of 'Resistor::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): error C2259: 'VCCS': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vccs.cpp(25): message :         ]
+  vcvs.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): error C2259: 'VCVS': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\vcvs.cpp(25): message :         ]
+  voltagesource.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): error C2259: 'VoltageSource': cannot instantiate abstract class
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message : due to following members:
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message : 'void Element::injectVSCurrentControlIntoMatrix(Complex *,size_t,CCVS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         ]
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(41): message : see declaration of 'Element::injectVSCurrentControlIntoMatrix'
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message : 'void Element::injectCSCurrentControlIntoMatrix(Complex *,size_t,CCCS *,std::map<std::string,size_t,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,std::map<_Kty,_Ty,std::less<_Kty>,std::allocator<std::pair<const _Kty,_Ty>>>,double)': is abstract
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         with
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         [
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :             _Kty=std::string,
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :             _Ty=size_t
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\voltagesource.cpp(40): message :         ]
+  node.cpp
+  Generating Code...
+D:\Backup\SoftwareLab2020\CirSim\CirSim\Elements\element.h(42): message : see declaration of 'Element::injectCSCurrentControlIntoMatrix'
