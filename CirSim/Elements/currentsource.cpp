@@ -48,3 +48,34 @@ void CurrentSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	matrix[negIdx * matrixWidth + posIdx] -= internalAdmittance;
 	matrix[negIdx * matrixWidth + negIdx] += internalAdmittance;
 }
+void CurrentSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+{
+	Element* controlledElement = (Element*)ccvs;
+	size_t voltageIdx = voltageIndexMap[controlledElement->getName()];
+	size_t currentSourcePosIdx = nodeIndexMap[this->getPosNode()->getName()];
+	size_t currentSourceNegIdx = nodeIndexMap[this->getNegNode()->getName()];
+	size_t constRow = matrixWidth - 1;
+	Complex supplyVoltage = this->getSupplyCurrent();
+	Complex internalAdmittanceFactor = this->getInternalAdmittance();
+	matrix[voltageIdx * matrixWidth + constRow] += supplyVoltage;
+	matrix[voltageIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
+	matrix[voltageIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
+}
+void CurrentSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+{
+	Element* controlElement = (Element*)cccs;
+	CurrentSource* castedCCCS = static_cast<CurrentSource*>(controlElement);
+	size_t posIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
+	size_t negIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
+	size_t constRow = matrixWidth - 1;
+	size_t currentSourcePosIdx = nodeIndexMap[this->getPosNode()->getName()];
+	size_t currentSourceNegIdx = nodeIndexMap[this->getNegNode()->getName()];
+	Complex supplyCurrent = this->getSupplyCurrent();
+	Complex internalAdmittanceFactor = this->getInternalAdmittance();
+	matrix[posIdx * matrixWidth + constRow] += supplyCurrent;
+	matrix[posIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
+	matrix[posIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
+	matrix[negIdx * matrixWidth + constRow] -= supplyCurrent;
+	matrix[negIdx * matrixWidth + currentSourcePosIdx] -= internalAdmittanceFactor;
+	matrix[negIdx * matrixWidth + currentSourceNegIdx] += internalAdmittanceFactor;
+}

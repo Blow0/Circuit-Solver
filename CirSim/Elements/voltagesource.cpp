@@ -60,3 +60,20 @@ void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	matrix[posIdx * matrixWidth + voltageIdx] = -1;
 	matrix[negIdx * matrixWidth + voltageIdx] = 1;
 }
+void VoltageSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+{
+	Element* controlledElement = (Element*)ccvs;
+	size_t voltageIdx = voltageIndexMap[controlledElement->getName()];
+	size_t voltageSourceIdx = voltageIndexMap[this->getName()];
+	matrix[voltageIdx * matrixWidth + voltageSourceIdx] = -1;
+}
+void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+{
+	Element* controlElement = (Element*)cccs;
+	VoltageSource* castedCCCS = static_cast<VoltageSource*>(controlElement);
+	size_t posIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
+	size_t negIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
+	size_t voltageSourceIdx = voltageIndexMap[this->getName()];
+	matrix[posIdx * matrixWidth + voltageSourceIdx] -= 1;
+	matrix[negIdx * matrixWidth + voltageSourceIdx] += 1;
+}

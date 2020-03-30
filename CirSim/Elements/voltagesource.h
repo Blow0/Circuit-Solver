@@ -31,7 +31,8 @@ protected: //Constructors
 public: //Matrix Operations
 	virtual void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
 	inline void fillFromVector(Complex* vector, std::map<std::string, size_t>& voltageIndexMap) { m_current = vector[voltageIndexMap[m_name]]; }
-
+	void injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
+	void injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
 public: //Setters
 	inline virtual void setSupplyVoltage(Complex supplyVoltage) { m_supplyVoltage = supplyVoltage; }
 	inline virtual void setInternalImpedance(Complex internalImpedance) { m_internalImpedance = internalImpedance; }
