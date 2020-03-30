@@ -20,7 +20,7 @@ protected: //Static Members
 public://Static List methods
 	static std::list<VoltageSource*> getVoltageSourceList() { return m_voltageSources; }
 public: //Static Voltage Source creation
-	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
+	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance);
 protected: //Constructors
 	VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
 	virtual ~VoltageSource();

@@ -12,7 +12,7 @@ private: //Members
 	Complex m_voltageFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);
+	static VCVS* createVCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance);
 
 private: //Constructors
 	VCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex voltageFactor, Node* controlPosNode, Node* controlNegNode, Complex internalImpedance = 0);

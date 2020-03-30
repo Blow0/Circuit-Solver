@@ -1,2 +1,6 @@
 ﻿  CirSim.cpp
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(180,21): warning C4018: '<': signed/unsigned mismatch
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(182,22): warning C4018: '<': signed/unsigned mismatch
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(231,20): warning C4018: '<': signed/unsigned mismatch
+D:\Backup\SoftwareLab2020\CirSim\CirSim\CirSim.cpp(233,21): warning C4018: '<': signed/unsigned mismatch
   CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

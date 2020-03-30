@@ -29,7 +29,7 @@ int main()
 	string negNode;
 	double elementVal;
 	double phase;
-
+	double internalResistance;
 	//Controlled Sources temporary variables
 	string controlSource;
 	string controlPosNode;
@@ -63,37 +63,33 @@ int main()
 		case 'C':
 		case 'c':
 		{
-			if (elementType.size() > 2)
-			{
-				std::cin >> controlSource;
-				Element* controlsource = Element::getElement(controlSource);
 				switch (elementType[2])
 				{
 				case 'V': //CCVS
 				case 'v':
 				{
+				std::cin >> controlSource;
+				Element* controlsource = Element::getElement(controlSource);
 					CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
 					break;
 				}
 				case 'C':
 				case 'c':
 				{
-
+					std::cin >> controlSource;
+					Element* controlsource = Element::getElement(controlSource);
 					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
 					break;
 				}
 				}
-			}	
-			else
-			{
 				switch (elementType[1])
 				{
 				case 'S':
 				case 's':
 				{
-					std::cin >>phase;
+					std::cin >>phase>>internalResistance;
 					controlElement.setPolar(elementVal, phase);
-					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
+					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement, internalResistance);
 					break;
 				}
 				default:
@@ -102,46 +98,41 @@ int main()
 				break;
 				}
 				}
-			}
 			break;
 		}
 		case 'V':
 		case 'v':
 		{
-			if (elementType.size() > 2)
-			{
-				std::cin >> controlPosNode >> controlNegNode;
-				Node* controlposnode = Node::getNode(controlPosNode);
-				Node* controlnegnode = Node::getNode(controlNegNode);
 				switch (elementType[2])
 				{
 				case 'V': // VCVS
 				case 'v':
 				{
+					std::cin >> controlPosNode >> controlNegNode;
+					Node* controlposnode = Node::getNode(controlPosNode);
+					Node* controlnegnode = Node::getNode(controlNegNode);
 					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
 					break;
 				}
 				case 'C':
 				case 'c':
 				{
+					std::cin >> controlPosNode >> controlNegNode;
+					Node* controlposnode = Node::getNode(controlPosNode);
+					Node* controlnegnode = Node::getNode(controlNegNode);
 					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
 					break;
 				}
 				}
-			}
-				
-			else
-			{
 				switch (elementType[1])
 				{
 				case 'S': //VS voltage source
 				case 's':
-					std::cin >> phase;
+					std::cin >> phase>>internalResistance;
 					controlElement.setPolar(elementVal, phase);
-					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
+					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement, internalResistance);
 					break;
 				}
-			}
 			break;
 		}
 		}
@@ -170,28 +161,43 @@ int main()
 			voltageSourceIndexMap.emplace((*it)->getName(), idx);
 			idx++;
 		}
-		unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		unsigned int matrixHeight = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		unsigned int matrixWidth = matrixHeight + 1;
 		//Height     *     Width
-		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
-
+		Complex* matrix = new Complex[matrixHeight * (matrixWidth)];
 		size_t gndNodeIdx = nodeIndexMap[gndNode];
-		Element::InjectMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
+		Element::InjectMatrix(matrix, matrixWidth, nodeIndexMap, voltageSourceIndexMap, 0);
 
 		//Set Gnd Equation Vgnd = 0
-		for (unsigned int i = 0; i < matrixSize + 1; i++)
+		for (unsigned int i = 0; i < matrixWidth; i++)
 		{
 			if (i != gndNodeIdx)
-				matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
+				matrix[gndNodeIdx * (matrixWidth) + i] = 0.0;
 			else
-				matrix[gndNodeIdx * (matrixSize + 1) + i] = 1.0;
+				matrix[gndNodeIdx * (matrixWidth) + i] = 1.0;
 		}
 
-		Complex* solutions = SolveSystem(matrix, matrixSize);
+		for (int i = 0; i < matrixHeight; i++)
+		{
+			for (int j = 0; j < matrixWidth; j++)
+			{
+				cout << matrix[i * matrixWidth + j].getReal()<<" ";
+			}
+			cout << endl;
+		}
 
-		for (unsigned int i = 0; i < Node::getNodesCount(); i++)
+		Complex* solutions = SolveSystem(matrix, matrixHeight);
+
+		size_t i = 0;
+		for (i = 0; i < Node::getNodesCount(); i++)
 		{
 			std::cout << "V[" << i + 1 << "]" << " = ";
 			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
+		}
+		for (size_t j = i; j < matrixHeight; j++)
+		{
+			cout << "I[" << i << "]" << " = ";
+			cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
 		}
 
 		delete[] solutions;
@@ -220,6 +226,15 @@ Complex* SolveSystem(Complex* matrix, unsigned int height) //Height
 				}
 			}
 		}
+	}
+
+	for (int i = 0; i < height; i++)
+	{
+		for (int j = 0; j < height+1; j++)
+		{
+			cout << matrix[i * (height+1) + j].getReal() << " ";
+		}
+		cout << endl;
 	}
 
 	for (i = 0; i < height; i++)
