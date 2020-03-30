@@ -1,6 +1,7 @@
 #include<iostream>
 #include <string>
-#include <memory.h>
+#include <vector>
+
 #include "complex.h"
 #include "Elements/resistor.h"
 #include "Elements/capacitor.h"
@@ -12,145 +13,98 @@
 #include "Elements/cccs.h"
 #include "Elements/ccvs.h"
 
-
-using namespace std;
-
 //Solves system of linear equations
 Complex* SolveSystem(Complex* matrix, unsigned int height);
 
+void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings)
+{
+	size_t pos = -1;
+	size_t nextPos = -1;
+	while ((nextPos = str.find(delimiter, pos + 1)) != std::string::npos)
+		strings.push_back(str.substr(pos + 1, nextPos - pos - 1));
+}
+
 int main()
 {
-	//Nodes 
-	string gndNode;
+	//Input
+	std::string line;
+	std::vector<std::string> tokens;
 
-	//Element temporary variables
-	string elementType;
-	string posNode;
-	string negNode;
-	double elementVal;
-	double phase;
-
-	//Controlled Sources temporary variables
-	string controlSource;
-	string controlPosNode;
-	string controlNegNode;
-	Complex controlElement(0.8, 0.6);
 	//Take Input from user until he enters "end"
 	while (1)
 	{
-		std::cin >> elementType;
-		if (elementType == "end")
+		tokens.clear();
+		std::getline(std::cin, line);
+		splitString(line, " ", tokens);
+
+		if (tokens[0] == "end")
 			break;
 
-		std::cin >> posNode >> negNode >> elementVal;
-		Node* elementPosNode = Node::createNode(posNode);
-		Node* elementNegNode = Node::createNode(negNode);
-
-		switch (elementType[0])
+		switch (tokens[0].at(0))
 		{
-		case 'r':
-		case 'R':
-		{
-			Resistor * resistor = Resistor::createResistor(elementType, *elementPosNode, *elementNegNode, elementVal);
-			break;
-		}
-		case 'L':
-		case 'l':
-		{
-			Inductor* inductor = Inductor::createInductor(elementType, *elementPosNode, *elementNegNode, elementVal);
-			break;
-		}
-		case 'C':
-		case 'c':
-		{
-			if (elementType.size() > 2)
-			{
-				std::cin >> controlSource;
-				Element* controlsource = Element::getElement(controlSource);
-				switch (elementType[2])
-				{
-				case 'V': //CCVS
-				case 'v':
-				{
-					CCVS* ccvs = CCVS::createCCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
-					break;
-				}
-				case 'C':
-				case 'c':
-				{
-
-					CCCS* cccs = CCCS::createCCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlsource, 0.0);
-					break;
-				}
-				}
-			}	
-			else
-			{
-				switch (elementType[1])
-				{
-				case 'S':
-				case 's':
-				{
-					std::cin >>phase;
-					controlElement.setPolar(elementVal, phase);
-					CurrentSource* currentsource = CurrentSource::createCurrentSource(elementType, *elementPosNode, *elementNegNode, controlElement);
-					break;
-				}
-				default:
-				{
-				Capacitor* capacitor = Capacitor::createCapacitor(elementType, *elementPosNode, *elementNegNode, elementVal);
+			case 'r':
+			case 'R':
+				Resistor::createResistor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
 				break;
-				}
-				}
-			}
-			break;
-		}
-		case 'V':
-		case 'v':
-		{
-			if (elementType.size() > 2)
+			case 'L':
+			case 'l':
+				Inductor::createInductor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
+				break;
+			case 'C':
+			case 'c':
 			{
-				std::cin >> controlPosNode >> controlNegNode;
-				Node* controlposnode = Node::getNode(controlPosNode);
-				Node* controlnegnode = Node::getNode(controlNegNode);
-				switch (elementType[2])
+				if (tokens[0].size() > 1)
 				{
-				case 'V': // VCVS
-				case 'v':
-				{
-					VCVS* vcvs = VCVS::createVCVS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
-					break;
+					switch (tokens[0].at(1))
+					{
+					case 'V':
+					case 'v':
+						CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						break;
+					case 'C':
+					case 'c':
+						CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						break;
+					case 'S':
+					case 's':
+						CurrentSource::createCurrentSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
+						break;
+					}
 				}
-				case 'C':
-				case 'c':
-				{
-					VCCS* vccs = VCCS::createVCCS(elementType, *elementPosNode, *elementNegNode, elementVal, controlposnode, controlnegnode, 0.0);
-					break;
-				}
-				}
+				else
+					Capacitor::createCapacitor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
+				break;
 			}
-				
-			else
+			case 'V':
+			case 'v':
 			{
-				switch (elementType[1])
+				if (tokens[0].size() > 1)
 				{
-				case 'S': //VS voltage source
-				case 's':
-					std::cin >> phase;
-					controlElement.setPolar(elementVal, phase);
-					VoltageSource* voltagesource = VoltageSource::createVoltageSource(elementType, *elementPosNode, *elementNegNode, controlElement);
-					break;
+					switch (tokens[0].at(1))
+					{
+					case 'V':
+					case 'v':
+						VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						break;
+					case 'C':
+					case 'c':
+						VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						break;
+					case 'S':
+					case 's':
+						VoltageSource::createVoltageSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
+						break;
+					}
 				}
+				break;
 			}
-			break;
-		}
 		}
 	}
 
 	//Get size of Augmented matrix
 	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
 	{
-
+		std::string gndNode;
 		std::cout << "Enter Ground Node ";
 		std::cin >> gndNode;
 
@@ -170,15 +124,15 @@ int main()
 			voltageSourceIndexMap.emplace((*it)->getName(), idx);
 			idx++;
 		}
-		unsigned int matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		size_t matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 		//Height     *     Width
 		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 
 		size_t gndNodeIdx = nodeIndexMap[gndNode];
-		Element::InjectMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
+		Element::LoadElementsIntoMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
 
 		//Set Gnd Equation Vgnd = 0
-		for (unsigned int i = 0; i < matrixSize + 1; i++)
+		for (size_t i = 0; i < matrixSize + 1; i++)
 		{
 			if (i != gndNodeIdx)
 				matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
@@ -188,10 +142,10 @@ int main()
 
 		Complex* solutions = SolveSystem(matrix, matrixSize);
 
-		for (unsigned int i = 0; i < Node::getNodesCount(); i++)
+		for (size_t i = 0; i < Node::getNodesCount(); i++)
 		{
 			std::cout << "V[" << i + 1 << "]" << " = ";
-			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << endl;
+			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << std::endl;
 		}
 
 		delete[] solutions;
@@ -201,7 +155,7 @@ int main()
 	return 0;
 }
 
-Complex* SolveSystem(Complex* matrix, unsigned int height) //Height
+Complex* SolveSystem(Complex* matrix, size_t height) //Height
 {
 	Complex tempFactor;
 	unsigned int i, j, k;
