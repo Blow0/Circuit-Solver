@@ -1,35 +1,57 @@
-#include<iostream>
+#include <iostream>
 #include <string>
 #include <vector>
 
-#include "complex.h"
-#include "Elements/resistor.h"
-#include "Elements/capacitor.h"
-#include "Elements/inductor.h"
-#include "Elements//currentsource.h"
-#include "Elements/voltagesource.h"
-#include "Elements/vcvs.h"
-#include "Elements/vccs.h"
-#include "Elements/cccs.h"
-#include "Elements/ccvs.h"
+#include "cirsimdef.h"
 
-//Solves system of linear equations
+//Declarations
+void takeInputAndBuildCircuit();
+void analyzeCircuitAndGiveOutput();
+void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings);
 Complex* SolveSystem(Complex* matrix, size_t height);
-
-void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings)
-{
-	size_t pos = -1;
-	size_t nextPos = -1;
-	while ((nextPos = str.find(delimiter, pos + 1)) != std::string::npos)
-	{
-		strings.push_back(str.substr(pos + 1, nextPos - pos));
-		pos = nextPos + 1;
-	}
-}
 
 int main()
 {
-	//Input
+	takeInputAndBuildCircuit();
+	analyzeCircuitAndGiveOutput();
+	return 0;
+}
+
+/*
+TODO:
+	Toqa
+	----
+	1. Auto detect for ground.
+		Check if any of the nodes has the name "ground" or "gnd" or "0" whoever comes first is the gnd
+		If non found then take the first Source (current or voltage) negative terminal to be gnd
+		If no sources found take the first node to be gnd
+
+	2. Decent Input.
+		1. Ask for circuit elements and create circuit //Already done
+		2. Ask for frequency
+		3. Solve Circuit
+		4. Clear Matrix
+		5. GoTo 2 or 1 based on user choice 
+			[don't forget to delete all elements then nodes before asking for another circuit]
+			[no need to delete anything otherthan clearing matrix if just the frequency has changed]
+
+	3. Decent Output on the form:
+		For each node:
+			"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
+		For each element:
+			"<ElementType>["<ElementName>"]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
+
+
+	Adham
+	-----
+	1. Add Kilo-Mega-.. to input structure.
+	2. Add Comments.
+*/
+
+//Definitions
+//Program Flow
+void takeInputAndBuildCircuit()
+{
 	std::string line;
 	std::vector<std::string> tokens;
 
@@ -55,7 +77,6 @@ int main()
 			break;
 		case 'C':
 		case 'c':
-		{
 			if (tokens[0].size() > 1)
 			{
 				switch (tokens[0].at(1))
@@ -77,10 +98,8 @@ int main()
 			else
 				Capacitor::createCapacitor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
 			break;
-		}
 		case 'V':
 		case 'v':
-		{
 			if (tokens[0].size() > 1)
 			{
 				switch (tokens[0].at(1))
@@ -101,9 +120,10 @@ int main()
 			}
 			break;
 		}
-		}
 	}
-
+}
+void analyzeCircuitAndGiveOutput()
+{
 	//Get size of Augmented matrix
 	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
 	{
@@ -154,20 +174,18 @@ int main()
 		delete[] solutions;
 		delete[] matrix;
 	}
-
-	return 0;
 }
-
-Complex* SolveSystem(Complex* matrix, size_t height) //Height
+//Solve Linear System of Equations
+Complex* SolveSystem(Complex* matrix, size_t height)
 {
 	Complex tempFactor;
-	unsigned int i, j, k;
-	unsigned int width = height + 1;
+	size_t i, j, k;
+	size_t width = height + 1;
 	for (i = 0; i < height; i++)
 	{
 		for (j = i + 1; j < height; j++)
 		{
-			if (matrix[i * width + j ].getMagnitude() < matrix[j * width + i].getMagnitude())
+			if (matrix[i * width + i].getMagnitude() < matrix[j * width + i].getMagnitude())
 			{
 				for (k = 0; k <= height; k++)
 				{
@@ -196,4 +214,17 @@ Complex* SolveSystem(Complex* matrix, size_t height) //Height
 	for (i = 0; i < height; i++)
 		solutions[i] = matrix[i * width + height] / matrix[i * width + i];
 	return solutions;
+}
+//Helpers
+void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings)
+{
+	size_t pos = 0;
+	size_t nextPos = 0;
+	while ((nextPos = str.find(delimiter, pos)) != std::string::npos)
+	{
+		strings.push_back(str.substr(pos, nextPos - pos));
+		pos = nextPos + 1;
+	}
+	if (pos != str.length())
+		strings.push_back(str.substr(pos));
 }

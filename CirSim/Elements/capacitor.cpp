@@ -1,5 +1,8 @@
 #include "capacitor.h"
 
+#include "cccs.h"
+#include "ccvs.h"
+
 //Constructors
 Capacitor::Capacitor(const std::string& capacitorName, Node& posNode, Node& negNode, double capacitance)
 	: Element(capacitorName, ElementType::Capacitor)
@@ -33,36 +36,54 @@ Capacitor* Capacitor::createCapacitor(const std::string& capacitorName, Node& po
 //Matrix Operations
 void Capacitor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	if(nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("Capacitor: Couldn't find a Node.");
+
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
-	Complex admittance = getAdmittance(angularFrequency);
 
+	Complex admittance = getAdmittance(angularFrequency);
 	matrix[posIdx * matrixWidth + posIdx] += admittance;
 	matrix[posIdx * matrixWidth + negIdx] -= admittance;
 	matrix[negIdx * matrixWidth + posIdx] -= admittance;
 	matrix[negIdx * matrixWidth + negIdx] += admittance;
 }
-void Capacitor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+
+void Capacitor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlledElement = (Element*)ccvs;
-	size_t controlPosIdx = nodeIndexMap[this->m_posNode->getName()];
-	size_t controlNegIdx = nodeIndexMap[this->m_negNode->getName()];
-	size_t voltageIdx = voltageIndexMap[controlledElement->getName()];
-	Complex admittance = this->getAdmittance(angularFrequency);
-	matrix[voltageIdx * matrixWidth + controlPosIdx] -= admittance;
-	matrix[voltageIdx * matrixWidth + controlNegIdx] += admittance;
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("Capacitor: Couldn't find a Node.");
+
+	if (voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
+		throw std::runtime_error("Capacitor: Couldn't find a Voltage Source.");
+
+	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
+	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
+	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+
+	Complex resistorFactor = totalCurrentFactor * getAdmittance(angularFrequency);
+	matrix[voltageIdx * matrixWidth + controlPosIdx] -= resistorFactor;
+	matrix[voltageIdx * matrixWidth + controlNegIdx] += resistorFactor;
 }
-void Capacitor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+
+void Capacitor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlElement = (Element*)cccs;
-	Capacitor* castedCCCS = static_cast<Capacitor*>(controlElement);
-	size_t controlPosIdx = nodeIndexMap[this->getPosNode()->getName()];
-	size_t controlNegIdx = nodeIndexMap[this->getNegNode()->getName()];
-	size_t posIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
-	Complex admittance = this->getAdmittance(angularFrequency);
-	matrix[posIdx * matrixWidth + controlPosIdx] -= admittance;
-	matrix[posIdx * matrixWidth + controlNegIdx] += admittance;
-	matrix[negIdx * matrixWidth + controlPosIdx] += admittance;
-	matrix[negIdx * matrixWidth + controlNegIdx] -= admittance;
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(cccs->getPosNode()->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("Capacitor: Couldn't find a Node.");
+
+	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
+	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
+	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
+	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
+
+	Complex capacitorFactor = totalCurrentFactor * getAdmittance(angularFrequency);
+	matrix[posIdx * matrixWidth + controlPosIdx] -= capacitorFactor;
+	matrix[posIdx * matrixWidth + controlNegIdx] += capacitorFactor;
+	matrix[negIdx * matrixWidth + controlPosIdx] += capacitorFactor;
+	matrix[negIdx * matrixWidth + controlNegIdx] -= capacitorFactor;
 }
