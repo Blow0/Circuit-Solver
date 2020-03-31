@@ -40,6 +40,7 @@ TODO:
 			"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
 		For each element:
 			"<ElementType>["<ElementName>"]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
+			//you can output based on the element: powe dissipated or power supplied or power stored
 
 
 	Adham

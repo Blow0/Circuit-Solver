@@ -1,5 +1,13 @@
 #include "ccvs.h"
 
+#include "resistor.h"
+#include "inductor.h"
+#include "capacitor.h"
+#include "currentsource.h"
+#include "voltagesource.h"
+#include "vcvs.h"
+#include "vccs.h"
+#include "cccs.h"
 #include "cccs.h"
 
 //Constructors
@@ -79,4 +87,42 @@ void CCVS::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth,
 
 	matrix[posIdx * matrixWidth + voltageSourceIdx] -= totalCurrentFactor;
 	matrix[negIdx * matrixWidth + voltageSourceIdx] += totalCurrentFactor;
+}
+
+//Getters
+Complex CCVS::getControlCurrent(double angularFrequency) const
+{
+	Complex current;
+	Element* controlElement = getControlElement();
+	switch (controlElement->getType())
+	{
+	case ElementType::Resistor:
+		current = ((Resistor*)controlElement)->getCurrent();
+		break;
+	case ElementType::Inductor:
+		current = ((Inductor*)controlElement)->getCurrent(angularFrequency);
+		break;
+	case ElementType::Capacitor:
+		current = ((Capacitor*)controlElement)->getCurrent(angularFrequency);
+		break;
+	case ElementType::VS:
+		current = ((VoltageSource*)controlElement)->getCurrent();
+		break;
+	case ElementType::CS:
+		current = ((CurrentSource*)controlElement)->getCurrent();
+		break;
+	case ElementType::VCVS:
+		current = ((VCVS*)controlElement)->getCurrent();
+		break;
+	case ElementType::VCCS:
+		current = ((VCCS*)controlElement)->getCurrent();
+		break;
+	case ElementType::CCVS:
+		current = ((CCVS*)controlElement)->getCurrent();
+		break;
+	case ElementType::CCCS:
+		current = ((CCCS*)controlElement)->getCurrent();
+		break;
+	}
+	return getCurrentFactor() * current;
 }

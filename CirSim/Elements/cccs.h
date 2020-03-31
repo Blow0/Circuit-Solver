@@ -38,8 +38,8 @@ private: //Blocked Setters
 public: //Getters
 	inline Element* getControlElement() const { Element* element = Element::getElement(m_controlElement); if (element == nullptr) throw std::runtime_error("CCCS: Couldn't find ControlElement"); return element; }
 	inline Complex getCurrentFactor() const { return m_currentFactor; }
-	inline Complex getSupplyCurrent() const { return m_currentFactor * getControlCurrent(); }
-	inline Complex getControlCurrent() const { return 0; }
+	inline Complex getSupplyCurrent(double angularFrequency) const { return m_currentFactor * getControlCurrent(angularFrequency); }
+	Complex getControlCurrent(double angularFrequency) const;
 
 	CCCS(const CCCS&) = delete;
 	void operator=(const CCCS&) = delete;
