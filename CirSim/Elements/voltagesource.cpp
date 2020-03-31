@@ -1,7 +1,11 @@
 #include "voltagesource.h"
 
+#include "cccs.h"
+#include "ccvs.h"
+
 //Static Member declaration
 std::list <VoltageSource*> VoltageSource::voltageSources;
+
 //Constructors
 VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
 	: Element(voltageSrcName, ElementType::VS)
@@ -46,6 +50,13 @@ VoltageSource* VoltageSource::createVoltageSource(const std::string& voltageSrcN
 //Matrix Operations
 void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("VoltageSource: Couldn't find a Node.");
+
+	if (voltageIndexMap.find(m_name) == voltageIndexMap.end())
+		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
+
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
@@ -60,20 +71,32 @@ void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	matrix[posIdx * matrixWidth + voltageIdx] = -1;
 	matrix[negIdx * matrixWidth + voltageIdx] = 1;
 }
-void VoltageSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+
+void VoltageSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlledElement = (Element*)ccvs;
-	size_t voltageIdx = voltageIndexMap[controlledElement->getName()];
-	size_t voltageSourceIdx = voltageIndexMap[this->getName()];
-	matrix[voltageIdx * matrixWidth + voltageSourceIdx] = -1;
+	if (voltageIndexMap.find(m_name) == voltageIndexMap.end()
+		|| voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
+		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
+
+	size_t voltageSourceIdx = voltageIndexMap[m_name];
+	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+
+	matrix[voltageIdx * matrixWidth + voltageSourceIdx] = -totalCurrentFactor;
 }
-void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+
+void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlElement = (Element*)cccs;
-	VoltageSource* castedCCCS = static_cast<VoltageSource*>(controlElement);
-	size_t posIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
-	size_t voltageSourceIdx = voltageIndexMap[this->getName()];
-	matrix[posIdx * matrixWidth + voltageSourceIdx] -= 1;
-	matrix[negIdx * matrixWidth + voltageSourceIdx] += 1;
+	if (nodeIndexMap.find(cccs->getPosNode()->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("VoltageSource: Couldn't find a Node.");
+
+	if (voltageIndexMap.find(m_name) == voltageIndexMap.end())
+		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
+
+	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
+	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
+	size_t voltageSourceIdx = voltageIndexMap[m_name];
+
+	matrix[posIdx * matrixWidth + voltageSourceIdx] -= totalCurrentFactor;
+	matrix[negIdx * matrixWidth + voltageSourceIdx] += totalCurrentFactor;
 }

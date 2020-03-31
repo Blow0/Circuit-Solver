@@ -1,6 +1,8 @@
 #include "currentsource.h"
 
-size_t m_currentControlledCount = 0;
+#include "cccs.h"
+#include "ccvs.h"
+
 //Constructors
 CurrentSource::CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance)
 	: Element(currentSrcName, ElementType::CS)
@@ -35,6 +37,10 @@ CurrentSource* CurrentSource::createCurrentSource(const std::string& currentSrcN
 //Matrix Operations
 void CurrentSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("CurrentSource: Couldn't find a Node.");
+
 	size_t posIdx = nodeIndexMap[m_posNode->getName()];
 	size_t negIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
@@ -48,34 +54,48 @@ void CurrentSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	matrix[negIdx * matrixWidth + posIdx] -= internalAdmittance;
 	matrix[negIdx * matrixWidth + negIdx] += internalAdmittance;
 }
-void CurrentSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+
+void CurrentSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlledElement = (Element*)ccvs;
-	size_t voltageIdx = voltageIndexMap[controlledElement->getName()];
-	size_t currentSourcePosIdx = nodeIndexMap[this->getPosNode()->getName()];
-	size_t currentSourceNegIdx = nodeIndexMap[this->getNegNode()->getName()];
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("CurrentSource: Couldn't find a Node.");
+
+	if (voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
+		throw std::runtime_error("CurrentSource: Couldn't find a Voltage Source.");
+
+	size_t currentSourcePosIdx = nodeIndexMap[m_posNode->getName()];
+	size_t currentSourceNegIdx = nodeIndexMap[m_negNode->getName()];
 	size_t constRow = matrixWidth - 1;
-	Complex supplyVoltage = this->getSupplyCurrent();
-	Complex internalAdmittanceFactor = this->getInternalAdmittance();
-	matrix[voltageIdx * matrixWidth + constRow] += supplyVoltage;
+	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+
+	Complex supplyCurrentFactor = totalCurrentFactor * getSupplyCurrent();
+	Complex internalAdmittanceFactor = totalCurrentFactor * getInternalAdmittance();
+	matrix[voltageIdx * matrixWidth + constRow] = supplyCurrentFactor;
 	matrix[voltageIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
 	matrix[voltageIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
 }
-void CurrentSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0)
+
+void CurrentSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
 {
-	Element* controlElement = (Element*)cccs;
-	CurrentSource* castedCCCS = static_cast<CurrentSource*>(controlElement);
-	size_t posIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[castedCCCS->getPosNode()->getName()];
+	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(cccs->getPosNode()->getName()) == nodeIndexMap.end()
+		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
+		throw std::runtime_error("CurrentSource: Couldn't find a Node.");
+
+	size_t currentSourcePosIdx = nodeIndexMap[m_posNode->getName()];
+	size_t currentSourceNegIdx = nodeIndexMap[m_negNode->getName()];
+	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
+	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
 	size_t constRow = matrixWidth - 1;
-	size_t currentSourcePosIdx = nodeIndexMap[this->getPosNode()->getName()];
-	size_t currentSourceNegIdx = nodeIndexMap[this->getNegNode()->getName()];
-	Complex supplyCurrent = this->getSupplyCurrent();
-	Complex internalAdmittanceFactor = this->getInternalAdmittance();
-	matrix[posIdx * matrixWidth + constRow] += supplyCurrent;
+
+	Complex supplyCurrentFactor = totalCurrentFactor * getSupplyCurrent();
+	Complex internalAdmittanceFactor = totalCurrentFactor * getInternalAdmittance();
+	matrix[posIdx * matrixWidth + constRow] += supplyCurrentFactor;
 	matrix[posIdx * matrixWidth + currentSourcePosIdx] += internalAdmittanceFactor;
 	matrix[posIdx * matrixWidth + currentSourceNegIdx] -= internalAdmittanceFactor;
-	matrix[negIdx * matrixWidth + constRow] -= supplyCurrent;
+	matrix[negIdx * matrixWidth + constRow] -= supplyCurrentFactor;
 	matrix[negIdx * matrixWidth + currentSourcePosIdx] -= internalAdmittanceFactor;
 	matrix[negIdx * matrixWidth + currentSourceNegIdx] += internalAdmittanceFactor;
 }

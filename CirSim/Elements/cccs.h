@@ -25,8 +25,8 @@ public: //Matrix Operations
 	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
 
 private: //Matrix Operations Helpers
-	void injectSupplyCurrentIntoCCVS(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
-	void injectSupplyCurrentIntoCCCS(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+	void injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
+	void injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
 
 public: //Setters
 	inline void setCurrentFactor(Complex currentFactor) { m_currentFactor = currentFactor; }
@@ -38,8 +38,8 @@ private: //Blocked Setters
 public: //Getters
 	inline Element* getControlElement() const { Element* element = Element::getElement(m_controlElement); if (element == nullptr) throw std::runtime_error("CCCS: Couldn't find ControlElement"); return element; }
 	inline Complex getCurrentFactor() const { return m_currentFactor; }
-	inline Complex getSupplyCurrent() const { return m_currentFactor * getControlCurrent(); }
-	inline Complex getControlCurrent() const { return 0; }
+	inline Complex getSupplyCurrent(double angularFrequency) const { return m_currentFactor * getControlCurrent(angularFrequency); }
+	Complex getControlCurrent(double angularFrequency) const;
 
 	CCCS(const CCCS&) = delete;
 	void operator=(const CCCS&) = delete;
