@@ -5,15 +5,39 @@
 #include "cirsimdef.h"
 
 //Declarations
-void takeInputAndBuildCircuit();
-void analyzeCircuitAndGiveOutput();
+std::string takeInputAndBuildCircuit();
+std::string detectGroundNode(std::string elementType, std::string node);
+void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency);
+void analyzeCircuitAndGiveOutput(std::string detectedGnd, double angularFrequency);
 void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings);
 Complex* SolveSystem(Complex* matrix, size_t height);
 
 int main()
 {
-	takeInputAndBuildCircuit();
-	analyzeCircuitAndGiveOutput();
+	std::cout << "1. Create New Circuit." << std::endl;
+	std::cout << "2. Enter Frequency." << std::endl;
+	std::cout << "3. Exit." << std::endl;
+	unsigned int input;
+	std::cin >> input;
+	std::string detectedGnd;
+	double angularFrequency;
+	while (input != 3)
+	{
+		switch (input)
+		{
+		case 1: //Create the circuit
+			detectedGnd = takeInputAndBuildCircuit();
+			break;
+		case 2:
+			std::cout << "Please Enter the Frequency: ";
+			std::cin >> angularFrequency;
+			analyzeCircuitAndGiveOutput(detectedGnd, angularFrequency);
+			break;
+		case 3:
+			break;
+		}
+		std::cin >> input;
+	}
 	return 0;
 }
 
@@ -21,15 +45,15 @@ int main()
 TODO:
 	Toqa
 	----
-	1. Auto detect for ground.
+	1. Auto detect for ground. //Done
 		Check if any of the nodes has the name "ground" or "gnd" or "0" whoever comes first is the gnd
 		If non found then take the first Source (current or voltage) negative terminal to be gnd
 		If no sources found take the first node to be gnd
 
 	2. Decent Input.
 		1. Ask for circuit elements and create circuit //Already done
-		2. Ask for frequency
-		3. Solve Circuit
+		2. Ask for frequency //Done
+		3. Solve Circuit    
 		4. Clear Matrix
 		5. GoTo 2 or 1 based on user choice 
 			[don't forget to delete all elements then nodes before asking for another circuit]
@@ -51,20 +75,29 @@ TODO:
 
 //Definitions
 //Program Flow
-void takeInputAndBuildCircuit()
+std::string takeInputAndBuildCircuit()
 {
 	std::string line;
 	std::vector<std::string> tokens;
+	std::string gndNode = "-1";
 
+	std::cin.clear();
+	std::cin.ignore(INT_MAX, '\n');
+	std::cout << "Enter the Circuit Netlist:" << std::endl;
 	//Take Input from user until he enters "end"
 	while (1)
 	{
 		tokens.clear();
+
 		std::getline(std::cin, line);
 		splitString(line, " ", tokens);
 
 		if (tokens[0] == "end")
 			break;
+
+		std::string detectedGnd = detectGroundNode(tokens[0],tokens[3]);
+		if (detectedGnd != "-1")
+			gndNode = detectedGnd;
 
 		switch (tokens[0].at(0))
 		{
@@ -88,7 +121,7 @@ void takeInputAndBuildCircuit()
 					break;
 				case 'C':
 				case 'c':
-					CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					CCCS::createCCCS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
 					break;
 				case 'S':
 				case 's':
@@ -111,7 +144,7 @@ void takeInputAndBuildCircuit()
 					break;
 				case 'C':
 				case 'c':
-					VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					VCCS::createVCCS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
 					break;
 				case 'S':
 				case 's':
@@ -122,16 +155,33 @@ void takeInputAndBuildCircuit()
 			break;
 		}
 	}
+	return gndNode;
 }
-void analyzeCircuitAndGiveOutput()
+std::string detectGroundNode(std::string elementType,std::string node)
+{
+	static bool firstTime = 0;
+	static bool firstSource = 1;
+	//Case1 
+	if (node == "gnd" || node == "ground" || node == "0" && !firstTime)
+	{
+		return node;
+		firstTime = 1;
+	}
+	//Case2
+	else if(elementType.at(0) == 'V' || (elementType.at(0) == 'C' && elementType.size() > 1) && firstSource)
+	{
+		return node; //return Negative node of this Source
+		firstSource = 0;
+	}
+	else
+		return "-1";
+}
+
+void analyzeCircuitAndGiveOutput(std::string detectedGnd, double angularFrequency)
 {
 	//Get size of Augmented matrix
 	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
 	{
-		std::string gndNode;
-		std::cout << "Enter Ground Node ";
-		std::cin >> gndNode;
-
 		//IndexMap
 		std::map<std::string, size_t> nodeIndexMap;
 		std::map<std::string, size_t> voltageSourceIndexMap;
@@ -148,12 +198,22 @@ void analyzeCircuitAndGiveOutput()
 			voltageSourceIndexMap.emplace((*it)->getName(), idx);
 			idx++;
 		}
+		//Set Ground Node
+		std::string gndNode;
+		if (detectedGnd == "-1")
+		{
+			std::map<std::string, size_t>::iterator it = nodeIndexMap.begin();
+			gndNode = it->first;
+		}
+		else
+			gndNode = detectedGnd;
+
 		size_t matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
 		//Height     *     Width
 		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
 
 		size_t gndNodeIdx = nodeIndexMap[gndNode];
-		Element::LoadElementsIntoMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, 0);
+		Element::LoadElementsIntoMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, angularFrequency);
 
 		//Set Gnd Equation Vgnd = 0
 		for (size_t i = 0; i < matrixSize + 1; i++)
@@ -165,17 +225,78 @@ void analyzeCircuitAndGiveOutput()
 		}
 
 		Complex* solutions = SolveSystem(matrix, matrixSize);
-
-		for (size_t i = 0; i < Node::getNodesCount(); i++)
-		{
-			std::cout << "V[" << i + 1 << "]" << " = ";
-			std::cout << solutions[i].getMagnitude() << "<" << solutions[i].getPhase() << std::endl;
-		}
-
+		//Output
+		showOutput(solutions, nodeIndexMap, angularFrequency);
 		delete[] solutions;
 		delete[] matrix;
 	}
 }
+void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency)
+{
+	std::map<std::string, size_t>::iterator it;
+	//"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
+	for (it = nodeIndexMap.begin();it != nodeIndexMap.end(); it++)
+	{
+		std::cout << "Node[<" << it->first << ">]" << ":   "<<"Nodal_Voltage = ";
+		std::cout <<solutions[it->second].getMagnitude() << "<" << solutions[it->second].getPhase() << std::endl;
+	}
+	//"<ElementType>[" < ElementName > "]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
+		//you can output based on the element: powe dissipated or power supplied or power stored
+	std::map<std::string, Element*> elementMap = Element::getElementMap();
+	std::map<std::string, Element*>::iterator it1;
+	bool Dissipating;
+	double power;
+	for (it1 = elementMap.begin(); it1 != elementMap.end(); it1++)
+	{
+		Dissipating = false;
+		std::cout << "<";
+		switch (it1->second->getType())
+		{
+		case ElementType::Resistor:
+			std::cout << "R";
+			Dissipating = true;
+			break;
+		case ElementType::Capacitor:
+			std::cout << "C";
+			Dissipating = true;
+			break;
+		case ElementType::Inductor:
+			std::cout << "L";
+			Dissipating = true;
+			break;
+		case ElementType::CS:
+			std::cout << "CS";
+			break;
+		case ElementType::CCCS:
+			std::cout << "CCCS";
+			break;
+		case ElementType::CCVS:
+			std::cout << "CCVS";
+			break;
+		case ElementType::VS:
+			std::cout << "VS";
+			break;
+		case ElementType::VCCS:
+			std::cout << "VCCS";
+			break;
+		case ElementType::VCVS:
+			std::cout << "VCVS";
+			break;
+		}
+		std::cout << ">[" << it1->first << "]:   ";
+		std::cout << "Voltage_Difference = " << it1->second->getVoltageDiff().getMagnitude() << "<"
+			<< it1->second->getVoltageDiff().getPhase()<<"      ";
+		std::cout << "Current = " << it1->second->getCurrent(angularFrequency).getMagnitude() <<"<"
+			<< it1->second->getCurrent(angularFrequency).getPhase();
+		std::cout << "Power = ";
+		if (Dissipating)
+			power = it1->second->getPowerDissipated(angularFrequency).getReal();
+		else
+			power = it1->second->getTotalPowerSupplied().getReal();
+		std::cout << power<<std::endl;
+	}
+}
+
 //Solve Linear System of Equations
 Complex* SolveSystem(Complex* matrix, size_t height)
 {

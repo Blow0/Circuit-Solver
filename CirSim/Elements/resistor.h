@@ -35,9 +35,8 @@ public: //Getters
 	inline Complex getImpedance() const { return m_resistance; }
 	inline Complex getAdmittance() const { return 1.0 / m_resistance; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline Complex getCurrent() const { return getVoltageDiff() / m_resistance; }
-	inline Complex getDissipatedPower() const { return getVoltageDiff() * getCurrent().getComplement(); }
-
+	inline Complex getCurrent(double angularFrequency = 0.0) const { return getVoltageDiff() / m_resistance; }
+	inline Complex getPowerDissipated(double angularFrequency = 0.0) const { return getVoltageDiff() * getCurrent().getComplement(); }
 	Resistor(const Resistor&) = delete;
 	void operator=(const Resistor&) = delete;
 };

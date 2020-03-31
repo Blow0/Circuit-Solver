@@ -21,7 +21,7 @@ CCVS::CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex cu
 
 CCVS::~CCVS()
 {
-	m_controlElement = nullptr;
+	
 }
 
 //Static Voltage Source Creation 
