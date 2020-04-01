@@ -29,6 +29,14 @@ void solveCircuit(double angularFrequency);
 
 //Solves Linear System of Equations using gaussian elimination.
 //Returns array of complex solutions to the system.
+
+//Declarations
+std::string takeInputAndBuildCircuit();
+std::string detectGroundNode(std::string elementType, std::string node);
+void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency);
+void analyzeCircuitAndGiveOutput(std::string detectedGnd, double angularFrequency);
+void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings);
+
 Complex* SolveSystem(Complex* matrix, size_t height);
 
 //Outputs the solutions of the circuit.
@@ -42,7 +50,8 @@ void splitString(const std::string& str, const std::string& delimiter, std::vect
 
 int main()
 {
-	/*std::cout << "1. Create New Circuit." << std::endl;
+
+	std::cout << "1. Create New Circuit." << std::endl;
 	std::cout << "2. Enter Frequency." << std::endl;
 	std::cout << "3. Exit." << std::endl;
 	unsigned int input;
@@ -65,11 +74,13 @@ int main()
 			break;
 		}
 		std::cin >> input;
-	}*/
+
+	}
 	return 0;
 }
 
 /*
+
 cs I1 1 4 20K<1.02rad
 r R1 1   4 8
 r R2 1 2 4
@@ -77,12 +88,36 @@ r R3 2 3 5
 r R4 3   4 6
 end
 */
-
+/*
 void takeInputAndBuildCircuit()
+TODO:
+	Toqa
+	----
+	2. Decent Input.
+		1. Ask for circuit elements and create circuit //Already done
+		2. Ask for frequency //Done
+		3. Solve Circuit    
+		4. Clear Matrix
+		5. GoTo 2 or 1 based on user choice 
+			[don't forget to delete all elements then nodes before asking for another circuit]
+			[no need to delete anything otherthan clearing matrix if just the frequency has changed]
+
+	Adham
+	-----
+	1. Add Kilo-Mega-.. to input structure.
+	2. Add Comments.
+*/
+
+//Definitions
+//Program Flow
+std::string takeInputAndBuildCircuit()
+
 {
 	//Input temp. values
 	std::string line;
 	std::vector<std::string> tokens;
+	std::string gndNode = "-1";
+
 
 	//Flush input stream
 	std::cin.clear();
@@ -93,11 +128,17 @@ void takeInputAndBuildCircuit()
 
 	//Take Input lines from user until he enters "end"
 	while (true)
+	std::cin.clear();
+	std::cin.ignore(INT_MAX, '\n');
+	std::cout << "Enter the Circuit Netlist:" << std::endl;
+	//Take Input from user until he enters "end"
+	while (1)
 	{
 		//Clear last input tokens
 		tokens.clear();
 
 		//Get line from user input
+
 		std::getline(std::cin, line);
 
 		//Sperate input line into tokens
@@ -112,6 +153,11 @@ void takeInputAndBuildCircuit()
 			break;
 
 		//Create element based on type(token[0])
+
+		std::string detectedGnd = detectGroundNode(tokens[0],tokens[3]);
+		if (detectedGnd != "-1")
+			gndNode = detectedGnd;
+
 		switch (tokens[0].at(0))
 		{
 		case 'r':
@@ -158,7 +204,28 @@ void takeInputAndBuildCircuit()
 			break;
 		}
 	}
+	return gndNode;
 }
+std::string detectGroundNode(std::string elementType,std::string node)
+{
+	static bool firstTime = 0;
+	static bool firstSource = 1;
+	//Case1 
+	if (node == "gnd" || node == "ground" || node == "0" && !firstTime)
+	{
+		return node;
+		firstTime = 1;
+	}
+	//Case2
+	else if(elementType.at(0) == 'V' || (elementType.at(0) == 'C' && elementType.size() > 1) && firstSource)
+	{
+		return node; //return Negative node of this Source
+		firstSource = 0;
+	}
+	else
+		return "-1";
+}
+
 void analyzeCircuit()
 {
 	//Counter variable
@@ -204,6 +271,44 @@ void solveCircuit(double angularFrequency)
 		matrix[gndNodeIdx * (matrixSize + 1) + i] = 0.0;
 	matrix[gndNodeIdx * matrixWidth + gndNodeIdx] = 1.0;
 
+void analyzeCircuitAndGiveOutput(std::string detectedGnd, double angularFrequency)
+{
+	//Get size of Augmented matrix
+	if (Node::getNodesCount() + VoltageSource::getVoltageSrcsCount() > 0)
+	{
+		//IndexMap
+		std::map<std::string, size_t> nodeIndexMap;
+		std::map<std::string, size_t> voltageSourceIndexMap;
+		std::map<std::string, Node*> nodesMap = Node::getNodesMap();
+		std::list<VoltageSource*> voltageSourceList = VoltageSource::getVoltageSourceList();
+		size_t idx = 0;
+		for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+		{
+			nodeIndexMap.emplace(it->first, idx);
+			idx++;
+		}
+		for (std::list<VoltageSource*>::iterator it = voltageSourceList.begin(); it != voltageSourceList.end(); it++)
+		{
+			voltageSourceIndexMap.emplace((*it)->getName(), idx);
+			idx++;
+		}
+		//Set Ground Node
+		std::string gndNode;
+		if (detectedGnd == "-1")
+		{
+			std::map<std::string, size_t>::iterator it = nodeIndexMap.begin();
+			gndNode = it->first;
+		}
+		else
+			gndNode = detectedGnd;
+
+		size_t matrixSize = Node::getNodesCount() + VoltageSource::getVoltageSrcsCount();
+		//Height     *     Width
+		Complex* matrix = new Complex[matrixSize * (matrixSize + 1)];
+
+		size_t gndNodeIdx = nodeIndexMap[gndNode];
+		Element::LoadElementsIntoMatrix(matrix, matrixSize + 1, nodeIndexMap, voltageSourceIndexMap, angularFrequency);
+
 	//Get MNA Equations Solutions
 	Complex* solutions = SolveSystem(matrix, matrixSize);
 
@@ -232,6 +337,7 @@ Node* getGroundNode()
 			std::string nodeName = it->second->getName();
 			for (size_t i = 0; i < nodeName.length(); i++)
 				nodeName[i] = tolower(nodeName[i]);
+
 
 			//Check for ground node
 			if (nodeName == "gnd" || nodeName == "ground")
@@ -269,9 +375,84 @@ Node* getGroundNode()
 		//Return first node as gnd node
 		if (it->second != nullptr)
 			return it->second;
+
+		Complex* solutions = SolveSystem(matrix, matrixSize);
+		//Output
+		showOutput(solutions, nodeIndexMap, angularFrequency);
+		delete[] solutions;
+		delete[] matrix;
+
 	}
 	return nullptr;
 }
+
+void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency)
+{
+	std::map<std::string, size_t>::iterator it;
+	//"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
+	for (it = nodeIndexMap.begin();it != nodeIndexMap.end(); it++)
+	{
+		std::cout << "Node[<" << it->first << ">]" << ":   "<<"Nodal_Voltage = ";
+		std::cout <<solutions[it->second].getMagnitude() << "<" << solutions[it->second].getPhase() << std::endl;
+	}
+	//"<ElementType>[" < ElementName > "]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
+		//you can output based on the element: powe dissipated or power supplied or power stored
+	std::map<std::string, Element*> elementMap = Element::getElementMap();
+	std::map<std::string, Element*>::iterator it1;
+	bool Dissipating;
+	double power;
+	for (it1 = elementMap.begin(); it1 != elementMap.end(); it1++)
+	{
+		Dissipating = false;
+		std::cout << "<";
+		switch (it1->second->getType())
+		{
+		case ElementType::Resistor:
+			std::cout << "R";
+			Dissipating = true;
+			break;
+		case ElementType::Capacitor:
+			std::cout << "C";
+			Dissipating = true;
+			break;
+		case ElementType::Inductor:
+			std::cout << "L";
+			Dissipating = true;
+			break;
+		case ElementType::CS:
+			std::cout << "CS";
+			break;
+		case ElementType::CCCS:
+			std::cout << "CCCS";
+			break;
+		case ElementType::CCVS:
+			std::cout << "CCVS";
+			break;
+		case ElementType::VS:
+			std::cout << "VS";
+			break;
+		case ElementType::VCCS:
+			std::cout << "VCCS";
+			break;
+		case ElementType::VCVS:
+			std::cout << "VCVS";
+			break;
+		}
+		std::cout << ">[" << it1->first << "]:   ";
+		std::cout << "Voltage_Difference = " << it1->second->getVoltageDiff().getMagnitude() << "<"
+			<< it1->second->getVoltageDiff().getPhase()<<"      ";
+		std::cout << "Current = " << it1->second->getCurrent(angularFrequency).getMagnitude() <<"<"
+			<< it1->second->getCurrent(angularFrequency).getPhase();
+		std::cout << "Power = ";
+		if (Dissipating)
+			power = it1->second->getPowerDissipated(angularFrequency).getReal();
+		else
+			power = it1->second->getTotalPowerSupplied().getReal();
+		std::cout << power<<std::endl;
+	}
+}
+
+//Solve Linear System of Equations
 Complex* SolveSystem(Complex* matrix, size_t height)
 {
 	Complex tempFactor;

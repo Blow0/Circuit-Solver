@@ -20,7 +20,6 @@ CCCS::CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex cu
 
 CCCS::~CCCS()
 {
-	m_controlElement = nullptr;
 }
 
 //Static Voltage Source Creation 

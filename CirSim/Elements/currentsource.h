@@ -40,6 +40,10 @@ public: //Getters
 	inline virtual Complex getSupplyCurrent() const { return m_supplyCurrent; }
 	inline Complex getPowerSupplied() const { return getSupplyCurrent() * getVoltageDiff(); }
 	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
+	inline Complex getCurrent(double angularFrequency = 0.0) const { return (getSupplyCurrent() - getVoltageDiff() * m_internalAdmittance); }
+	inline virtual Complex getSupplyCurrent() const { return m_supplyCurrent; }
+	inline Complex getPowerSupplied() const { return getSupplyCurrent() * getVoltageDiff(); }
+	inline Complex getPowerDissipated(double angularFrequency = 0.0) const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 
 	CurrentSource(const CurrentSource&) = delete;
