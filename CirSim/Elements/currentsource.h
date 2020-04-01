@@ -36,9 +36,9 @@ public: //Getters
 	inline Node* getNegNode() const { return m_negNode; }
 	inline Complex getInternalAdmittance() { return m_internalAdmittance; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline Complex getCurrent() const { return (m_supplyCurrent - getVoltageDiff() * m_internalAdmittance); }
+	inline Complex getCurrent() const { return (getSupplyCurrent() - getVoltageDiff() * m_internalAdmittance); }
 	inline virtual Complex getSupplyCurrent() const { return m_supplyCurrent; }
-	inline Complex getPowerSupplied() const { return m_supplyCurrent * getVoltageDiff(); }
+	inline Complex getPowerSupplied() const { return getSupplyCurrent() * getVoltageDiff(); }
 	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 

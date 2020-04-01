@@ -31,10 +31,13 @@ protected: //Constructors
 	virtual ~Element();
 
 public: //Static Elements Map Methods
-	static inline bool elementExists(const std::string& elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
+	static inline const std::map<std::string, Element*>& getElementsMap() { return elementsMap; }
 	static inline Element* getElement(const std::string& elementName) { return elementExists(elementName) ? elementsMap[elementName] : nullptr;}
+	static inline bool elementExists(const std::string& elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
 	static inline size_t getElementsCount() { return elementsMap.size(); }
-	static void LoadElementsIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency);
+	static inline void clearElements() { elementsMap.clear(); }
+	static void deleteAllElements();
+	static void loadElementsIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency);
 
 public: //Matrix Operations
 	virtual void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0) = 0;
