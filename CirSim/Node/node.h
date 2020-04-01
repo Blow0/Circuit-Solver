@@ -23,6 +23,7 @@ public: //Static Nodes Map Methods
 	static inline Node* getNode(const std::string& nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }
 	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
 	static inline size_t getNodesCount() { return nodesMap.size(); }
+	static const std::map<std::string, Node*> getNodesMap() { return nodesMap; }
 	static inline void clearNodes() { nodesMap.clear(); }
 	static void deleteAllNodes();
 	static void fillNodesFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap);

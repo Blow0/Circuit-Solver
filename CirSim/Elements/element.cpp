@@ -16,6 +16,15 @@ Element::~Element()
 }
 
 void Element::deleteAllElements()
+<<<<<<< HEAD
+=======
+{
+	for (std::map<std::string, Element*>::iterator it = elementsMap.begin(); it != elementsMap.end(); it++)
+		delete it->second;
+}
+
+void Element::LoadElementsIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+>>>>>>> 5ebc3ecc373446cdd456cba3ab9f3cb89a6312c9
 {
 	for (std::map<std::string, Element*>::iterator it = elementsMap.begin(); it != elementsMap.end(); it++)
 		delete it->second;
