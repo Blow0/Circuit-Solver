@@ -45,11 +45,11 @@ public: //Getters
 	inline Node* getPosNode() const { return m_posNode; }
 	inline Node* getNegNode() const { return m_negNode; }
 	inline Complex getInternalImpedance() const { return m_internalImpedance; }
-	inline Complex getCurrent(double angularFrequency = 0.0) const { return m_current; }
+	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
 	inline virtual Complex getSupplyVoltage() const { return m_supplyVoltage; }
 	inline Complex getPowerSupplied() const { return m_current * getSupplyVoltage(); }
-	inline Complex getPowerDissipated(double angularFrequency = 0.0) const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
+	inline Complex getPowerDissipated() const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 
 	VoltageSource(const VoltageSource&) = delete;

@@ -1,14 +1,1 @@
-﻿  CirSim.cpp
-  capacitor.cpp
-  cccs.cpp
-  ccvs.cpp
-  currentsource.cpp
-  element.cpp
-  inductor.cpp
-  resistor.cpp
-  vccs.cpp
-  vcvs.cpp
-  voltagesource.cpp
-  node.cpp
-  Generating Code...
-  CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe
+﻿  CirSim.vcxproj -> D:\Backup\SoftwareLab2020\CirSim\Debug\CirSim.exe

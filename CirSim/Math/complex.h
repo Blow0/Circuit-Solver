@@ -159,7 +159,7 @@ public: //Creators
 		{
 		
 		std::string magSt = str.substr(0, anglePos);
-		double mag = stod(magSt.substr(0, anglePos - 1));
+		double mag = stod(magSt.substr(0, anglePos));
 		switch (magSt.back())
 		{
 		case 'p':
@@ -219,7 +219,6 @@ public: //Creators
 
 		return complex;
 	}
-
 	static std::string complexToString(Complex complex)
 	{
 		double real = complex.getReal();
