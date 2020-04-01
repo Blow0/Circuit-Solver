@@ -1,5 +1,14 @@
 #include "node.h"
 #include "../Elements/element.h"
+#include "../Elements/resistor.h"
+#include "../Elements/capacitor.h"
+#include "../Elements/inductor.h"
+#include "../Elements/currentsource.h"
+#include "../Elements/voltagesource.h"
+#include "../Elements/vcvs.h"
+#include "../Elements/vccs.h"
+#include "../Elements/cccs.h"
+#include "../Elements/ccvs.h"
 
 //Nodes Map
 std::map<std::string, Node*> Node::nodesMap;
@@ -8,7 +17,6 @@ std::map<std::string, Node*> Node::nodesMap;
 Node::Node(const std::string& name)
 	: m_name(name)
 	, m_nodalVoltage(0.0)
-	, m_flowCurrent(0.0)
 {
 }
 
@@ -18,13 +26,45 @@ Node::~Node()
 	nodesMap.erase(m_name);
 }
 
-void Node::computeFlowCurrent()
+Complex Node::getFlowCurrent(double angularFrequency) const
 {
-	/*m_flowCurrent = 0.0;
-	for (Element* element : m_elements)
+
+	Complex flowCurrent = 0.0;
+	for (std::list<Element*>::const_iterator it = m_elements.begin(); it != m_elements.end(); it++)
 	{
-		m_flowCurrent = m_flowCurrent + element->getCurrent();
-	}*/
+	Element* element = (*it);
+	switch (element->getType())
+	{
+	case ElementType::Resistor:
+		flowCurrent += ((Resistor*)element)->getCurrent().getComponentWiseAbs();
+		break;
+	case ElementType::Inductor:
+		flowCurrent += ((Capacitor*)element)->getCurrent(angularFrequency).getComponentWiseAbs();
+		break;
+	case ElementType::Capacitor:
+		flowCurrent += ((Inductor*)element)->getCurrent(angularFrequency).getComponentWiseAbs();
+		break;
+	case ElementType::CS:
+		flowCurrent += ((CurrentSource*)element)->getSupplyCurrent().getComponentWiseAbs();
+		break;
+	case ElementType::VS:
+		flowCurrent += ((VoltageSource*)element)->getCurrent().getComponentWiseAbs();
+		break;
+	case ElementType::VCCS:
+		flowCurrent += ((VCCS*)element)->getSupplyCurrent().getComponentWiseAbs();
+		break;
+	case ElementType::VCVS:
+		flowCurrent += ((VCVS*)element)->getCurrent().getComponentWiseAbs();
+		break;
+	case ElementType::CCCS:
+		flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+		break;
+	case ElementType::CCVS:
+		flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+		break;
+	}
+}
+return flowCurrent / 2.0;
 }
 
 //Elements
@@ -75,4 +115,15 @@ Node* Node::createNode(const std::string& nodeName)
 	Node* node = new Node(nodeName);
 	nodesMap.emplace(nodeName, node);
 	return node;
+}
+void Node::deleteAllNodes()
+{
+	for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+		delete it->second;
+}
+
+void Node::fillNodesFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap)
+{
+	for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+		it->second->fillFromVector(vector, nodeIndexMap);
 }

@@ -20,7 +20,8 @@ protected: //Static Voltage Sources List
 public://Static Voltage Sources List methods
 	static inline const std::list<VoltageSource*>& getVoltageSourceList() { return voltageSources; }
 	static inline size_t getVoltageSrcsCount() { return voltageSources.size(); }
-
+	static inline void clearVoltageSources() { voltageSources.clear(); }
+	static void fillVoltageSourcesFromVector(Complex* vector, std::map<std::string, size_t>& voltageIndexMap);
 public: //Static Voltage Source creation
 	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
 

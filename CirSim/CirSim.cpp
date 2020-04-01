@@ -229,7 +229,7 @@ void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, 
 	}
 	//"<ElementType>[" < ElementName > "]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
 		//you can output based on the element: powe dissipated or power supplied or power stored
-	std::map<std::string, Element*> elementMap = Element::getElementMap();
+	std::map<std::string, Element*> elementMap = Element::getElementsMap();
 	std::map<std::string, Element*>::iterator it1;
 	bool Dissipating;
 	double power;

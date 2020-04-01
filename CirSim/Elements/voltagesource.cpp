@@ -100,3 +100,9 @@ void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t mat
 	matrix[posIdx * matrixWidth + voltageSourceIdx] -= totalCurrentFactor;
 	matrix[negIdx * matrixWidth + voltageSourceIdx] += totalCurrentFactor;
 }
+
+void VoltageSource::fillVoltageSourcesFromVector(Complex* vector, std::map<std::string, size_t>& voltageIndexMap)
+{
+	for (std::list<VoltageSource*>::iterator it = voltageSources.begin(); it != voltageSources.end(); it++)
+		(*it)->fillFromVector(vector, voltageIndexMap);
+}

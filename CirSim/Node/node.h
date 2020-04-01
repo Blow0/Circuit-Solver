@@ -17,13 +17,15 @@ private:
 	std::string m_name;
 	std::list<Element*> m_elements;
 	Complex m_nodalVoltage;
-	Complex m_flowCurrent;
 
 public: //Static Nodes Map Methods
 	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
 	static inline Node* getNode(const std::string& nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }
 	static inline size_t getNodesCount() { return nodesMap.size(); }
-	static std::map<std::string, Node*> getNodesMap() { return nodesMap; }
+	static const std::map<std::string, Node*> getNodesMap() { return nodesMap; }
+	static inline void clearNodes() { nodesMap.clear(); }
+	static void deleteAllNodes();
+	static void fillNodesFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap);
 
 public: //Static Node Creation
 	static Node* createNode(const std::string& nodeName);
@@ -34,9 +36,6 @@ private: //Constructors
 
 public: //Matrix Operations
 	void fillFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap) { m_nodalVoltage = vector[nodeIndexMap[m_name]]; }
-
-public: //Computers
-	void computeFlowCurrent();
 
 public: //Logic
 	inline bool operator==(const Node& rhs) const { return rhs.m_name == m_name; }
@@ -53,8 +52,7 @@ public: //Setters
 public: //Getters
 	inline const std::string& getName() const { return m_name; }
 	inline Complex getNodalVoltage() const { return m_nodalVoltage; }
-	inline Complex getFlowCurrent() const { return m_flowCurrent; }
-
+	Complex getFlowCurrent(double angularFrequency) const;
 	Node(const Node&) = delete;
 	void operator=(const Node&) = delete;
 };
