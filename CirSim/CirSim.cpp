@@ -45,11 +45,6 @@ int main()
 TODO:
 	Toqa
 	----
-	1. Auto detect for ground. //Done
-		Check if any of the nodes has the name "ground" or "gnd" or "0" whoever comes first is the gnd
-		If non found then take the first Source (current or voltage) negative terminal to be gnd
-		If no sources found take the first node to be gnd
-
 	2. Decent Input.
 		1. Ask for circuit elements and create circuit //Already done
 		2. Ask for frequency //Done
@@ -58,14 +53,6 @@ TODO:
 		5. GoTo 2 or 1 based on user choice 
 			[don't forget to delete all elements then nodes before asking for another circuit]
 			[no need to delete anything otherthan clearing matrix if just the frequency has changed]
-
-	3. Decent Output on the form:
-		For each node:
-			"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
-		For each element:
-			"<ElementType>["<ElementName>"]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
-			//you can output based on the element: powe dissipated or power supplied or power stored
-
 
 	Adham
 	-----
