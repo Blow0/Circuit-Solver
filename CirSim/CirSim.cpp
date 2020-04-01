@@ -1,8 +1,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <stdlib.h>
 #include "cirsimdef.h"
+//Circuit data
+Node* gndNode;
+std::map<std::string, size_t> nodesIndexMap;
+std::map<std::string, size_t> voltageSourcesIndexMap;
 
 //Circuit data
 Node* gndNode;
@@ -42,30 +46,30 @@ void splitString(const std::string& str, const std::string& delimiter, std::vect
 
 int main()
 {
-	/*std::cout << "1. Create New Circuit." << std::endl;
-	std::cout << "2. Enter Frequency." << std::endl;
-	std::cout << "3. Exit." << std::endl;
-	unsigned int input;
-	std::cin >> input;
-	std::string detectedGnd;
-	double angularFrequency;
-	while (input != 3)
+	unsigned int choice = 0;
+	double frequency;
+	while (choice != 3)
 	{
-		switch (input)
+		system("ClS");
+		std::cout << "1. Create New Circuit\n2. Enter the Angular Frequency\n3.Exit\n";
+		std::cin >> choice;
+		switch (choice)
 		{
-		case 1: //Create the circuit
-			detectedGnd = takeInputAndBuildCircuit();
+		case 1:
+			takeInputAndBuildCircuit();
+			analyzeCircuit();
 			break;
 		case 2:
-			std::cout << "Please Enter the Frequency: ";
-			std::cin >> angularFrequency;
-			analyzeCircuitAndGiveOutput(detectedGnd, angularFrequency);
+			system("ClS");
+			std::cout << "Enter Frequency: ";
+			std::cin >> frequency;
+			solveCircuit(frequency);
 			break;
 		case 3:
-			break;
+			return 0;
 		}
-		std::cin >> input;
-	}*/
+	}
+	system("PAUSE");
 	return 0;
 }
 
@@ -158,6 +162,7 @@ void takeInputAndBuildCircuit()
 			break;
 		}
 	}
+
 }
 void analyzeCircuit()
 {
@@ -272,6 +277,122 @@ Node* getGroundNode()
 	}
 	return nullptr;
 }
+void showOutput(double angularFrequency)
+{
+	system("CLS");
+	std::map<std::string, Node*> nodesMap = Node::getNodesMap();
+	for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+	{
+		std::cout << "Node[" << it->first << "]:	" << "Nodal_Voltage = "
+			<< Complex::complexToPolarString(it->second->getNodalVoltage(), true) << std::endl;
+	}
+	std::map<std::string, Element*>elementMap = Element::getElementsMap();
+	for (std::map<std::string, Element*>::iterator it = elementMap.begin(); it != elementMap.end(); it++)
+	{
+		//Element type to string
+
+		Complex voltageDiff, current, power;
+		std::string type;
+		bool dissipating = false;
+		switch (it->second->getType())
+		{
+		case ElementType::Resistor:
+		{
+			type = "R";
+			Resistor* resistor = static_cast<Resistor*> (it->second);
+			voltageDiff = resistor->getVoltageDiff();
+			current = resistor->getCurrent();
+			power = resistor->getPowerDissipated();
+			dissipating = true;
+			break;
+		}
+		case ElementType::Capacitor:
+		{
+			type = "C";
+			Capacitor* capacitor = static_cast<Capacitor*> (it->second);
+			voltageDiff = capacitor->getVoltageDiff();
+			current = capacitor->getCurrent(angularFrequency);
+			power = capacitor->getPowerDissipated(angularFrequency);
+			dissipating = true;
+			break;
+		}
+		case ElementType::Inductor:
+		{	
+			type = "L";
+			Inductor* inductor = static_cast<Inductor*> (it->second);
+			voltageDiff = inductor->getVoltageDiff();
+			current = inductor->getCurrent(angularFrequency);
+			power = inductor->getPowerDissipated(angularFrequency);
+			dissipating = true;
+			break;
+		}
+		case ElementType::CS:
+		{	
+			type = "CS";
+			CurrentSource* cs = static_cast<CurrentSource*> (it->second);
+			voltageDiff = cs->getVoltageDiff();
+			current = cs->getCurrent();
+			power = cs->getTotalPowerSupplied();
+			break;
+		}
+		case ElementType::VS:
+		{	
+			type = "VS";
+			VoltageSource* vs = static_cast<VoltageSource*> (it->second);
+			voltageDiff = vs->getVoltageDiff();
+			current = vs->getCurrent();
+			power = vs->getTotalPowerSupplied();
+			break;
+		}
+		case ElementType::CCCS:
+		{
+			type = "CCCS";
+			CCCS* cccs = static_cast<CCCS*> (it->second);
+			voltageDiff = cccs->getVoltageDiff();
+			current = cccs->getCurrent();
+			power = cccs->getTotalPowerSupplied();
+			break;
+		}
+		case ElementType::VCCS:
+		{
+			type = "VCCS";
+			VCCS* vccs = static_cast<VCCS*> (it->second);
+			voltageDiff = vccs->getVoltageDiff();
+			current = vccs->getCurrent();
+			power = vccs->getTotalPowerSupplied();
+			break;
+		}
+		case ElementType::CCVS:
+		{
+			type = "CCVS";
+			CCVS* ccvs = static_cast<CCVS*> (it->second);
+			voltageDiff = ccvs->getVoltageDiff();
+			current = ccvs->getCurrent();
+			power = ccvs->getTotalPowerSupplied();
+			break;
+		}
+		case ElementType::VCVS:
+		{
+			type = "VCVS";
+			VCVS* vcvs = static_cast<VCVS*> (it->second);
+			voltageDiff = vcvs->getVoltageDiff();
+			current = vcvs->getCurrent();
+			power = vcvs->getTotalPowerSupplied();
+			break;
+		}
+		}
+		//Determine if source is supplying or dissipating
+		(power.getReal() < 0.0 && !dissipating)? dissipating = false : dissipating = true;
+
+		std::cout << type <<"[" << it->first << "]:	";
+		std::cout << "Voltage_Difference = " << Complex::complexToPolarString(voltageDiff, true)
+			<< "\t Current = " << Complex::complexToPolarString(current, true)
+			<< "\n Power " << (dissipating ? "Dissipated" : "Supplied") << " = ";
+			std::cout<< Complex::complexToPolarString(power, true)<<std::endl;
+
+	}
+	system("PAUSE");
+}
 Complex* SolveSystem(Complex* matrix, size_t height)
 {
 	Complex tempFactor;
@@ -310,71 +431,6 @@ Complex* SolveSystem(Complex* matrix, size_t height)
 	for (i = 0; i < height; i++)
 		solutions[i] = matrix[i * width + height] / matrix[i * width + i];
 	return solutions;
-}
-void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency)
-{
-	/*std::map<std::string, size_t>::iterator it;
-	//"Node["<NodeName>"]:      Nodal_Voltage = <NodeVoltage>"
-	for (it = nodeIndexMap.begin(); it != nodeIndexMap.end(); it++)
-	{
-		std::cout << "Node[<" << it->first << ">]" << ":   " << "Nodal_Voltage = ";
-		std::cout << solutions[it->second].getMagnitude() << "<" << solutions[it->second].getPhase() << std::endl;
-	}
-	//"<ElementType>[" < ElementName > "]:      Voltage_Difference = <VoltageDiff>      Current = <Current>"
-		//you can output based on the element: powe dissipated or power supplied or power stored
-	const std::map<std::string, Element*>& elementMap = Element::getElementMap();
-	std::map<std::string, Element*>::iterator it1;
-	bool Dissipating;
-	double power;
-	for (it1 = elementMap.begin(); it1 != elementMap.end(); it1++)
-	{
-		Dissipating = false;
-		std::cout << "<";
-		switch (it1->second->getType())
-		{
-		case ElementType::Resistor:
-			std::cout << "R";
-			Dissipating = true;
-			break;
-		case ElementType::Capacitor:
-			std::cout << "C";
-			Dissipating = true;
-			break;
-		case ElementType::Inductor:
-			std::cout << "L";
-			Dissipating = true;
-			break;
-		case ElementType::CS:
-			std::cout << "CS";
-			break;
-		case ElementType::CCCS:
-			std::cout << "CCCS";
-			break;
-		case ElementType::CCVS:
-			std::cout << "CCVS";
-			break;
-		case ElementType::VS:
-			std::cout << "VS";
-			break;
-		case ElementType::VCCS:
-			std::cout << "VCCS";
-			break;
-		case ElementType::VCVS:
-			std::cout << "VCVS";
-			break;
-		}
-		std::cout << ">[" << it1->first << "]:   ";
-		std::cout << "Voltage_Difference = " << it1->second->getVoltageDiff().getMagnitude() << "<"
-			<< it1->second->getVoltageDiff().getPhase() << "      ";
-		std::cout << "Current = " << it1->second->getCurrent(angularFrequency).getMagnitude() << "<"
-			<< it1->second->getCurrent(angularFrequency).getPhase();
-		std::cout << "Power = ";
-		if (Dissipating)
-			power = it1->second->getPowerDissipated(angularFrequency).getReal();
-		else
-			power = it1->second->getTotalPowerSupplied().getReal();
-		std::cout << power << std::endl;
-	}*/
 }
 void clearCircuit()
 {

@@ -71,7 +71,7 @@ public: //Creators
 			{
 				size_t plusPos = str.find('+', 1);
 				size_t subPos = str.find('-', 1);
-		
+
 				if (plusPos != std::string::npos) //Complex
 				{
 					std::string real;
@@ -264,7 +264,7 @@ public: //Creators
 				imag *= 1.0e-12;
 				break;
 			}
-			
+
 			if (abs(real) >= DBL_EPSILON)
 			{
 				stream << std::fixed << real;
@@ -314,7 +314,7 @@ public: //Creators
 		}
 		else
 			stream << std::fixed << 0.0;
-		
+
 		return stream.str();
 	}
 	static std::string complexToPolarString(Complex complex, bool deg)

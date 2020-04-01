@@ -33,6 +33,7 @@
     <ClCompile Include="Node\node.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cirsimdef.h" />
     <ClInclude Include="Elements\capacitor.h" />
     <ClInclude Include="Elements\cccs.h" />
     <ClInclude Include="Elements\ccvs.h" />
