@@ -81,7 +81,6 @@ r R3 2 3 5
 r R4 3   4 6
 end
 */
-
 void takeInputAndBuildCircuit()
 {
 	//Input temp. values
@@ -277,7 +276,8 @@ Node* getGroundNode()
 	}
 	return nullptr;
 }
-void showOutput(double angularFrequency)
+
+void showOutput(Complex* solutions, std::map<std::string, size_t> nodeIndexMap, double angularFrequency)
 {
 	system("CLS");
 	std::map<std::string, Node*> nodesMap = Node::getNodesMap();
