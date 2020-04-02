@@ -158,36 +158,42 @@ public: //Creators
 		else //Polar
 		{
 			std::string magSt = str.substr(0, anglePos);
-			double mag = stod(magSt.substr(0, anglePos - 1));
-			switch (magSt.back())
-			{
-			case 'p':
-				mag *= 1.0e-12;
-				break;
-			case 'n':
-				mag *= 1.0e-9;
-				break;
-			case 'u':
-				mag *= 1.0e-6;
-				break;
-			case 'm':
-				mag *= 1.0e-3;
-				break;
-			case 'K':
-				mag *= 1.0e3;
-				break;
-			case 'M':
-				mag *= 1.0e6;
-				break;
-			case 'G':
-				mag *= 1.0e9;
-				break;
-			case 'T':
-				mag *= 1.0e12;
-				break;
-			default:
-				mag = stod(magSt);
+			double mag = 0.0;
+			if (magSt.length() > 1)
+			{ 
+				mag = stod(magSt.substr(0, anglePos - 1));
+				switch (magSt.back())
+				{
+				case 'p':
+					mag *= 1.0e-12;
+					break;
+				case 'n':
+					mag *= 1.0e-9;
+					break;
+				case 'u':
+					mag *= 1.0e-6;
+					break;
+				case 'm':
+					mag *= 1.0e-3;
+					break;
+				case 'K':
+					mag *= 1.0e3;
+					break;
+				case 'M':
+					mag *= 1.0e6;
+					break;
+				case 'G':
+					mag *= 1.0e9;
+					break;
+				case 'T':
+					mag *= 1.0e12;
+					break;
+				default:
+					mag = stod(magSt);
+				}
 			}
+			else
+				mag = stod(magSt);
 
 			std::string angleSt = str.substr(anglePos + 1);
 			double angle;

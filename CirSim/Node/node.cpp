@@ -49,17 +49,17 @@ Complex Node::getFlowCurrent(double angularFrequency) const
 		case ElementType::VS:
 			flowCurrent += ((VoltageSource*)element)->getCurrent().getComponentWiseAbs();
 			break;
-		case ElementType::VCCS:
-			flowCurrent += ((VCCS*)element)->getSupplyCurrent().getComponentWiseAbs();
-			break;
-		case ElementType::VCVS:
-			flowCurrent += ((VCVS*)element)->getCurrent().getComponentWiseAbs();
-			break;
 		case ElementType::CCCS:
 			flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
 			break;
 		case ElementType::CCVS:
 			flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+			break;
+		case ElementType::VCCS:
+			flowCurrent += ((VCCS*)element)->getSupplyCurrent().getComponentWiseAbs();
+			break;
+		case ElementType::VCVS:
+			flowCurrent += ((VCVS*)element)->getCurrent().getComponentWiseAbs();
 			break;
 		}
 	}
