@@ -35,13 +35,13 @@ Complex Node::getFlowCurrent(double angularFrequency) const
 		switch (element->getType())
 		{
 		case ElementType::Resistor:
-			flowCurrent += ((Resistor*)element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Resistor*>(element)->getCurrent().getComponentWiseAbs();
 			break;
 		case ElementType::Inductor:
-			flowCurrent += ((Capacitor*)element)->getCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Inductor*>(element)->getCurrent(angularFrequency).getComponentWiseAbs();
 			break;
 		case ElementType::Capacitor:
-			flowCurrent += ((Inductor*)element)->getCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Capacitor*>(element)->getCurrent(angularFrequency).getComponentWiseAbs();
 			break;
 		case ElementType::CS:
 			flowCurrent += ((CurrentSource*)element)->getSupplyCurrent().getComponentWiseAbs();
@@ -50,16 +50,16 @@ Complex Node::getFlowCurrent(double angularFrequency) const
 			flowCurrent += ((VoltageSource*)element)->getCurrent().getComponentWiseAbs();
 			break;
 		case ElementType::CCCS:
-			flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<CCCS*>(element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
 			break;
 		case ElementType::CCVS:
-			flowCurrent += ((CCCS*)element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<CCVS*>(element)->getCurrent().getComponentWiseAbs();
 			break;
 		case ElementType::VCCS:
-			flowCurrent += ((VCCS*)element)->getSupplyCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<VCCS*>(element)->getSupplyCurrent().getComponentWiseAbs();
 			break;
 		case ElementType::VCVS:
-			flowCurrent += ((VCVS*)element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<VCVS*>(element)->getCurrent().getComponentWiseAbs();
 			break;
 		}
 	}

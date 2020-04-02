@@ -150,10 +150,10 @@ int main()
 
 /*
 cs I1 1 4 20<1.02rad
-r R1 1   4 8
+r R1 1 4 8
 r R2 1 2 4
 r R3 2 3 5
-r R4 3   4 6
+r R4 3 4 6
 end
 */
 void takeInputAndBuildCircuit()
@@ -451,7 +451,7 @@ void showOutput()
 		{
 			case ElementType::Resistor:
 			{
-				Resistor* resistor = static_cast<Resistor*>(it->second);
+				Resistor* resistor = dynamic_cast<Resistor*>(it->second);
 				std::cout << "Resistor[" << resistor->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(resistor->getCurrent(), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(resistor->getVoltageDiff(), true) << std::endl;
@@ -460,7 +460,7 @@ void showOutput()
 			}
 			case ElementType::Inductor:
 			{	
-				Inductor* inductor = static_cast<Inductor*>(it->second);
+				Inductor* inductor = dynamic_cast<Inductor*>(it->second);
 				std::cout << "Capacitor[" << inductor->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(inductor->getCurrent(angularFrequency), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(inductor->getVoltageDiff(), true) << std::endl;
@@ -469,7 +469,7 @@ void showOutput()
 			}
 			case ElementType::Capacitor:
 			{
-				Capacitor* capacitor = static_cast<Capacitor*>(it->second);
+				Capacitor* capacitor = dynamic_cast<Capacitor*>(it->second);
 				std::cout << "Capacitor[" << capacitor->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(capacitor->getCurrent(angularFrequency), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(capacitor->getVoltageDiff(), true) << std::endl;
@@ -478,7 +478,7 @@ void showOutput()
 			}
 			case ElementType::CS:
 			{	
-				CurrentSource* currentSource = static_cast<CurrentSource*>(it->second);
+				CurrentSource* currentSource = dynamic_cast<CurrentSource*>(it->second);
 				std::cout << "CurrentSource[" << currentSource->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(currentSource->getCurrent(), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(currentSource->getVoltageDiff(), true) << std::endl;
@@ -487,7 +487,7 @@ void showOutput()
 			}
 			case ElementType::VS:
 			{	
-				VoltageSource* voltageSource = static_cast<VoltageSource*>(it->second);
+				VoltageSource* voltageSource = dynamic_cast<VoltageSource*>(it->second);
 				std::cout << "VoltageSource[" << voltageSource->getName() << "]:" << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(voltageSource->getVoltageDiff(), true) << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(voltageSource->getCurrent(), true) << std::endl;
@@ -496,16 +496,16 @@ void showOutput()
 			}
 			case ElementType::CCCS:
 			{
-				CCCS* cccs = static_cast<CCCS*>(it->second);
+				CCCS* cccs = dynamic_cast<CCCS*>(it->second);
 				std::cout << "CCCS[" << cccs->getName() << "]:" << std::endl;
-				std::cout << "\tCurrent = " << Complex::complexToPolarString(cccs->getCurrent(), true) << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(cccs->getCurrent(angularFrequency), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(cccs->getVoltageDiff(), true) << std::endl;
 				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(cccs->getTotalPowerSupplied(angularFrequency), true) << std::endl << std::endl;
 				break;
 			}
 			case ElementType::CCVS:
 			{
-				CCVS* ccvs = static_cast<CCVS*>(it->second);
+				CCVS* ccvs = dynamic_cast<CCVS*>(it->second);
 				std::cout << "CCVS[" << ccvs->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(ccvs->getCurrent(), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(ccvs->getVoltageDiff(), true) << std::endl;
@@ -514,7 +514,7 @@ void showOutput()
 			}
 			case ElementType::VCCS:
 			{
-				VCCS* vccs = static_cast<VCCS*>(it->second);
+				VCCS* vccs = dynamic_cast<VCCS*>(it->second);
 				std::cout << "VCCS[" << vccs->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(vccs->getCurrent(), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vccs->getVoltageDiff(), true) << std::endl;
@@ -523,7 +523,7 @@ void showOutput()
 			}
 			case ElementType::VCVS:
 			{
-				VCVS* vcvs = static_cast<VCVS*>(it->second);
+				VCVS* vcvs = dynamic_cast<VCVS*>(it->second);
 				std::cout << "VCVS[" << vcvs->getName() << "]:" << std::endl;
 				std::cout << "\tCurrent = " << Complex::complexToPolarString(vcvs->getCurrent(), true) << std::endl;
 				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vcvs->getVoltageDiff(), true) << std::endl;
