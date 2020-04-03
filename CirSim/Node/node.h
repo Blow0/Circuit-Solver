@@ -19,10 +19,10 @@ private:
 	Complex m_nodalVoltage;
 
 public: //Static Nodes Map Methods
-	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
+	static inline const std::map<std::string, Node*>& getNodesMap() { return nodesMap; }
 	static inline Node* getNode(const std::string& nodeName) { return nodeExists(nodeName) ? nodesMap[nodeName] : nullptr; }
+	static inline bool nodeExists(const std::string& nodeName) { return (nodesMap.find(nodeName) != nodesMap.end()); }
 	static inline size_t getNodesCount() { return nodesMap.size(); }
-	static const std::map<std::string, Node*> getNodesMap() { return nodesMap; }
 	static inline void clearNodes() { nodesMap.clear(); }
 	static void deleteAllNodes();
 	static void fillNodesFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap);
@@ -53,6 +53,7 @@ public: //Getters
 	inline const std::string& getName() const { return m_name; }
 	inline Complex getNodalVoltage() const { return m_nodalVoltage; }
 	Complex getFlowCurrent(double angularFrequency) const;
+
 	Node(const Node&) = delete;
 	void operator=(const Node&) = delete;
 };

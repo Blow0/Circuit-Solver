@@ -97,31 +97,31 @@ Complex CCVS::getControlCurrent(double angularFrequency) const
 	switch (controlElement->getType())
 	{
 	case ElementType::Resistor:
-		current = ((Resistor*)controlElement)->getCurrent();
+		current = dynamic_cast<Resistor*>(controlElement)->getCurrent();
 		break;
 	case ElementType::Inductor:
-		current = ((Inductor*)controlElement)->getCurrent(angularFrequency);
+		current = dynamic_cast<Inductor*>(controlElement)->getCurrent(angularFrequency);
 		break;
 	case ElementType::Capacitor:
-		current = ((Capacitor*)controlElement)->getCurrent(angularFrequency);
-		break;
-	case ElementType::VS:
-		current = ((VoltageSource*)controlElement)->getCurrent();
+		current = dynamic_cast<Capacitor*>(controlElement)->getCurrent(angularFrequency);
 		break;
 	case ElementType::CS:
-		current = ((CurrentSource*)controlElement)->getCurrent();
+		current = dynamic_cast<CurrentSource*>(controlElement)->getCurrent();
 		break;
-	case ElementType::VCVS:
-		current = ((VCVS*)controlElement)->getCurrent();
-		break;
-	case ElementType::VCCS:
-		current = ((VCCS*)controlElement)->getCurrent();
-		break;
-	case ElementType::CCVS:
-		current = ((CCVS*)controlElement)->getCurrent();
+	case ElementType::VS:
+		current = dynamic_cast<VoltageSource*>(controlElement)->getCurrent();
 		break;
 	case ElementType::CCCS:
-		current = ((CCCS*)controlElement)->getCurrent();
+		current = dynamic_cast<CCCS*>(controlElement)->getCurrent(angularFrequency);
+		break;
+	case ElementType::CCVS:
+		current = dynamic_cast<CCVS*>(controlElement)->getCurrent();
+		break;
+	case ElementType::VCCS:
+		current = dynamic_cast<VCCS*>(controlElement)->getCurrent();
+		break;
+	case ElementType::VCVS:
+		current = dynamic_cast<VCVS*>(controlElement)->getCurrent();
 		break;
 	}
 	return getCurrentFactor() * current;

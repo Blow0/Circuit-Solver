@@ -22,6 +22,7 @@ public://Static Voltage Sources List methods
 	static inline size_t getVoltageSrcsCount() { return voltageSources.size(); }
 	static inline void clearVoltageSources() { voltageSources.clear(); }
 	static void fillVoltageSourcesFromVector(Complex* vector, std::map<std::string, size_t>& voltageIndexMap);
+
 public: //Static Voltage Source creation
 	static VoltageSource* createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance = 0);
 
@@ -47,7 +48,7 @@ public: //Getters
 	inline Complex getInternalImpedance() const { return m_internalImpedance; }
 	inline Complex getCurrent() const { return m_current; }
 	inline Complex getVoltageDiff() const { return m_posNode->getNodalVoltage() - m_negNode->getNodalVoltage(); }
-	inline virtual Complex getSupplyVoltage() const { return m_supplyVoltage; }
+	inline Complex getSupplyVoltage() const { return m_supplyVoltage; }
 	inline Complex getPowerSupplied() const { return m_current * getSupplyVoltage(); }
 	inline Complex getPowerDissipated() const { return m_internalImpedance * getCurrent().getMagnitudeSqr(); }
 	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }

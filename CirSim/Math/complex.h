@@ -157,62 +157,67 @@ public: //Creators
 		}
 		else //Polar
 		{
-		
-		std::string magSt = str.substr(0, anglePos);
-		double mag = stod(magSt.substr(0, anglePos));
-		switch (magSt.back())
-		{
-		case 'p':
-			mag *= 1.0e-12;
-			break;
-		case 'n':
-			mag *= 1.0e-9;
-			break;
-		case 'u':
-			mag *= 1.0e-6;
-			break;
-		case 'm':
-			mag *= 1.0e-3;
-			break;
-		case 'K':
-			mag *= 1.0e3;
-			break;
-		case 'M':
-			mag *= 1.0e6;
-			break;
-		case 'G':
-			mag *= 1.0e9;
-			break;
-		case 'T':
-			mag *= 1.0e12;
-			break;
-		default:
-			mag = stod(magSt);
-		}
+			std::string magSt = str.substr(0, anglePos);
+			double mag = 0.0;
+			if (magSt.length() > 1)
+			{ 
+				mag = stod(magSt.substr(0, anglePos - 1));
+				switch (magSt.back())
+				{
+				case 'p':
+					mag *= 1.0e-12;
+					break;
+				case 'n':
+					mag *= 1.0e-9;
+					break;
+				case 'u':
+					mag *= 1.0e-6;
+					break;
+				case 'm':
+					mag *= 1.0e-3;
+					break;
+				case 'K':
+					mag *= 1.0e3;
+					break;
+				case 'M':
+					mag *= 1.0e6;
+					break;
+				case 'G':
+					mag *= 1.0e9;
+					break;
+				case 'T':
+					mag *= 1.0e12;
+					break;
+				default:
+					mag = stod(magSt);
+				}
+			}
+			else
+				mag = stod(magSt);
 
-		std::string angleSt = str.substr(anglePos + 1);
-		double angle;
-		size_t radPos = angleSt.find("rad");
-		size_t degPos = angleSt.find("deg");
-		if (radPos != std::string::npos)
-		{
-			if (degPos != std::string::npos) //first
+			std::string angleSt = str.substr(anglePos + 1);
+			double angle;
+			size_t radPos = angleSt.find("rad");
+			size_t degPos = angleSt.find("deg");
+			if (radPos != std::string::npos)
 			{
-				if (degPos < radPos)
-					angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
-				else
+				if (degPos != std::string::npos) //first
+				{
+					if (degPos < radPos)
+						angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
+					else
+						angle = stod(angleSt.substr(0, radPos));
+				}
+				else //rad
 					angle = stod(angleSt.substr(0, radPos));
 			}
-			else //rad
-				angle = stod(angleSt.substr(0, radPos));
-		}
-		else
-		{
-			if (degPos != std::string::npos) //deg
-				angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
-			else //default - deg
-				angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
-		}
+			else
+			{
+				if (degPos != std::string::npos) //deg
+					angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
+				else //default - deg
+					angle = stod(angleSt.substr(0, degPos)) * (PI / 180.0);
+			}
 
 			complex.setPolar(mag, angle);
 		}
@@ -373,6 +378,7 @@ public: //Creators
 			stream << std::fixed << 0.0;
 		return stream.str();
 	}
+
 public: //Setters
 	inline void setCartesian(double real, double imag)		 { m_real = real; m_imag = imag; }
 	inline void setReal		(double real)					 { m_real = real; }
@@ -391,6 +397,7 @@ public: //Getters
 	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) / (mag >= DBL_EPSILON ? mag : 1.0); }
 	inline Complex getInverse()		 const { return getComplement().getNormalized(); }
 	inline Complex getComponentWiseAbs()	const { return Complex(abs(m_real), abs(m_imag)); }
+
 public: //Methods
 	inline void invert();
 	inline void normalize();
@@ -446,6 +453,7 @@ void Complex::componentWiseAbs()
 	m_real = abs(m_real);
 	m_imag = abs(m_imag);
 }
+
 //Operations
 Complex Complex::operator-() const
 {

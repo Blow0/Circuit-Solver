@@ -35,8 +35,12 @@ public: //Getters
 	inline Node* getControlPosNode() const { Node* node = Node::getNode(m_controlPosNode); if (node == nullptr) throw std::runtime_error("VCCS: Couldn't find ControlPosNode"); return node; }
 	inline Node* getControlNegNode() const { Node* node = Node::getNode(m_controlNegNode); if (node == nullptr) throw std::runtime_error("VCCS: Couldn't find ControlNegNode"); return node; }
 	inline Complex getVoltageFactor() const { return m_voltageFactor; }
-	inline Complex getSupplyCurrent() const { return m_voltageFactor * getControlVoltage(); }
 	inline Complex getControlVoltage() const { return getControlPosNode()->getNodalVoltage() - getControlNegNode()->getNodalVoltage(); }
+	inline Complex getCurrent() const { return (getSupplyCurrent() - getVoltageDiff() * m_internalAdmittance); }
+	inline Complex getSupplyCurrent() const { return m_voltageFactor * getControlVoltage(); }
+	inline Complex getPowerSupplied() const { return getSupplyCurrent() * getVoltageDiff(); }
+	inline Complex getPowerDissipated() const { return m_internalAdmittance * getVoltageDiff().getMagnitudeSqr(); }
+	inline Complex getTotalPowerSupplied() const { return getPowerSupplied() - getPowerDissipated(); }
 
 	VCCS(const VCCS&) = delete;
 	void operator=(const VCCS&) = delete;
