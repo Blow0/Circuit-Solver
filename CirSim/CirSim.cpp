@@ -20,6 +20,8 @@ void takeInputAndBuildCircuit();
 //Takes input frequency from user.
 void takeInputFrequency();
 
+//Edits Existing Circuit
+void editExistringCircuit();
 //Analyzes the circuit.
 //Fills circuit data.
 void analyzeCircuit();
@@ -121,13 +123,16 @@ int main()
 			solveCircuit();
 			break;
 		case 2:
-			//Clear Circuit Analysis
-			clearCircuitAnalysis();
-			//Take circuit elements from user
-			takeInputAndBuildCircuit();
-			//Analyze circuit
-			analyzeCircuit();
-			//Solve Circuit
+			//Change gndNode or Edit elements
+			try
+			{
+			editExistringCircuit();
+			}
+			catch (const char* exception)
+			{
+				std::cerr << "Error: " << exception << std::endl;
+			}
+			//Solve circuit
 			solveCircuit();
 			break;
 		case 3:
@@ -307,6 +312,63 @@ void takeInputFrequency()
 			return;
 		}
 	}
+}
+void editExistringCircuit()
+{
+	size_t choice;
+
+	while (true)
+	{
+		//Clear Output
+		system("CLS");
+
+		//Give user Options
+		std::cout << "1. Edit Ground Node" << std::endl;
+		std::cout << "2. Edit Circuit Element(s)" << std::endl;
+		std::cout << "3. Exit" << std::endl;
+
+		if (!(std::cin >> choice))
+		{
+			//Bad Input
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			continue;
+		}
+
+		switch (choice)
+		{
+		case 1:
+		{
+			std::string nodeName;
+			Node* node;
+			std::cin >> nodeName;
+			node = Node::getNode(nodeName);
+			if (node == nullptr)
+				throw "Node Not Found!";
+			gndNode = node;
+			break;
+		}
+		case 2:
+		{
+			std::string type, name, line;
+			std::cout << "Enter the Type of The Element and its Name" << std::endl;
+			std::cin >> type >> name;
+			name = type + name;
+			Element* editedElement = Element::getElement(name);
+			std::map<std::string, Element*> elementMap = Element::getElementsMap();
+			if (editedElement == nullptr)
+				throw "Element Not Found!";
+			elementMap.erase(name);
+			takeInputAndBuildCircuit();
+			analyzeCircuit();
+			break;
+		}
+		case 3:
+			return;
+		}
+	}
+
+
 }
 void analyzeCircuit()
 {
