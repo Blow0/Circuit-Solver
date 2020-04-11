@@ -350,7 +350,7 @@ void editExistringCircuit()
 		}
 		case 2:
 		{
-			std::string type, name, line;
+			std::string type, name;
 			std::cout << "Enter the Type of The Element and its Name" << std::endl;
 			std::cin >> type >> name;
 			name = type + name;
