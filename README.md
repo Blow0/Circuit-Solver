@@ -9,16 +9,27 @@ current through, and power supplied/dissipated for **each element** in the circu
   
 This application uses **Netlist** to desribe the circuit.
 
-**Input Format:**
+### Input Format:
 
 *elementType    elementName   positiveNode   negativeNode   elementValue    phase   internalResistance*
 
 for ex.:
  *R A1 1 2 50*
  
-**Note that:** 
+**Note** 
 
-*phase& InternalResistance* is optional for Active elements (the App. assumes the phase is zero if not entered).
+* *Element Types*: 
+  * R Resistance 
+  * C Capacitor 
+  * L Inductor 
+  * VS Voltage Source
+  * CS Current Source
+  * VCVS Voltage Controlled Voltage Source
+  * VCCS Voltage Controlled Current Source
+  * CCVS Current Controleed Voltage Source
+  * CCCS Current Controlled Current Source
+
+* *phase& InternalResistance* is optional for Active elements (the App. assumes the phase is zero if not entered).
 
 **For Voltage Dep. Sources:**
 
@@ -28,4 +39,3 @@ for ex.:
 
 same as Voltage Dep. sources but instead of the controlling nodes, just enter the controlling Element's name.
 
-## Examples:
