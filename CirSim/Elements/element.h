@@ -36,6 +36,7 @@ public: //Static Elements Map Methods
 	static inline bool elementExists(const std::string& elementName) { return (elementsMap.find(elementName) != elementsMap.end()); }
 	static inline size_t getElementsCount() { return elementsMap.size(); }
 	static inline void clearElements() { elementsMap.clear(); }
+	static inline void clearElement(const std::string& elementName) { elementsMap.erase(elementName); }
 	static void deleteAllElements();
 	static void loadElementsIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency);
 
