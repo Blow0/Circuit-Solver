@@ -8,7 +8,7 @@ Resistor::Resistor(const std::string& name, Node& posNode, Node& negNode, double
 	: Element(name, ElementType::Resistor)
 	, m_posNode(&posNode)
 	, m_negNode(&negNode)
-	, m_resistance(check_not_zero(abs(resistance)))
+	, m_resistance(abs(resistance))
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
@@ -24,24 +24,22 @@ Resistor::~Resistor()
 //Static Resistor Creation
 Resistor* Resistor::createResistor(const std::string& resistorName, Node& posNode, Node& negNode, double resistance)
 {
-	std::string name = "r" + resistorName;
-	if (elementExists(name))
-		return (Resistor*)elementsMap[name];
-
-	Resistor* resistor = new Resistor(resistorName, posNode, negNode, resistance);
-	elementsMap.emplace(name, resistor);
+	std::string name = elementNameWithType(resistorName, ElementType::Resistor);
+	Resistor* resistor = (Resistor*)getElement(name);
+	if (resistor == nullptr)
+		resistor = new Resistor(resistorName, posNode, negNode, resistance);
 	return resistor;
 }
 
 //Matrix Operations
-void Resistor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+void Resistor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("Resistor: Couldn't find a Node.");
 
-	size_t posIdx = nodeIndexMap[m_posNode->getName()];
-	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	size_t posIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t negIdx = nodeIndexMap.at(m_negNode->getName());
 
 	Complex admittance = getAdmittance();
 	matrix[posIdx * matrixWidth + posIdx] += admittance;
@@ -50,7 +48,7 @@ void Resistor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<st
 	matrix[negIdx * matrixWidth + negIdx] += admittance;
 }
 
-void Resistor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void Resistor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
@@ -59,16 +57,16 @@ void Resistor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWi
 	if (voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
 		throw std::runtime_error("Resistor: Couldn't find a Voltage Source.");
 
-	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
-	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
-	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+	size_t controlPosIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t controlNegIdx = nodeIndexMap.at(m_negNode->getName());
+	size_t voltageIdx = voltageIndexMap.at(ccvs->getName());
 
 	Complex resistorFactor = totalCurrentFactor * getAdmittance();
 	matrix[voltageIdx * matrixWidth + controlPosIdx] -= resistorFactor;
 	matrix[voltageIdx * matrixWidth + controlNegIdx] += resistorFactor;
 }
 
-void Resistor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void Resistor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end()
@@ -76,10 +74,10 @@ void Resistor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWi
 		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("Resistor: Couldn't find a Node.");
 
-	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
-	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
-	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
+	size_t controlPosIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t controlNegIdx = nodeIndexMap.at(m_negNode->getName());
+	size_t posIdx = nodeIndexMap.at(cccs->getPosNode()->getName());
+	size_t negIdx = nodeIndexMap.at(cccs->getNegNode()->getName());
 
 	Complex resistorFactor = totalCurrentFactor * getAdmittance();
 	matrix[posIdx * matrixWidth + controlPosIdx] -= resistorFactor;

@@ -7,6 +7,18 @@
 std::list <VoltageSource*> VoltageSource::voltageSources;
 
 //Constructors
+VoltageSource::VoltageSource(const std::string& voltageSrcName, ElementType type, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
+	: Element(voltageSrcName, type)
+	, m_posNode(&posNode)
+	, m_negNode(&negNode)
+	, m_supplyVoltage(supplyVoltage)
+	, m_current(0.0, 0.0)
+{
+	m_posNode->linkElement(this);
+	m_negNode->linkElement(this);
+	voltageSources.push_back(this);
+}
+
 VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
 	: Element(voltageSrcName, ElementType::VS)
 	, m_posNode(&posNode)
@@ -16,6 +28,7 @@ VoltageSource::VoltageSource(const std::string& voltageSrcName, Node& posNode, N
 {
 	m_posNode->linkElement(this);
 	m_negNode->linkElement(this);
+	voltageSources.push_back(this);
 }
 
 VoltageSource::~VoltageSource()
@@ -24,9 +37,11 @@ VoltageSource::~VoltageSource()
 	m_negNode->unLinkElement(this);
 	m_posNode = m_negNode = nullptr;
 
+	std::string name = getName();
+	ElementType type = getType();
 	for (std::list<VoltageSource*>::iterator it = voltageSources.begin(); it != voltageSources.end(); it++)
 	{
-		if (this == *it)
+		if (name == (*it)->getName() && type == (*it)->getType())
 		{
 			voltageSources.erase(it);
 			break;
@@ -37,30 +52,27 @@ VoltageSource::~VoltageSource()
 //Static Voltage Source Creation 
 VoltageSource* VoltageSource::createVoltageSource(const std::string& voltageSrcName, Node& posNode, Node& negNode, Complex supplyVoltage, Complex internalImpedance)
 {
-	std::string name = "vs" + voltageSrcName;
-	if (elementExists(name))
-		return (VoltageSource*)elementsMap[name];
-
-	VoltageSource* voltagesource = new VoltageSource(voltageSrcName, posNode, negNode, supplyVoltage, internalImpedance);
-	elementsMap.emplace(name, voltagesource);
-	voltageSources.push_back(voltagesource);
+	std::string name = elementNameWithType(voltageSrcName, ElementType::VS);
+	VoltageSource* voltagesource = (VoltageSource*)getElement(name);
+	if (voltagesource == nullptr)
+		voltagesource = new VoltageSource(voltageSrcName, posNode, negNode, supplyVoltage, internalImpedance);
 	return voltagesource;
 }
 
 //Matrix Operations
-void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("VoltageSource: Couldn't find a Node.");
 
-	if (voltageIndexMap.find(m_name) == voltageIndexMap.end())
+	if (voltageIndexMap.find(getName()) == voltageIndexMap.end())
 		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
 
-	size_t posIdx = nodeIndexMap[m_posNode->getName()];
-	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	size_t posIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t negIdx = nodeIndexMap.at(m_negNode->getName());
 	size_t constRow = matrixWidth - 1;
-	size_t voltageIdx = voltageIndexMap[m_name];
+	size_t voltageIdx = voltageIndexMap.at(getName());
 
 	Complex supplyVoltage = getSupplyVoltage();
 	Complex internalImpedance = getInternalImpedance();
@@ -72,30 +84,30 @@ void VoltageSource::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::m
 	matrix[negIdx * matrixWidth + voltageIdx] = 1;
 }
 
-void VoltageSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void VoltageSource::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
-	if (voltageIndexMap.find(m_name) == voltageIndexMap.end()
+	if (voltageIndexMap.find(getName()) == voltageIndexMap.end()
 		|| voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
 		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
 
-	size_t voltageSourceIdx = voltageIndexMap[m_name];
-	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+	size_t voltageSourceIdx = voltageIndexMap.at(getName());
+	size_t voltageIdx = voltageIndexMap.at(ccvs->getName());
 
 	matrix[voltageIdx * matrixWidth + voltageSourceIdx] = -totalCurrentFactor;
 }
 
-void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void VoltageSource::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(cccs->getPosNode()->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("VoltageSource: Couldn't find a Node.");
 
-	if (voltageIndexMap.find(m_name) == voltageIndexMap.end())
+	if (voltageIndexMap.find(getName()) == voltageIndexMap.end())
 		throw std::runtime_error("VoltageSource: Couldn't find a Voltage Source.");
 
-	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
-	size_t voltageSourceIdx = voltageIndexMap[m_name];
+	size_t posIdx = nodeIndexMap.at(cccs->getPosNode()->getName());
+	size_t negIdx = nodeIndexMap.at(cccs->getNegNode()->getName());
+	size_t voltageSourceIdx = voltageIndexMap.at(getName());
 
 	matrix[posIdx * matrixWidth + voltageSourceIdx] -= totalCurrentFactor;
 	matrix[negIdx * matrixWidth + voltageSourceIdx] += totalCurrentFactor;

@@ -14,8 +14,8 @@
 std::map<std::string, Node*> Node::nodesMap;
 
 //Constructors
-Node::Node(const std::string& name)
-	: m_name(name)
+Node::Node(const std::string& nodeName)
+	: m_name(nodeName)
 	, m_nodalVoltage(0.0)
 {
 }
@@ -35,31 +35,31 @@ Complex Node::getFlowCurrent(double angularFrequency) const
 		switch (element->getType())
 		{
 		case ElementType::Resistor:
-			flowCurrent += dynamic_cast<Resistor*>(element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Resistor*>(element)->getCurrent().getComponentAbs();
 			break;
 		case ElementType::Inductor:
-			flowCurrent += dynamic_cast<Inductor*>(element)->getCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Inductor*>(element)->getCurrent(angularFrequency).getComponentAbs();
 			break;
 		case ElementType::Capacitor:
-			flowCurrent += dynamic_cast<Capacitor*>(element)->getCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<Capacitor*>(element)->getCurrent(angularFrequency).getComponentAbs();
 			break;
 		case ElementType::CS:
-			flowCurrent += ((CurrentSource*)element)->getSupplyCurrent().getComponentWiseAbs();
+			flowCurrent += ((CurrentSource*)element)->getSupplyCurrent().getComponentAbs();
 			break;
 		case ElementType::VS:
-			flowCurrent += ((VoltageSource*)element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += ((VoltageSource*)element)->getCurrent().getComponentAbs();
 			break;
 		case ElementType::CCCS:
-			flowCurrent += dynamic_cast<CCCS*>(element)->getSupplyCurrent(angularFrequency).getComponentWiseAbs();
+			flowCurrent += dynamic_cast<CCCS*>(element)->getSupplyCurrent(angularFrequency).getComponentAbs();
 			break;
 		case ElementType::CCVS:
-			flowCurrent += dynamic_cast<CCVS*>(element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<CCVS*>(element)->getCurrent().getComponentAbs();
 			break;
 		case ElementType::VCCS:
-			flowCurrent += dynamic_cast<VCCS*>(element)->getSupplyCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<VCCS*>(element)->getSupplyCurrent().getComponentAbs();
 			break;
 		case ElementType::VCVS:
-			flowCurrent += dynamic_cast<VCVS*>(element)->getCurrent().getComponentWiseAbs();
+			flowCurrent += dynamic_cast<VCVS*>(element)->getCurrent().getComponentAbs();
 			break;
 		}
 	}
@@ -80,7 +80,7 @@ bool Node::unLinkElement(const Element* element)
 {
 	for (std::list<Element*>::iterator it = m_elements.begin(); it != m_elements.end(); it++)
 	{
-		if (element == (*it))
+		if (element->getName() == (*it)->getName())
 		{
 			//Found element. Remove it.
 			m_elements.erase(it);
@@ -95,7 +95,7 @@ bool Node::isElementLinked(const Element* element)
 {
 	for (std::list<Element*>::iterator it = m_elements.begin(); it != m_elements.end(); it++)
 	{
-		if (element == (*it))
+		if (element->getName() == (*it)->getName())
 		{
 			//Found element.
 			return true;
@@ -122,7 +122,7 @@ void Node::deleteAllNodes()
 		delete it->second;
 }
 
-void Node::fillNodesFromVector(Complex* vector, std::map<std::string, size_t>& nodeIndexMap)
+void Node::fillAllNodesFromVector(const Complex* vector, const std::map<std::string, size_t>& nodeIndexMap)
 {
 	for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
 		it->second->fillFromVector(vector, nodeIndexMap);

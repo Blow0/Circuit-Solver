@@ -24,24 +24,22 @@ Inductor::~Inductor()
 //Static Resistor Creation
 Inductor* Inductor::createInductor(const std::string& inductorName, Node& posNode, Node& negNode, double inductance)
 {
-	std::string name = "l" + inductorName;
-	if (elementExists(name))
-		return (Inductor*)elementsMap[name];
-
-	Inductor* inductor = new Inductor(inductorName, posNode, negNode, inductance);
-	elementsMap.emplace(name, inductor);
+	std::string name = elementNameWithType(inductorName, ElementType::Inductor);
+	Inductor* inductor = (Inductor*)getElement(name);
+	if (inductor == nullptr)
+		inductor = new Inductor(inductorName, posNode, negNode, inductance);
 	return inductor;
 }
 
 //Matrix Operations
-void Inductor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
+void Inductor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("Inductor: Couldn't find a Node.");
 
-	size_t posIdx = nodeIndexMap[m_posNode->getName()];
-	size_t negIdx = nodeIndexMap[m_negNode->getName()];
+	size_t posIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t negIdx = nodeIndexMap.at(m_negNode->getName());
 
 	Complex admittance = getAdmittance(angularFrequency);
 	matrix[posIdx * matrixWidth + posIdx] += admittance;
@@ -50,7 +48,7 @@ void Inductor::injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<st
 	matrix[negIdx * matrixWidth + negIdx] += admittance;
 }
 
-void Inductor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void Inductor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end())
@@ -59,16 +57,16 @@ void Inductor::injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWi
 	if (voltageIndexMap.find(ccvs->getName()) == voltageIndexMap.end())
 		throw std::runtime_error("Inductor: Couldn't find a Voltage Source.");
 
-	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
-	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
-	size_t voltageIdx = voltageIndexMap[ccvs->getName()];
+	size_t controlPosIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t controlNegIdx = nodeIndexMap.at(m_negNode->getName());
+	size_t voltageIdx = voltageIndexMap.at(ccvs->getName());
 
 	Complex inductorFactor = totalCurrentFactor * getAdmittance(angularFrequency);
 	matrix[voltageIdx * matrixWidth + controlPosIdx] -= inductorFactor;
 	matrix[voltageIdx * matrixWidth + controlNegIdx] += inductorFactor;
 }
 
-void Inductor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency)
+void Inductor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
 {
 	if (nodeIndexMap.find(m_posNode->getName()) == nodeIndexMap.end()
 		|| nodeIndexMap.find(m_negNode->getName()) == nodeIndexMap.end()
@@ -76,10 +74,10 @@ void Inductor::injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWi
 		|| nodeIndexMap.find(cccs->getNegNode()->getName()) == nodeIndexMap.end())
 		throw std::runtime_error("Inductor: Couldn't find a Node.");
 
-	size_t controlPosIdx = nodeIndexMap[m_posNode->getName()];
-	size_t controlNegIdx = nodeIndexMap[m_negNode->getName()];
-	size_t posIdx = nodeIndexMap[cccs->getPosNode()->getName()];
-	size_t negIdx = nodeIndexMap[cccs->getNegNode()->getName()];
+	size_t controlPosIdx = nodeIndexMap.at(m_posNode->getName());
+	size_t controlNegIdx = nodeIndexMap.at(m_negNode->getName());
+	size_t posIdx = nodeIndexMap.at(cccs->getPosNode()->getName());
+	size_t negIdx = nodeIndexMap.at(cccs->getNegNode()->getName());
 
 	Complex inductorFactor = totalCurrentFactor * getAdmittance(angularFrequency);
 	matrix[posIdx * matrixWidth + controlPosIdx] -= inductorFactor;

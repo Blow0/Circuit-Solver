@@ -7,30 +7,32 @@
 class CCVS : public VoltageSource
 {
 private: //Members
-	std::string m_controlElement;
+	std::string m_controlElementName;
+	ElementType m_controlElementType;
 	Complex m_currentFactor;
 
 public: //Static Current controlled Voltage Source creation
-	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalImpedance);
+	static CCVS* createCCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, ElementType controlElementType, const std::string& controlElementName, Complex internalImpedance = 0.0);
 
 private: //Constructors
-	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, const std::string& controlElement, Complex internalImpedance = 0);
+	CCVS(const std::string& ccvsName, Node& posNode, Node& negNode, Complex currentFactor, ElementType controlElementType, const std::string& controlElementName, Complex internalImpedance);
 	~CCVS();
 
 public: //Matrix Operations
-	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, std::map<std::string, size_t>& nodeIndexMap, std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
-	void injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
-	void injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, std::map<std::string, size_t> nodeIndexMap, std::map<std::string, size_t> voltageIndexMap, double angularFrequency = 0.0);
+	void injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+	void injectVSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCVS* ccvs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
+	void injectCSCurrentControlIntoMatrix(Complex* matrix, size_t matrixWidth, CCCS* cccs, Complex totalCurrentFactor, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
 
 public: //Setters
 	inline void setCurrentFactor(Complex currentFactor) { m_currentFactor = currentFactor;  }
-	inline void setControlElement(const std::string& controlElement) { m_controlElement = controlElement; }
+	inline void setControlElementType(ElementType controlElementType) { m_controlElementType = controlElementType; }
+	inline void setControlElementName(const std::string& controlElementName) { m_controlElementName = controlElementName; }
 
 private: //Blocked Setters
 	inline void setSupplyVoltage(Complex supplyVoltage) { }
 
 public: //Getters
-	inline Element* getControlElement() const { Element* element = Element::getElement(m_controlElement); if (element == nullptr) throw std::runtime_error("CCVS: Couldn't find ControlElement"); return element; }
+	inline Element* getControlElement() const { Element* element = Element::getElement(elementNameWithType(m_controlElementName, m_controlElementType)); if (element == nullptr) throw std::runtime_error("CCCS: Couldn't find ControlElement"); return element; }
 	inline Complex getCurrentFactor() const { return m_currentFactor; }
 	Complex getControlCurrent(double angularFrequency) const;
 	inline Complex getSupplyVoltage(double angularFrequency) const { return m_currentFactor * getControlCurrent(angularFrequency); }

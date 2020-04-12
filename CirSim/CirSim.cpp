@@ -10,6 +10,7 @@ double angularFrequency;
 
 //Circuit data
 Node* gndNode;
+std::string gndNodeName = "gnd";
 std::map<std::string, size_t> nodesIndexMap;
 std::map<std::string, size_t> voltageSourcesIndexMap;
 
@@ -123,15 +124,10 @@ int main()
 			solveCircuit();
 			break;
 		case 2:
-			//Change gndNode or Edit elements
-			try
-			{
+			//Edit Existring Circuit
 			editExistringCircuit();
-			}
-			catch (const char* exception)
-			{
-				std::cerr << "Error: " << exception << std::endl;
-			}
+			//Analyze circuit
+			analyzeCircuit();
 			//Solve circuit
 			solveCircuit();
 			break;
@@ -154,11 +150,11 @@ int main()
 }
 
 /*
-cs I1 1 4 20<1.02rad
-r R1 1 4 8
-r R2 1 2 4
-r R3 2 3 5
-r R4 3 4 6
+add cs I1 1 4 20<1.02rad
+add r R1 1 4 8
+add r R2 1 2 4
+add r R3 2 3 5
+add r R4 3 4 6
 end
 */
 void takeInputAndBuildCircuit()
@@ -186,65 +182,150 @@ void takeInputAndBuildCircuit()
 		//Get line from user input
 		std::getline(std::cin, line);
 
+		//Make line all lowercase letters
+		for (size_t i = 0; i < line.length(); i++)
+		{
+			if (isalpha(line[i]))
+				line[i] = tolower(line[i]);
+		}
+
 		//Sperate input line into tokens
 		splitString(line, " ", tokens);
 
-		//Make tokens[0] all lower case letters
-		for (size_t i = 0; i < tokens[0].length(); i++)
-			tokens[0][i] = tolower(tokens[0][i]);
-
-		//Exit input stage if user entered "end" 
-		if (tokens[0] == "end")
-			break;
-
-		//Create element based on type(token[0])
-		switch (tokens[0].at(0))
+		//Check operation
+		if (tokens[0] == "add" || tokens[0] == "rmv" || tokens[0] == "edt")
 		{
-		case 'r':
-			Resistor::createResistor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-			break;
-		case 'l':
-			Inductor::createInductor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-			break;
-		case 'c':
-			if (tokens[0].size() > 1)
+			//Check if tokens >= 3
+			if (tokens.size() < 3)
 			{
-				switch (tokens[0].at(1))
-				{
-				case 'v':
-					CCVS::createCCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-					break;
-				case 'c':
-					CCCS::createCCCS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-					break;
-				case 's':
-					CurrentSource::createCurrentSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
-					break;
-				}
+				std::cout << "Error: Bad Operation Input." << std::endl;
+				continue;
 			}
-			else
-				Capacitor::createCapacitor(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), std::stod(tokens[4]));
-			break;
-		case 'v':
-			if (tokens[0].size() > 1)
-			{
-				switch (tokens[0].at(1))
-				{
-				case 'v':
-					VCVS::createVCVS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-					break;
-				case 'c':
-					VCCS::createVCCS(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), tokens[5], tokens[6], (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
-					break;
-				case 's':
-					VoltageSource::createVoltageSource(tokens[1], *Node::createNode(tokens[2]), *Node::createNode(tokens[3]), Complex::stringToComplex(tokens[4]), (tokens.size() > 5 ? Complex::stringToComplex(tokens[5]) : 0.0));
-					break;
-				}
-			}
-			break;
-		}
-	}
 
+			//Element Details:
+			//	tokens[0]: Operations Type
+			//	tokens[1]: Element Type									add/rmv/edt
+			//	tokens[2]: Element Name									add/rmv/edt
+			//	tokens[3]: Element PosNode								add/edt
+			//	tokens[4]: Element NegNode								add/edt
+			//	tokens[5]: Element Value								add/edt
+			//	tokens[6]: cs-vs internal / CC Element / VC PosNode		add/edt
+			//	tokens[7]: CC internal / VC NegNode						add/edt
+			//	tokens[8]: VC internal									add/edt
+
+			if (tokens[0] == "add") //Add Element
+			{
+				//Create element based on type(token[1])
+				ElementType elementType = Element::stringToElementType(tokens[1]);
+				switch (elementType)
+				{
+				case ElementType::None:
+					std::cout << "Error: Bad Element Type." << std::endl;
+					break;
+				case ElementType::Resistor:
+					if (tokens.size() < 6)
+					{
+						std::cout << "Error: Bad Resistor Input." << std::endl;
+						break;
+					}
+					Resistor::createResistor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					break;
+				case ElementType::Inductor:
+					if (tokens.size() < 6)
+					{
+						std::cout << "Error: Bad Inductor Input." << std::endl;
+						break;
+					}
+					Inductor::createInductor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					break;
+				case ElementType::Capacitor:
+					if (tokens.size() < 6)
+					{
+						std::cout << "Error: Bad Capacitor Input." << std::endl;
+						break;
+					}
+					Capacitor::createCapacitor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					break;
+				case ElementType::CS:
+					if (tokens.size() < 6)
+					{
+						std::cout << "Error: Bad CS Input." << std::endl;
+						break;
+					}
+					CurrentSource::createCurrentSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case ElementType::VS:
+					if (tokens.size() < 6)
+					{
+						std::cout << "Error: Bad VS Input." << std::endl;
+						break;
+					}
+					VoltageSource::createVoltageSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					break;
+				case ElementType::CCCS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error: Bad CCCS Input." << std::endl;
+							break;
+						}
+						ElementType controlType = Element::stringToElementType(tokens[6]);
+						if (controlType == ElementType::None)
+						{
+							std::cout << "Error: Bad CCCS Input." << std::endl;
+							break;
+						}
+						CCCS::createCCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+					}
+					break;
+				case ElementType::CCVS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error: Bad CCVS Input." << std::endl;
+							break;
+						}
+						ElementType controlType = Element::stringToElementType(tokens[6]);
+						if (controlType == ElementType::None)
+						{
+							std::cout << "Error: Bad CCVS Input." << std::endl;
+							break;
+						}
+						CCVS::createCCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+					}
+					break;
+				case ElementType::VCCS:
+					if (tokens.size() < 8)
+					{
+						std::cout << "Error: Bad VCCS Input." << std::endl;
+						break;
+					}
+					VCCS::createVCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					break;
+				case ElementType::VCVS:
+					if (tokens.size() < 8)
+					{
+						std::cout << "Error: Bad VCVS Input." << std::endl;
+						break;
+					}
+					VCVS::createVCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					break;
+				}
+			}
+			else if (tokens[0] == "rmv") //Remove Element
+			{
+
+			}
+			else if (tokens[0] == "edt") //Edit Element
+			{
+
+			}
+		}
+		else if (tokens[0] == "end") //Exit input stage if user entered "end" 
+			break;
+		else
+			std::cout << "Error: Bad Operation Type." << std::endl;
+	}
 }
 void takeInputFrequency()
 {
@@ -298,11 +379,13 @@ void takeInputFrequency()
 				{
 					try
 					{
+						//Calculate angular frequency
 						angularFrequency = stod(input) * (choice == 2 ? 2.0 * PI : 1.0);
 						return;
 					}
 					catch (const std::invalid_argument&)
 					{
+						//Bad input
 						continue;
 					}
 				}
@@ -325,7 +408,7 @@ void editExistringCircuit()
 		//Give user Options
 		std::cout << "1. Edit Ground Node" << std::endl;
 		std::cout << "2. Edit Circuit Element(s)" << std::endl;
-		std::cout << "3. Exit" << std::endl;
+		std::cout << "3. Back" << std::endl;
 
 		if (!(std::cin >> choice))
 		{
@@ -338,37 +421,45 @@ void editExistringCircuit()
 		switch (choice)
 		{
 		case 1:
-		{
-			std::string nodeName;
-			Node* node;
-			std::cin >> nodeName;
-			node = Node::getNode(nodeName);
-			if (node == nullptr)
-				throw "Node Not Found!";
-			gndNode = node;
+			while (true)
+			{
+				//Clear Screen
+				system("ClS");
+
+				//Ask user to input gnd node
+				std::cout << "Enter b to go back." << std::endl;
+				std::cout << "Enter Ground Node Name: ";
+
+				//Get user input
+				std::string input;
+				std::cin >> input;
+
+				//Check for back
+				if (input[0] == 'b' || input[0] == 'B')
+				{
+					//Back
+					break;
+				}
+				else
+				{
+					//Check if ground existed
+					if (!Node::nodeExists(input))
+						continue;
+
+					//Set gndNodeName to new ground name
+					gndNodeName = input;
+					break;
+				}
+			}
 			break;
-		}
 		case 2:
-		{
-			std::string type, name;
-			std::cout << "Enter the Type of The Element and its Name" << std::endl;
-			std::cin >> type >> name;
-			name = type + name;
-			Element* editedElement = Element::getElement(name);
-			std::map<std::string, Element*> elementMap = Element::getElementsMap();
-			if (editedElement == nullptr)
-				throw "Element Not Found!";
-			elementMap.erase(name);
+			//Take circuit elements from user
 			takeInputAndBuildCircuit();
-			analyzeCircuit();
 			break;
-		}
 		case 3:
 			return;
 		}
 	}
-
-
 }
 void analyzeCircuit()
 {
@@ -407,7 +498,7 @@ void solveCircuit()
 	Complex* matrix = new Complex[matrixWidth * matrixHeight];
 
 	//Load Each Element into MNA Matrix
-	Element::loadElementsIntoMatrix(matrix, matrixWidth, nodesIndexMap, voltageSourcesIndexMap, angularFrequency);
+	Element::loadAllElementsIntoMatrix(matrix, matrixWidth, nodesIndexMap, voltageSourcesIndexMap, angularFrequency);
 	
 	//Set Gnd Equation Vgnd = 0
 	size_t gndNodeIdx = nodesIndexMap[gndNode->getName()];
@@ -419,7 +510,7 @@ void solveCircuit()
 	Complex* solutions = SolveSystem(matrix, matrixSize);
 
 	//Fill nodes and voltage sources
-	Node::fillNodesFromVector(solutions, nodesIndexMap);
+	Node::fillAllNodesFromVector(solutions, nodesIndexMap);
 	VoltageSource::fillVoltageSourcesFromVector(solutions, voltageSourcesIndexMap);
 
 	//Clear matrix from memory
@@ -436,13 +527,8 @@ Node* getGroundNode()
 	{
 		if (it->second != nullptr)
 		{
-			//Get lower case node Name
-			std::string nodeName = it->second->getName();
-			for (size_t i = 0; i < nodeName.length(); i++)
-				nodeName[i] = tolower(nodeName[i]);
-
 			//Check for ground node
-			if (nodeName == "gnd" || nodeName == "ground")
+			if (it->second->getName() == gndNodeName)
 				return it->second;
 		}
 	}
@@ -621,7 +707,7 @@ Complex* SolveSystem(Complex* matrix, size_t height)
 	{
 		for (j = i + 1; j < height; j++)
 		{
-			if (matrix[i * width + i].getMagnitude() < matrix[j * width + i].getMagnitude())
+			if (matrix[i * width + i] < matrix[j * width + i])
 			{
 				for (k = 0; k <= height; k++)
 				{
@@ -654,9 +740,8 @@ Complex* SolveSystem(Complex* matrix, size_t height)
 void clearCircuit()
 {
 	clearCircuitAnalysis();
-	Node::clearNodes();
-	Element::clearElements();
-	VoltageSource::clearVoltageSources();
+	Element::deleteAllElements();
+	Node::deleteAllNodes();
 }
 void clearCircuitAnalysis()
 {
