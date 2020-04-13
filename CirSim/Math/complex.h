@@ -38,34 +38,29 @@ public: //Creators
 		if (anglePos == std::string::npos) //Cartesian
 		{
 			size_t length = str.length();
-			switch (str.back())
+			if (length > 1)
 			{
-			case 'p':
-			case 'n':
-			case 'u':
-			case 'm':
-			case 'K':
-			case 'M':
-			case 'G':
-			case 'T':
-				length--;
+				switch (str.back())
+				{
+				case 'p':
+				case 'n':
+				case 'u':
+				case 'm':
+				case 'K':
+				case 'M':
+				case 'G':
+				case 'T':
+					length--;
+				}
 			}
 
 			size_t iPos = str.find('i');
 			if (iPos == std::string::npos)
-			{
-				iPos = str.find('I');
-				if (iPos == std::string::npos)
-				{
-					iPos = str.find('j');
-					if (iPos == std::string::npos)
-						iPos = str.find('J');
-				}
-			}
+				iPos = str.find('j');
 
 			if (iPos == std::string::npos) //Only Real
 			{
-				complex.setCartesian(stod(str.substr(0, length)), 0.0);
+				complex.setCarts(stod(str.substr(0, length)), 0.0);
 			}
 			else //Complex or Imaginary
 			{
@@ -124,7 +119,7 @@ public: //Creators
 							imag.erase(iPos, 1);
 						}
 					}
-					complex.setCartesian(stod(real), stod(imag));
+					complex.setCarts(stod(real), stod(imag));
 				}
 				else
 				{
@@ -144,13 +139,13 @@ public: //Creators
 							real = str.substr(subPos + 1, length - subPos - 1);
 							imag.erase(iPos, 1);
 						}
-						complex.setCartesian(stod(real), stod(imag));
+						complex.setCarts(stod(real), stod(imag));
 					}
 					else //Only Imaginary
 					{
 						std::string imag = str.substr(0, length);
 						imag.erase(iPos, 1);
-						complex.setCartesian(0.0, stod(imag));
+						complex.setCarts(0.0, stod(imag));
 					}
 				}
 			}
@@ -380,12 +375,12 @@ public: //Creators
 	}
 
 public: //Setters
-	inline void setCartesian(double real, double imag)		 { m_real = real; m_imag = imag; }
-	inline void setReal		(double real)					 { m_real = real; }
-	inline void setImag		(double imag)					 { m_imag = imag; }
-	inline void setPolar	(double magnitude, double phase) { m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
-	inline void setMagnitude(double magnitude)				 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
-	inline void setPhase	(double phase)					 { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
+	inline void setCarts (double real, double imag)			{ m_real = real; m_imag = imag; }
+	inline void setReal	 (double real)						{ m_real = real; }
+	inline void setImag	 (double imag)						{ m_imag = imag; }
+	inline void setPolar (double magnitude, double phase)	{ m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
+	inline void setMag	 (double magnitude)					{ double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
+	inline void setPhase (double phase)						{ double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }
@@ -394,23 +389,23 @@ public: //Getters
 	inline double  getMagnitudeSqr() const { return m_real * m_real + m_imag * m_imag; }
 	inline double  getPhase()		 const { return atan2(m_imag, m_real); }
 	inline Complex getComplement()	 const { return Complex(m_real, -m_imag); }
-	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) / (mag >= DBL_EPSILON ? mag : 1.0); }
-	inline Complex getInverse()		 const { return getComplement().getNormalized(); }
-	inline Complex getComponentWiseAbs()	const { return Complex(abs(m_real), abs(m_imag)); }
+	inline Complex getNormalized()	 const { double mag = getMagnitude(); return Complex(m_real, m_imag) * (mag >= DBL_EPSILON ? (1.0 / mag) : 1.0); }
+	inline Complex getInverse()		 const { double magSqr = getMagnitudeSqr(); if (magSqr >= DBL_EPSILON) return getComplement() / magSqr; else throw std::runtime_error("Can't divide by Zero."); }
+	inline Complex getComponentAbs() const { return Complex(abs(m_real), abs(m_imag)); }
 
 public: //Methods
 	inline void invert();
 	inline void normalize();
 	inline void complement();
-	inline void componentWiseAbs();
+	inline void componentAbs();
 
 public: //Logic
 	inline bool operator!=(const Complex& rhs) const { return (rhs.m_real != m_real || rhs.m_imag != m_imag); }
 	inline bool operator==(const Complex& rhs) const { return (rhs.m_real == m_real && rhs.m_imag == m_imag); }
-	inline bool operator> (const Complex& rhs) const { return (rhs.getMagnitude() > getMagnitude());  }
-	inline bool operator< (const Complex& rhs) const { return (rhs.getMagnitude() < getMagnitude());  }
-	inline bool operator>=(const Complex& rhs) const { return (rhs.getMagnitude() >= getMagnitude()); }
-	inline bool operator<=(const Complex& rhs) const { return (rhs.getMagnitude() <= getMagnitude()); }
+	inline bool operator> (const Complex& rhs) const { return (getMagnitude() >  rhs.getMagnitude());  }
+	inline bool operator< (const Complex& rhs) const { return (getMagnitude() <  rhs.getMagnitude());  }
+	inline bool operator>=(const Complex& rhs) const { return (getMagnitude() >= rhs.getMagnitude()); }
+	inline bool operator<=(const Complex& rhs) const { return (getMagnitude() <= rhs.getMagnitude()); }
 
 public: //Operations
 	inline Complex operator- () const;
@@ -432,8 +427,15 @@ public: //Operations
 //Methods
 void Complex::invert()
 {
-	complement();
-	normalize();
+	double magSqr = getMagnitude();
+	if (magSqr >= DBL_EPSILON)
+	{
+		complement();
+		m_real /= magSqr;
+		m_imag /= magSqr;
+	}
+	else
+		throw std::runtime_error("Can't divide by Zero.");
 }
 void Complex::normalize()
 {
@@ -448,7 +450,7 @@ void Complex::complement()
 {
 	m_imag = -m_imag;
 }
-void Complex::componentWiseAbs()
+void Complex::componentAbs()
 {
 	m_real = abs(m_real);
 	m_imag = abs(m_imag);
@@ -461,8 +463,7 @@ Complex Complex::operator-() const
 }
 Complex Complex::operator+(const Complex& rhs) const
 {
-	return Complex(getReal() + rhs.getReal()
-		, getImag() + rhs.getImag());
+	return Complex(getReal() + rhs.getReal(), getImag() + rhs.getImag());
 }
 Complex Complex::operator-(const Complex& rhs) const
 {
@@ -471,7 +472,7 @@ Complex Complex::operator-(const Complex& rhs) const
 Complex Complex::operator*(const Complex& rhs) const
 {
 	return Complex((m_real * rhs.m_real) - (m_imag * rhs.m_imag)
-		, (m_real * rhs.m_imag) + (m_imag * rhs.m_real));
+				 , (m_real * rhs.m_imag) + (m_imag * rhs.m_real));
 }
 Complex Complex::operator*(double rhs) const
 {
@@ -526,10 +527,12 @@ Complex Complex::operator/=(const Complex& rhs)
 {
 	double rhsMagSqr = rhs.getMagnitudeSqr();
 	if (rhsMagSqr >= DBL_EPSILON)
+	{
 		(*this) *= rhs.getComplement() / rhsMagSqr;
+		return (*this);
+	}
 	else
 		throw std::runtime_error("Can't divide by Zero.");
-	return (*this);
 }
 Complex Complex::operator/=(double rhs)
 {
@@ -537,10 +540,10 @@ Complex Complex::operator/=(double rhs)
 	{
 		m_real /= rhs;
 		m_imag /= rhs;
+		return (*this);
 	}
 	else
 		throw std::runtime_error("Can't divide by Zero.");
-	return (*this);
 }
 
 #endif //_COMPLEX_H
