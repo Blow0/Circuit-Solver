@@ -228,7 +228,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad Resistor Input." << std::endl;
 						break;
 					}
-					Resistor::createResistor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					try
+					{
+						Resistor::createResistor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad Resistor Input." << std::endl;
+					}
 					break;
 				case ElementType::Inductor:
 					if (tokens.size() < 6)
@@ -236,7 +243,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad Inductor Input." << std::endl;
 						break;
 					}
-					Inductor::createInductor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					try
+					{
+						Inductor::createInductor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad Inductor Input." << std::endl;
+					}
 					break;
 				case ElementType::Capacitor:
 					if (tokens.size() < 6)
@@ -244,7 +258,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad Capacitor Input." << std::endl;
 						break;
 					}
-					Capacitor::createCapacitor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					try
+					{
+						Capacitor::createCapacitor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad Capacitor Input." << std::endl;
+					}
 					break;
 				case ElementType::CS:
 					if (tokens.size() < 6)
@@ -252,7 +273,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad CS Input." << std::endl;
 						break;
 					}
-					CurrentSource::createCurrentSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					try
+					{
+						CurrentSource::createCurrentSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad CS Input." << std::endl;
+					}
 					break;
 				case ElementType::VS:
 					if (tokens.size() < 6)
@@ -260,7 +288,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad VS Input." << std::endl;
 						break;
 					}
-					VoltageSource::createVoltageSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					try
+					{
+						VoltageSource::createVoltageSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad VS Input." << std::endl;
+					}
 					break;
 				case ElementType::CCCS:
 					{
@@ -275,7 +310,14 @@ void takeInputAndBuildCircuit()
 							std::cout << "Error: Bad CCCS Input." << std::endl;
 							break;
 						}
-						CCCS::createCCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+						try
+						{
+							CCCS::createCCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CCCS Input." << std::endl;
+						}
 					}
 					break;
 				case ElementType::CCVS:
@@ -291,7 +333,14 @@ void takeInputAndBuildCircuit()
 							std::cout << "Error: Bad CCVS Input." << std::endl;
 							break;
 						}
-						CCVS::createCCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+						try
+						{
+							CCVS::createCCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CCVS Input." << std::endl;
+						}
 					}
 					break;
 				case ElementType::VCCS:
@@ -300,7 +349,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad VCCS Input." << std::endl;
 						break;
 					}
-					VCCS::createVCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					try
+					{
+						VCCS::createVCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad VCCS Input." << std::endl;
+					}
 					break;
 				case ElementType::VCVS:
 					if (tokens.size() < 8)
@@ -308,7 +364,14 @@ void takeInputAndBuildCircuit()
 						std::cout << "Error: Bad VCVS Input." << std::endl;
 						break;
 					}
-					VCVS::createVCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					try
+					{
+						VCVS::createVCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad VCVS Input." << std::endl;
+					}
 					break;
 				}
 			}

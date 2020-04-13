@@ -38,30 +38,25 @@ public: //Creators
 		if (anglePos == std::string::npos) //Cartesian
 		{
 			size_t length = str.length();
-			switch (str.back())
+			if (length > 1)
 			{
-			case 'p':
-			case 'n':
-			case 'u':
-			case 'm':
-			case 'K':
-			case 'M':
-			case 'G':
-			case 'T':
-				length--;
+				switch (str.back())
+				{
+				case 'p':
+				case 'n':
+				case 'u':
+				case 'm':
+				case 'K':
+				case 'M':
+				case 'G':
+				case 'T':
+					length--;
+				}
 			}
 
 			size_t iPos = str.find('i');
 			if (iPos == std::string::npos)
-			{
-				iPos = str.find('I');
-				if (iPos == std::string::npos)
-				{
-					iPos = str.find('j');
-					if (iPos == std::string::npos)
-						iPos = str.find('J');
-				}
-			}
+				iPos = str.find('j');
 
 			if (iPos == std::string::npos) //Only Real
 			{
