@@ -54,7 +54,7 @@ std::string Element::elementTypeToString(ElementType type)
 
 ElementType Element::stringToElementType(const std::string& typeStr)
 {
-	ElementType type;
+	ElementType type = ElementType::None;
 	switch (typeStr.at(0))
 	{
 	case 'r':

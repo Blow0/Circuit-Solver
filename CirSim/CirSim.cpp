@@ -208,7 +208,7 @@ void takeInputAndBuildCircuit()
 			//	tokens[2]: Element Name									add/rmv/edt
 			//	tokens[3]: Element PosNode								add/edt
 			//	tokens[4]: Element NegNode								add/edt
-			//	tokens[5]: Element Value								add/edt
+			//	tokens[5]: Element Value	/ CC-VC factor				add/edt
 			//	tokens[6]: cs-vs internal / CC Element / VC PosNode		add/edt
 			//	tokens[7]: CC internal / VC NegNode						add/edt
 			//	tokens[8]: VC internal									add/edt
@@ -377,11 +377,341 @@ void takeInputAndBuildCircuit()
 			}
 			else if (tokens[0] == "rmv") //Remove Element
 			{
+				ElementType elementType = Element::stringToElementType(tokens[1]);
+				std::string elementName = Element::elementNameWithType(tokens[2], elementType);
 
+				if (Element::elementExists(elementName))
+					Element::destroy(elementName);
+				else
+					std::cout << "Element Not Found" << std::endl;
 			}
 			else if (tokens[0] == "edt") //Edit Element
 			{
+				ElementType elementType = Element::stringToElementType(tokens[1]);
+				std::string elementName = Element::elementNameWithType(tokens[2], elementType);
 
+				if (Element::elementExists(elementName))
+				{
+					Element* element = Element::getElement(elementName);
+
+					switch(elementType)
+					{
+					case ElementType::None:
+						std::cout << "Error: Bad Element Type." << std::endl;
+						break;
+					case ElementType::Resistor:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad Resistor input" << std::endl;
+						Resistor* resistor = dynamic_cast<Resistor*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							resistor->setPosNode(*Node::getNode(tokens[3]));
+							resistor->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							else if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+						resistor->setResistance(std::stod(tokens[5]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad Resistor Input." << std::endl;
+						}
+						break;
+					}
+					case ElementType::Capacitor:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad Capacitor input" << std::endl;
+						Capacitor* capacitor = dynamic_cast<Capacitor*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							capacitor->setPosNode(*Node::getNode(tokens[3]));
+							capacitor->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+						capacitor->setCapacitance(std::stod(tokens[5]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad Capacitor Edit" << std::endl;
+						}
+						break;
+					}
+					case ElementType::Inductor:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad Inductor input" << std::endl;
+						Inductor* inductor = dynamic_cast<Inductor*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							inductor->setPosNode(*Node::getNode(tokens[3]));
+							inductor->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							inductor->setInductance(std::stod(tokens[5]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad Inductor Edit" << std::endl;
+						}
+						break;
+					}
+					case ElementType::VS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad VS input" << std::endl;
+						VoltageSource* vs = dynamic_cast<VoltageSource*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							vs->setPosNode(*Node::getNode(tokens[3]));
+							vs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							vs->setSupplyVoltage(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+								vs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad VS Edit" << std::endl;
+						}
+						break;
+					}
+					case ElementType::CS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad CS input" << std::endl;
+						CurrentSource* cs = dynamic_cast<CurrentSource*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							cs->setPosNode(*Node::getNode(tokens[3]));
+							cs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							cs->setSupplyCurrent(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+								cs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CS Edit" << std::endl;
+						}
+						break;
+					}
+					case ElementType::VCVS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad VCVS Edit" << std::endl;
+						VCVS* vcvs = dynamic_cast<VCVS*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							vcvs->setPosNode(*Node::getNode(tokens[3]));
+							vcvs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							vcvs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+							{
+								if (Node::nodeExists(tokens[6]) && Node::nodeExists(tokens[7]))
+								{
+									vcvs->setControlPosNodeName(tokens[6]);
+									vcvs->setControlNegNodeName(tokens[7]);
+								}
+								else
+								{
+									if (!(Node::nodeExists(tokens[6])))
+										Node::createNode(tokens[6]);
+									if (!(Node::nodeExists(tokens[7])))
+										Node::createNode(tokens[7]);
+								}
+								if (tokens.size() > 8)
+									vcvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+							}
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error : Bad VCVS Edit" << std::endl;
+						}
+						break;
+					}
+					case ElementType::VCCS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad VCCS Edit" << std::endl;
+						VCCS* vccs = dynamic_cast<VCCS*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							vccs->setPosNode(*Node::getNode(tokens[3]));
+							vccs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[4]);
+						}
+						try
+						{
+							vccs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+							{
+								if (Node::nodeExists(tokens[6]) && Node::nodeExists(tokens[7]))
+								{
+									vccs->setControlPosNodeName(tokens[6]);
+									vccs->setControlNegNodeName(tokens[7]);
+								}
+								else
+								{
+									if (!(Node::nodeExists(tokens[6])))
+										Node::createNode(tokens[6]);
+									if (!(Node::nodeExists(tokens[7])))
+										Node::createNode(tokens[7]);
+								}
+								if (tokens.size() > 8)
+									vccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+							}
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad VCCS Edit." << std::endl;
+						}
+						break;
+					}
+					case ElementType::CCCS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad CCCS Edit" << std::endl;
+						CCCS* cccs = dynamic_cast<CCCS*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							cccs->setPosNode(*Node::getNode(tokens[3]));
+							cccs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							cccs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+							{
+								ElementType controlElementType = Element::stringToElementType(tokens[6]);
+								std::string controlElementName = Element::elementNameWithType(tokens[7], controlElementType);
+								if (Element::elementExists(controlElementName))
+								{
+									cccs->setControlElementType(controlElementType);
+									cccs->setControlElementName(tokens[7]);
+								}
+								else
+									std::cout << "Error : Bad CCCS Edit. Control Element not Found" << std::endl;
+								if (tokens.size() > 8)
+									cccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+							}
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CCCS Edit." << std::endl;
+						}
+						break;
+					}
+					case ElementType::CCVS:
+					{
+						if (tokens.size() < 6)
+							std::cout << "Error : Bad CCVS Edit" << std::endl;
+						CCVS* ccvs = dynamic_cast<CCVS*>(element);
+						if (Node::nodeExists(tokens[3]) && Node::nodeExists(tokens[4]))
+						{
+							ccvs->setPosNode(*Node::getNode(tokens[3]));
+							ccvs->setNegNode(*Node::getNode(tokens[4]));
+						}
+						else
+						{
+							if (!(Node::nodeExists(tokens[3])))
+								Node::createNode(tokens[3]);
+							if (!(Node::nodeExists(tokens[4])))
+								Node::createNode(tokens[5]);
+						}
+						try
+						{
+							ccvs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+							{
+								ElementType controlElementType = Element::stringToElementType(tokens[6]);
+								std::string controlElementName = Element::elementNameWithType(tokens[7], controlElementType);
+								if (Element::elementExists(controlElementName))
+								{
+									ccvs->setControlElementType(controlElementType);
+									ccvs->setControlElementName(tokens[7]);
+								}
+								else
+									std::cout << "Error : Bad CCVS Edit. Control Element not Found" << std::endl;
+								if (tokens.size() > 8)
+									ccvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+							}
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad VCCS Edit." << std::endl;
+						}
+						break;
+					}
+					}
+				}
+				else
+					std::cout << "Element Not Found" << std::endl;
 			}
 		}
 		else if (tokens[0] == "end") //Exit input stage if user entered "end" 
@@ -538,7 +868,7 @@ void analyzeCircuit()
 	//Create Voltage Sources Index Map
 	const std::list<VoltageSource*>& voltageSourcesList = VoltageSource::getVoltageSourceList();
 
-	for (std::list<VoltageSource*>::const_iterator it = voltageSourcesList.begin(); it != voltageSourcesList.end(); idx++)
+	for (std::list<VoltageSource*>::const_iterator it = voltageSourcesList.begin(); it != voltageSourcesList.end(); it++, idx++)
 		voltageSourcesIndexMap.emplace((*it)->getName(), idx);
 
 	//Get Ground Node
