@@ -741,7 +741,7 @@ void analyzeCircuit()
 	//Create Voltage Sources Index Map
 	const std::list<VoltageSource*>& voltageSourcesList = VoltageSource::getVoltageSourceList();
 
-	for (std::list<VoltageSource*>::const_iterator it = voltageSourcesList.begin(); it != voltageSourcesList.end(); idx++)
+	for (std::list<VoltageSource*>::const_iterator it = voltageSourcesList.begin(); it != voltageSourcesList.end(); it++, idx++)
 		voltageSourcesIndexMap.emplace((*it)->getName(), idx);
 
 	//Get Ground Node
