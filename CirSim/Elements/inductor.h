@@ -16,6 +16,8 @@ public: //Static Inductor Creation
 
 private: //Constructors
 	Inductor(const std::string& inductorName, Node& posNode, Node& negNode, double inductance = 0);
+
+public: //Destructor
 	~Inductor();
 
 public: //Matrix Operations

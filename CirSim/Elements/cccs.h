@@ -20,6 +20,8 @@ public: //Static Current controlled Voltage Source creation
 
 private: //Constructors
 	CCCS(const std::string& cccsName, Node& posNode, Node& negNode, Complex currentFactor, ElementType controlElementType, const std::string& controlElementName, Complex internalAdmittance);
+
+public: //Destructor
 	~CCCS();
 
 public: //Matrix Operations

@@ -16,6 +16,8 @@ public: //Static Current controlled Voltage Source creation
 
 private: //Constructors
 	VCVS(const std::string& vcvsName, Node& posNode, Node& negNode, Complex voltageFactor, const std::string& controlPosNodeName, const std::string& controlNegNodeName, Complex internalImpedance);
+
+public: //Destructor
 	~VCVS();
 
 public: //Matrix Operations

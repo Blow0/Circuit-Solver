@@ -16,6 +16,8 @@ public: //Static Resistor Creation
 
 private: //Constructors
 	Resistor(const std::string& resistorName, Node& posNode, Node& negNode, double resistance = 0);
+
+public: //Destructor
 	~Resistor();
 
 public: //Matrix Operations

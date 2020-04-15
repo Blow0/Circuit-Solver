@@ -28,6 +28,8 @@ private: //Members
 	
 protected: //Constructors
 	Element(const std::string& elementName, ElementType type);
+
+public: //Destructor
 	virtual ~Element();
 
 public: //Static Elements Map Methods
@@ -57,9 +59,6 @@ protected: //Setters
 public: //Getters
 	inline const std::string& getName() const { return m_name; }
 	inline ElementType getType() const { return m_type; }
-
-public: //Destroy element
-	static inline void destroy(std::string elementNameWithType) { delete elementsMap[elementNameWithType]; }
 
 	Element(const Element&) = delete;
 	void operator=(const Element&) = delete;
