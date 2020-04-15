@@ -209,8 +209,8 @@ void takeInputAndBuildCircuit()
 			//	tokens[3]: Element PosNode								add/edt
 			//	tokens[4]: Element NegNode								add/edt
 			//	tokens[5]: Element Value	/ CC-VC factor				add/edt
-			//	tokens[6]: cs-vs internal / CC Element / VC PosNode		add/edt
-			//	tokens[7]: CC internal / VC NegNode						add/edt
+			//	tokens[6]: cs-vs internal / CC Element Type/ VC PosNode	add/edt
+			//	tokens[7]: CC internal / VC NegNode/ CC Element			add/edt
 			//	tokens[8]: VC internal									add/edt
 
 			if (tokens[0] == "add") //Add Element
@@ -501,7 +501,7 @@ void takeInputAndBuildCircuit()
 						{
 							vs->setSupplyVoltage(Complex::stringToComplex(tokens[5]));
 							if (tokens.size() > 6)
-								vs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+								vs->setInternalImpedance(Complex::stringToComplex(tokens[6]));
 						}
 						catch (const std::invalid_argument&)
 						{
@@ -530,7 +530,7 @@ void takeInputAndBuildCircuit()
 						{
 							cs->setSupplyCurrent(Complex::stringToComplex(tokens[5]));
 							if (tokens.size() > 6)
-								cs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+								cs->setInternalAdmittance(Complex::stringToComplex(tokens[6]));
 						}
 						catch (const std::invalid_argument&)
 						{
@@ -553,7 +553,7 @@ void takeInputAndBuildCircuit()
 							if (!(Node::nodeExists(tokens[3])))
 								Node::createNode(tokens[3]);
 							if (!(Node::nodeExists(tokens[4])))
-								Node::createNode(tokens[5]);
+								Node::createNode(tokens[4]);
 						}
 						try
 						{
@@ -641,7 +641,7 @@ void takeInputAndBuildCircuit()
 							if (!(Node::nodeExists(tokens[3])))
 								Node::createNode(tokens[3]);
 							if (!(Node::nodeExists(tokens[4])))
-								Node::createNode(tokens[5]);
+								Node::createNode(tokens[4]);
 						}
 						try
 						{
@@ -682,7 +682,7 @@ void takeInputAndBuildCircuit()
 							if (!(Node::nodeExists(tokens[3])))
 								Node::createNode(tokens[3]);
 							if (!(Node::nodeExists(tokens[4])))
-								Node::createNode(tokens[5]);
+								Node::createNode(tokens[4]);
 						}
 						try
 						{
