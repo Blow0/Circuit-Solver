@@ -18,10 +18,11 @@ public: //Static Voltage Source creation
 
 protected: //Constructors
 	CurrentSource(const std::string& currentSrcName, ElementType type, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance);
-	virtual ~CurrentSource();
-
-private: //Constructors
+private:
 	CurrentSource(const std::string& currentSrcName, Node& posNode, Node& negNode, Complex supplyCurrent, Complex internalAdmittance);
+
+public: //Destructor
+	virtual ~CurrentSource();
 
 public: //Matrix Operations
 	virtual void injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);

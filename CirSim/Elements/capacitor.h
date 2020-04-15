@@ -16,6 +16,8 @@ public: //Static Inductor Creation
 
 private: //Constructors
 	Capacitor(const std::string& capacitorName, Node& posNode, Node& negNode, double inductance = 0);
+
+public: //Destructor
 	~Capacitor();
 
 public: //Matrix Operations
