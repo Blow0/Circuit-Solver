@@ -261,8 +261,8 @@ void takeInputAndBuildCircuit()
 			//	tokens[3]: Element PosNode								add/edt
 			//	tokens[4]: Element NegNode								add/edt
 			//	tokens[5]: Element Value	/ CC-VC factor				add/edt
-			//	tokens[6]: cs-vs internal / CC Element / VC PosNode		add/edt
-			//	tokens[7]: CC internal / VC NegNode						add/edt
+			//	tokens[6]: cs-vs internal / CC Element Type/ VC PosNode	add/edt
+			//	tokens[7]: CC internal / VC NegNode/ CC Element			add/edt
 			//	tokens[8]: VC internal									add/edt
 
 			if (tokens[0] == "add") //Add Element
