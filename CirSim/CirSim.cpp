@@ -55,6 +55,9 @@ void clearCircuitAnalysis();
 //Splits string into substrings using a delimiter.
 void splitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& strings);
 
+//Make line all lowercase letters
+std::string& stringToLower(std::string& str);
+
 int main()
 {
 	size_t choice = 0;
@@ -91,7 +94,7 @@ int main()
 				isCircuitSolved = true;
 				errorMsg = "";
 			}
-			catch (const std::runtime_error& err)
+			catch (const std::runtime_error & err)
 			{
 				//Mark Circuit as unsolved
 				isCircuitSolved = false;
@@ -142,7 +145,7 @@ int main()
 				isCircuitSolved = true;
 				errorMsg = "";
 			}
-			catch (const std::runtime_error& err)
+			catch (const std::runtime_error & err)
 			{
 				//Mark Circuit as unsolved
 				isCircuitSolved = false;
@@ -162,7 +165,7 @@ int main()
 				isCircuitSolved = true;
 				errorMsg = "";
 			}
-			catch (const std::runtime_error& err)
+			catch (const std::runtime_error & err)
 			{
 				//Mark Circuit as unsolved
 				isCircuitSolved = false;
@@ -182,7 +185,7 @@ int main()
 					isCircuitSolved = true;
 					errorMsg = "";
 				}
-				catch (const std::runtime_error& err)
+				catch (const std::runtime_error & err)
 				{
 					//Mark Circuit as unsolved
 					isCircuitSolved = false;
@@ -234,15 +237,11 @@ void takeInputAndBuildCircuit()
 		//Get line from user input
 		std::getline(std::cin, line);
 
-		//Make line all lowercase letters
-		for (size_t i = 0; i < line.length(); i++)
-		{
-			if (isalpha(line[i]))
-				line[i] = tolower(line[i]);
-		}
-
 		//Sperate input line into tokens
 		splitString(line, " ", tokens);
+
+		//Convert operation and element type to lowercase
+		stringToLower(tokens[0]);
 
 		//Check operation
 		if (tokens[0] == "add" || tokens[0] == "rmv" || tokens[0] == "edt")
@@ -268,7 +267,7 @@ void takeInputAndBuildCircuit()
 			if (tokens[0] == "add") //Add Element
 			{
 				//Create element based on type(token[1])
-				ElementType elementType = Element::stringToElementType(tokens[1]);
+				ElementType elementType = Element::stringToElementType(stringToLower(tokens[1]));
 				switch (elementType)
 				{
 				case ElementType::None:
@@ -282,7 +281,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						Resistor::createResistor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+						Resistor::createResistor(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), std::stod(tokens[5]));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -297,7 +296,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						Inductor::createInductor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+						Inductor::createInductor(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), std::stod(tokens[5]));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -312,7 +311,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						Capacitor::createCapacitor(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), std::stod(tokens[5]));
+						Capacitor::createCapacitor(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), std::stod(tokens[5]));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -327,7 +326,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						CurrentSource::createCurrentSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						CurrentSource::createCurrentSource(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -342,7 +341,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						VoltageSource::createVoltageSource(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
+						VoltageSource::createVoltageSource(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), (tokens.size() > 6 ? Complex::stringToComplex(tokens[6]) : 0.0));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -350,51 +349,51 @@ void takeInputAndBuildCircuit()
 					}
 					break;
 				case ElementType::CCCS:
+				{
+					if (tokens.size() < 8)
 					{
-						if (tokens.size() < 8)
-						{
-							std::cout << "Error: Bad CCCS Input." << std::endl;
-							break;
-						}
-						ElementType controlType = Element::stringToElementType(tokens[6]);
-						if (controlType == ElementType::None)
-						{
-							std::cout << "Error: Bad CCCS Input." << std::endl;
-							break;
-						}
-						try
-						{
-							CCCS::createCCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
-						}
-						catch (const std::invalid_argument&)
-						{
-							std::cout << "Error: Bad CCCS Input." << std::endl;
-						}
+						std::cout << "Error: Bad CCCS Input." << std::endl;
+						break;
 					}
-					break;
+					ElementType controlType = Element::stringToElementType(tokens[6]);
+					if (controlType == ElementType::None)
+					{
+						std::cout << "Error: Bad CCCS Input." << std::endl;
+						break;
+					}
+					try
+					{
+						CCCS::createCCCS(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), controlType, stringToLower(tokens[7]), (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad CCCS Input." << std::endl;
+					}
+				}
+				break;
 				case ElementType::CCVS:
+				{
+					if (tokens.size() < 8)
 					{
-						if (tokens.size() < 8)
-						{
-							std::cout << "Error: Bad CCVS Input." << std::endl;
-							break;
-						}
-						ElementType controlType = Element::stringToElementType(tokens[6]);
-						if (controlType == ElementType::None)
-						{
-							std::cout << "Error: Bad CCVS Input." << std::endl;
-							break;
-						}
-						try
-						{
-							CCVS::createCCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), controlType, tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
-						}
-						catch (const std::invalid_argument&)
-						{
-							std::cout << "Error: Bad CCVS Input." << std::endl;
-						}
+						std::cout << "Error: Bad CCVS Input." << std::endl;
+						break;
 					}
-					break;
+					ElementType controlType = Element::stringToElementType(tokens[6]);
+					if (controlType == ElementType::None)
+					{
+						std::cout << "Error: Bad CCVS Input." << std::endl;
+						break;
+					}
+					try
+					{
+						CCVS::createCCVS(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), controlType, stringToLower(tokens[7]), (tokens.size() > 8 ? Complex::stringToComplex(tokens[7]) : 0.0));
+					}
+					catch (const std::invalid_argument&)
+					{
+						std::cout << "Error: Bad CCVS Input." << std::endl;
+					}
+				}
+				break;
 				case ElementType::VCCS:
 					if (tokens.size() < 8)
 					{
@@ -403,7 +402,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						VCCS::createVCCS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+						VCCS::createVCCS(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), stringToLower(tokens[6]), stringToLower(tokens[7]), (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -418,7 +417,7 @@ void takeInputAndBuildCircuit()
 					}
 					try
 					{
-						VCVS::createVCVS(tokens[2], *Node::createNode(tokens[3]), *Node::createNode(tokens[4]), Complex::stringToComplex(tokens[5]), tokens[6], tokens[7], (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
+						VCVS::createVCVS(stringToLower(tokens[2]), *Node::createNode(stringToLower(tokens[3])), *Node::createNode(stringToLower(tokens[4])), Complex::stringToComplex(tokens[5]), stringToLower(tokens[6]), stringToLower(tokens[7]), (tokens.size() > 8 ? Complex::stringToComplex(tokens[8]) : 0.0));
 					}
 					catch (const std::invalid_argument&)
 					{
@@ -429,7 +428,7 @@ void takeInputAndBuildCircuit()
 			}
 			else if (tokens[0] == "rmv") //Remove Element
 			{
-				Element* element = Element::getElement(Element::elementNameWithType(tokens[2], Element::stringToElementType(tokens[1])));
+				Element* element = Element::getElement(Element::elementNameWithType(stringToLower(tokens[2]), Element::stringToElementType(stringToLower(tokens[1]))));
 				if (element != nullptr)
 					delete element;
 				else
@@ -437,225 +436,225 @@ void takeInputAndBuildCircuit()
 			}
 			else if (tokens[0] == "edt") //Edit Element
 			{
-				ElementType elementType = Element::stringToElementType(tokens[1]);
-				Element* element = Element::getElement(Element::elementNameWithType(tokens[2], elementType));
+				ElementType elementType = Element::stringToElementType(stringToLower(tokens[1]));
+				Element* element = Element::getElement(Element::elementNameWithType(stringToLower(tokens[2]), elementType));
 
 				if (element != nullptr)
 				{
-					switch(elementType)
+					switch (elementType)
 					{
-						case ElementType::None:
-							std::cout << "Error: Bad Element Type." << std::endl;
+					case ElementType::None:
+						std::cout << "Error: Bad Element Type." << std::endl;
 						break;
-						case ElementType::Resistor:
+					case ElementType::Resistor:
+					{
+						if (tokens.size() < 6)
 						{
-							if (tokens.size() < 6)
-							{
-								std::cout << "Error : Bad Resistor Input." << std::endl;
-								break;
-							}
-
-							Resistor* resistor = dynamic_cast<Resistor*>(element);
-							resistor->setPosNode(*Node::createNode(tokens[3]));
-							resistor->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								resistor->setResistance(std::stod(tokens[5]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad Resistor Input." << std::endl;
-							}
+							std::cout << "Error : Bad Resistor Input." << std::endl;
+							break;
 						}
-						break;
-						case ElementType::Inductor:
+
+						Resistor* resistor = dynamic_cast<Resistor*>(element);
+						resistor->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						resistor->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
 						{
-							if (tokens.size() < 6)
-							{
-								std::cout << "Error : Bad Inductor Input." << std::endl;
-								break;
-							}
-
-							Inductor* inductor = dynamic_cast<Inductor*>(element);
-							inductor->setPosNode(*Node::createNode(tokens[3]));
-							inductor->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								inductor->setInductance(std::stod(tokens[5]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad Inductor Input." << std::endl;
-							}
+							resistor->setResistance(std::stod(tokens[5]));
 						}
-						break;
-						case ElementType::Capacitor:
+						catch (const std::invalid_argument&)
 						{
-							if (tokens.size() < 6)
-							{
-								std::cout << "Error : Bad Capacitor Input." << std::endl;
-								break;
-							}
-
-							Capacitor* capacitor = dynamic_cast<Capacitor*>(element);
-							capacitor->setPosNode(*Node::createNode(tokens[3]));
-							capacitor->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								capacitor->setCapacitance(std::stod(tokens[5]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad Capacitor Input." << std::endl;
-							}
+							std::cout << "Error: Bad Resistor Input." << std::endl;
 						}
-						break;
-						case ElementType::CS:
+					}
+					break;
+					case ElementType::Inductor:
+					{
+						if (tokens.size() < 6)
 						{
-							if (tokens.size() < 6)
-							{
-								std::cout << "Error : Bad CS Input." << std::endl;
-								break;
-							}
-
-							CurrentSource* cs = dynamic_cast<CurrentSource*>(element);
-							cs->setPosNode(*Node::createNode(tokens[3]));
-							cs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								cs->setSupplyCurrent(Complex::stringToComplex(tokens[5]));
-								if (tokens.size() > 6)
-									cs->setInternalAdmittance(Complex::stringToComplex(tokens[6]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad CS Input." << std::endl;
-							}
+							std::cout << "Error : Bad Inductor Input." << std::endl;
+							break;
 						}
-						break;
-						case ElementType::VS:
+
+						Inductor* inductor = dynamic_cast<Inductor*>(element);
+						inductor->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						inductor->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
 						{
-							if (tokens.size() < 6)
-							{
-								std::cout << "Error : Bad VS Input." << std::endl;
-								break;
-							}
-
-							VoltageSource* vs = dynamic_cast<VoltageSource*>(element);
-							vs->setPosNode(*Node::createNode(tokens[3]));
-							vs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								vs->setSupplyVoltage(Complex::stringToComplex(tokens[5]));
-								if (tokens.size() > 6)
-									vs->setInternalImpedance(Complex::stringToComplex(tokens[6]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad VS Input." << std::endl;
-							}
+							inductor->setInductance(std::stod(tokens[5]));
 						}
-						break;
-						case ElementType::CCCS:
+						catch (const std::invalid_argument&)
 						{
-							if (tokens.size() < 8)
-							{
-								std::cout << "Error : Bad CCCS Input." << std::endl;
-								break;
-							}
-
-							CCCS* cccs = dynamic_cast<CCCS*>(element);
-							cccs->setPosNode(*Node::createNode(tokens[3]));
-							cccs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								cccs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
-								cccs->setControlElementType(Element::stringToElementType(tokens[6]));
-								cccs->setControlElementName(tokens[7]);
-								if (tokens.size() > 8)
-									cccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad CCCS Input." << std::endl;
-							}
+							std::cout << "Error: Bad Inductor Input." << std::endl;
 						}
-						break;
-						case ElementType::CCVS:
+					}
+					break;
+					case ElementType::Capacitor:
+					{
+						if (tokens.size() < 6)
 						{
-							if (tokens.size() < 8)
-							{
-								std::cout << "Error : Bad CCVS Input." << std::endl;
-								break;
-							}
-
-							CCVS* ccvs = dynamic_cast<CCVS*>(element);
-							ccvs->setPosNode(*Node::createNode(tokens[3]));
-							ccvs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								ccvs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
-								ccvs->setControlElementType(Element::stringToElementType(tokens[6]));
-								ccvs->setControlElementName(tokens[7]);
-								if (tokens.size() > 8)
-									ccvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad CCVS Input." << std::endl;
-							}
+							std::cout << "Error : Bad Capacitor Input." << std::endl;
+							break;
 						}
-						break;
-						case ElementType::VCCS:
+
+						Capacitor* capacitor = dynamic_cast<Capacitor*>(element);
+						capacitor->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						capacitor->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
 						{
-							if (tokens.size() < 8)
-							{
-								std::cout << "Error : Bad VCCS Input." << std::endl;
-								break;
-							}
-
-							VCCS* vccs = dynamic_cast<VCCS*>(element);
-							vccs->setPosNode(*Node::createNode(tokens[3]));
-							vccs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								vccs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
-								vccs->setControlPosNodeName(tokens[6]);
-								vccs->setControlNegNodeName(tokens[7]);
-								if (tokens.size() > 8)
-									vccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error: Bad VCCS Input." << std::endl;
-							}
+							capacitor->setCapacitance(std::stod(tokens[5]));
 						}
-						break;
-						case ElementType::VCVS:
+						catch (const std::invalid_argument&)
 						{
-							if (tokens.size() < 8)
-							{
-								std::cout << "Error : Bad VCVS Input." << std::endl;
-								break;
-							}
-
-							VCVS* vcvs = dynamic_cast<VCVS*>(element);
-							vcvs->setPosNode(*Node::createNode(tokens[3]));
-							vcvs->setNegNode(*Node::createNode(tokens[4]));
-							try
-							{
-								vcvs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
-								vcvs->setControlPosNodeName(tokens[6]);
-								vcvs->setControlNegNodeName(tokens[7]);
-								if (tokens.size() > 8)
-									vcvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
-							}
-							catch (const std::invalid_argument&)
-							{
-								std::cout << "Error : Bad VCVS Input." << std::endl;
-							}
+							std::cout << "Error: Bad Capacitor Input." << std::endl;
 						}
-						break;
+					}
+					break;
+					case ElementType::CS:
+					{
+						if (tokens.size() < 6)
+						{
+							std::cout << "Error : Bad CS Input." << std::endl;
+							break;
+						}
+
+						CurrentSource* cs = dynamic_cast<CurrentSource*>(element);
+						cs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						cs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							cs->setSupplyCurrent(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+								cs->setInternalAdmittance(Complex::stringToComplex(tokens[6]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CS Input." << std::endl;
+						}
+					}
+					break;
+					case ElementType::VS:
+					{
+						if (tokens.size() < 6)
+						{
+							std::cout << "Error : Bad VS Input." << std::endl;
+							break;
+						}
+
+						VoltageSource* vs = dynamic_cast<VoltageSource*>(element);
+						vs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						vs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							vs->setSupplyVoltage(Complex::stringToComplex(tokens[5]));
+							if (tokens.size() > 6)
+								vs->setInternalImpedance(Complex::stringToComplex(tokens[6]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad VS Input." << std::endl;
+						}
+					}
+					break;
+					case ElementType::CCCS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error : Bad CCCS Input." << std::endl;
+							break;
+						}
+
+						CCCS* cccs = dynamic_cast<CCCS*>(element);
+						cccs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						cccs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							cccs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
+							cccs->setControlElementType(Element::stringToElementType(stringToLower(tokens[6])));
+							cccs->setControlElementName(stringToLower(tokens[7]));
+							if (tokens.size() > 8)
+								cccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CCCS Input." << std::endl;
+						}
+					}
+					break;
+					case ElementType::CCVS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error : Bad CCVS Input." << std::endl;
+							break;
+						}
+
+						CCVS* ccvs = dynamic_cast<CCVS*>(element);
+						ccvs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						ccvs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							ccvs->setCurrentFactor(Complex::stringToComplex(tokens[5]));
+							ccvs->setControlElementType(Element::stringToElementType(stringToLower(tokens[6])));
+							ccvs->setControlElementName(stringToLower(tokens[7]));
+							if (tokens.size() > 8)
+								ccvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad CCVS Input." << std::endl;
+						}
+					}
+					break;
+					case ElementType::VCCS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error : Bad VCCS Input." << std::endl;
+							break;
+						}
+
+						VCCS* vccs = dynamic_cast<VCCS*>(element);
+						vccs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						vccs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							vccs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
+							vccs->setControlPosNodeName(stringToLower(tokens[6]));
+							vccs->setControlNegNodeName(stringToLower(tokens[7]));
+							if (tokens.size() > 8)
+								vccs->setInternalAdmittance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error: Bad VCCS Input." << std::endl;
+						}
+					}
+					break;
+					case ElementType::VCVS:
+					{
+						if (tokens.size() < 8)
+						{
+							std::cout << "Error : Bad VCVS Input." << std::endl;
+							break;
+						}
+
+						VCVS* vcvs = dynamic_cast<VCVS*>(element);
+						vcvs->setPosNode(*Node::createNode(stringToLower(tokens[3])));
+						vcvs->setNegNode(*Node::createNode(stringToLower(tokens[4])));
+						try
+						{
+							vcvs->setVoltageFactor(Complex::stringToComplex(tokens[5]));
+							vcvs->setControlPosNodeName(stringToLower(tokens[6]));
+							vcvs->setControlNegNodeName(stringToLower(tokens[7]));
+							if (tokens.size() > 8)
+								vcvs->setInternalImpedance(Complex::stringToComplex(tokens[8]));
+						}
+						catch (const std::invalid_argument&)
+						{
+							std::cout << "Error : Bad VCVS Input." << std::endl;
+						}
+					}
+					break;
 					}
 				}
 				else
@@ -680,7 +679,7 @@ void takeInputFrequency()
 		std::cout << "1. Enter Angular Frequency (rad/sec)" << std::endl;
 		std::cout << "2. Enter Frequency (Hz)" << std::endl;
 		std::cout << "3. Back" << std::endl;
-	
+
 		//Get user choice
 		if (!(std::cin >> choice))
 		{
@@ -785,7 +784,10 @@ void editExistringCircuit()
 				{
 					//Check if ground existed
 					if (!Node::nodeExists(input))
+					{
+						std::cout << "Error Node not Found" << std::endl;
 						continue;
+					}
 
 					//Set gndNodeName to new ground name
 					gndNodeName = input;
@@ -840,7 +842,7 @@ void solveCircuit()
 
 	//Load Each Element into MNA Matrix
 	Element::loadAllElementsIntoMatrix(matrix, matrixWidth, nodesIndexMap, voltageSourcesIndexMap, angularFrequency);
-	
+
 	//Set Gnd Equation Vgnd = 0
 	size_t gndNodeIdx = nodesIndexMap[gndNode->getName()];
 	for (size_t i = 0; i < matrixSize + 1; i++)
@@ -940,87 +942,87 @@ void showOutput()
 			//Print element information
 			switch (it->second->getType())
 			{
-				case ElementType::Resistor:
-				{
-					Resistor* resistor = dynamic_cast<Resistor*>(it->second);
-					std::cout << "Resistor[" << resistor->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(resistor->getCurrent(), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(resistor->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Dissipated = " << Complex::complexToPolarString(resistor->getPowerDissipated(), true) << std::endl << std::endl;
-				}
+			case ElementType::Resistor:
+			{
+				Resistor* resistor = dynamic_cast<Resistor*>(it->second);
+				std::cout << "Resistor[" << resistor->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(resistor->getCurrent(), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(resistor->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Dissipated = " << Complex::complexToPolarString(resistor->getPowerDissipated(), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::Inductor:
+			{
+				Inductor* inductor = dynamic_cast<Inductor*>(it->second);
+				std::cout << "Capacitor[" << inductor->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(inductor->getCurrent(angularFrequency), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(inductor->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Stored = " << Complex::complexToPolarString(inductor->getPowerStored(angularFrequency), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::Capacitor:
+			{
+				Capacitor* capacitor = dynamic_cast<Capacitor*>(it->second);
+				std::cout << "Capacitor[" << capacitor->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(capacitor->getCurrent(angularFrequency), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(capacitor->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Stored = " << Complex::complexToPolarString(capacitor->getPowerStored(angularFrequency), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::CS:
+			{
+				CurrentSource* currentSource = dynamic_cast<CurrentSource*>(it->second);
+				std::cout << "CurrentSource[" << currentSource->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(currentSource->getCurrent(), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(currentSource->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(currentSource->getTotalPowerSupplied(), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::VS:
+			{
+				VoltageSource* voltageSource = dynamic_cast<VoltageSource*>(it->second);
+				std::cout << "VoltageSource[" << voltageSource->getName() << "]:" << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(voltageSource->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(voltageSource->getCurrent(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(voltageSource->getTotalPowerSupplied(), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::CCCS:
+			{
+				CCCS* cccs = dynamic_cast<CCCS*>(it->second);
+				std::cout << "CCCS[" << cccs->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(cccs->getCurrent(angularFrequency), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(cccs->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(cccs->getTotalPowerSupplied(angularFrequency), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::CCVS:
+			{
+				CCVS* ccvs = dynamic_cast<CCVS*>(it->second);
+				std::cout << "CCVS[" << ccvs->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(ccvs->getCurrent(), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(ccvs->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(ccvs->getTotalPowerSupplied(angularFrequency), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::VCCS:
+			{
+				VCCS* vccs = dynamic_cast<VCCS*>(it->second);
+				std::cout << "VCCS[" << vccs->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(vccs->getCurrent(), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vccs->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(vccs->getTotalPowerSupplied(), true) << std::endl << std::endl;
+			}
+			break;
+			case ElementType::VCVS:
+			{
+				VCVS* vcvs = dynamic_cast<VCVS*>(it->second);
+				std::cout << "VCVS[" << vcvs->getName() << "]:" << std::endl;
+				std::cout << "\tCurrent = " << Complex::complexToPolarString(vcvs->getCurrent(), true) << std::endl;
+				std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vcvs->getVoltageDiff(), true) << std::endl;
+				std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(vcvs->getTotalPowerSupplied(), true) << std::endl << std::endl;
 				break;
-				case ElementType::Inductor:
-				{	
-					Inductor* inductor = dynamic_cast<Inductor*>(it->second);
-					std::cout << "Capacitor[" << inductor->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(inductor->getCurrent(angularFrequency), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(inductor->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Stored = " << Complex::complexToPolarString(inductor->getPowerStored(angularFrequency), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::Capacitor:
-				{
-					Capacitor* capacitor = dynamic_cast<Capacitor*>(it->second);
-					std::cout << "Capacitor[" << capacitor->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(capacitor->getCurrent(angularFrequency), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(capacitor->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Stored = " << Complex::complexToPolarString(capacitor->getPowerStored(angularFrequency), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::CS:
-				{	
-					CurrentSource* currentSource = dynamic_cast<CurrentSource*>(it->second);
-					std::cout << "CurrentSource[" << currentSource->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(currentSource->getCurrent(), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(currentSource->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(currentSource->getTotalPowerSupplied(), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::VS:
-				{	
-					VoltageSource* voltageSource = dynamic_cast<VoltageSource*>(it->second);
-					std::cout << "VoltageSource[" << voltageSource->getName() << "]:" << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(voltageSource->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(voltageSource->getCurrent(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(voltageSource->getTotalPowerSupplied(), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::CCCS:
-				{
-					CCCS* cccs = dynamic_cast<CCCS*>(it->second);
-					std::cout << "CCCS[" << cccs->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(cccs->getCurrent(angularFrequency), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(cccs->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(cccs->getTotalPowerSupplied(angularFrequency), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::CCVS:
-				{
-					CCVS* ccvs = dynamic_cast<CCVS*>(it->second);
-					std::cout << "CCVS[" << ccvs->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(ccvs->getCurrent(), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(ccvs->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(ccvs->getTotalPowerSupplied(angularFrequency), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::VCCS:
-				{
-					VCCS* vccs = dynamic_cast<VCCS*>(it->second);
-					std::cout << "VCCS[" << vccs->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(vccs->getCurrent(), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vccs->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(vccs->getTotalPowerSupplied(), true) << std::endl << std::endl;
-				}
-				break;
-				case ElementType::VCVS:
-				{
-					VCVS* vcvs = dynamic_cast<VCVS*>(it->second);
-					std::cout << "VCVS[" << vcvs->getName() << "]:" << std::endl;
-					std::cout << "\tCurrent = " << Complex::complexToPolarString(vcvs->getCurrent(), true) << std::endl;
-					std::cout << "\tVoltage_Difference = " << Complex::complexToPolarString(vcvs->getVoltageDiff(), true) << std::endl;
-					std::cout << "\tPower_Supplied = " << Complex::complexToPolarString(vcvs->getTotalPowerSupplied(), true) << std::endl << std::endl;
-					break;
-				}
+			}
 			}
 		}
 	}
@@ -1112,4 +1114,14 @@ void splitString(const std::string& str, const std::string& delimiter, std::vect
 		if (!sub.empty())
 			strings.push_back(sub);
 	}
+}
+
+std::string& stringToLower(std::string& str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (isalpha(str[i]))
+			str[i] = tolower(str[i]);
+	}
+	return str;
 }
