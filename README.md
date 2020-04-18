@@ -52,7 +52,7 @@ OperationType ElementType ElementName [ElementData]
 **Circuit-Solver** have a lot of elements but one thing in common any element input starts with a string indicating its type and then is followed by the name of the element and then the element data which depends on the type of element and operation type.<br/>
 **Note:** Element type and name are converted to lowercase letters.
 
-***Insertion Input Example*** 
+**Insertion Input Example**
 ```
 add cs I1 1 4 20K<1.02rad
 edt cs I1 1 4 30+50iK
