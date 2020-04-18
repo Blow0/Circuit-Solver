@@ -28,28 +28,28 @@ which means it calculates:
 
 ### 2. Circuit Naming
 
-Before you insert the circuit you wish to solve, make sure that you name every element in the circuit.
+Before you insert the circuit you wish to solve, make sure that you name every element in the circuit.<br/>
 **Note:** Names are ***case-insensitive*** and no two elements can have the same name unless they have different types.
 
 ### 3. Circuit Insertion
 
 **Circuit-Solver** stores the circuit in the form of a net list of elements.
 
-***3. 1. Insertion Format***
+***3. 1. Insertion Format***<br/>
 **Circuit-Solver** allows you to edit the stored net list using three operations and has this general input format:
 ```
 OperationType ElementType ElementName [ElementData]
 ```
 
-***3. 2. Insertion Operation***
+***3. 2. Insertion Operation***<br/>
 **Circuit-Solver** have three insertion-related operations:
 - **add:** Adds a new element into the circuit net list.
 - **rmv:** Removes an existing element in the circuit net list.
 - **edt:**  Edits an existing element in the circuit net list.
 - **end:** Ends the insertion and saves the net list.
 
-***3. 3. Element Input***
-**Circuit-Solver** have a lot of elements but one thing in common any element input starts with a string indicating its type and then is followed by the name of the element and then the element data which depends on the type of element and operation type.
+***3. 3. Element Input***<br/>
+**Circuit-Solver** have a lot of elements but one thing in common any element input starts with a string indicating its type and then is followed by the name of the element and then the element data which depends on the type of element and operation type.<br/>
 **Note:** Element type and name are converted to lowercase letters.
 
 ***Insertion Input Example*** 
