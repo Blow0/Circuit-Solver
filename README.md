@@ -70,6 +70,8 @@ end
 - For more details on each operation input check the documentation of the program.
 - For details on each element input form check the documentation of the program.
 - You aren't required to input nodes individually, you can input only elements and **Circuit-Solver** will create the needed nodes for you.
+- If you wish for a certain node to be the **ground**, let its name be "gnd", otherwise the program will make the firs source's negative node be the ground. If there's no source in the circuit, the program will take the ground as the first node entered.
+- You can **edit** the circuit you have entered and change the ground node, or the input frequency.
 
 ## Documentation
 
@@ -312,3 +314,14 @@ giga   | G            |	<img src="https://render.githubusercontent.com/render/ma
 tera   | T            |	<img src="https://render.githubusercontent.com/render/math?math=10^{12}">
 
 **Note:** kilo, mega, giga, and tera have capital abbreviations.
+
+
+### ScreenShots
+
+![Program at first run](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot1.png)
+
+![Circuit Input](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot2.png)
+
+![Program after building the circuit](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot3.png)
+
+![Circuit Solution](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot4.png)
