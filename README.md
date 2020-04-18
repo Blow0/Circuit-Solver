@@ -61,6 +61,7 @@ add r R2 1 2 4
 add r R3 2 3 5
 add r R4 3 4 6
 rmv r R1
+edt r R2 1 2 5
 end
 ```
 
@@ -72,7 +73,54 @@ end
 
 ## Documentation
 
-### Elements
+### Operations
+
+#### 1. Add
+Operation String:
+```
+"ADD" or "add"
+```
+Input Form:
+```
+add elementType elementName [elementData]
+```
+Input Example:
+```
+add C C1 1 2 20u
+```
+#### 2. Edit
+Operation String:
+```
+"EDT" or "edt"
+```
+Input Form:
+```
+edt elementType elementName [elementNewData]
+```
+Input Example:
+```
+edt C C1 1 2 40u
+```
+or
+```
+edt C C1 2 3 40u
+```
+**Note:** You can change any element data (e.g: PositiveNode, elementValue, controlElement..etc) by entering new data.
+
+#### 3. Remove
+Operation String:
+```
+"RMV" or "rmv"
+```
+Input Form:
+```
+rmv elementType elementName
+```
+Input Example:
+```
+rmv C C1
+```
+### Elements 
 
 #### 1. Node
 Element Type String:
@@ -101,7 +149,32 @@ Input Example:
 ```
 r Resistor1 Node1 Ground 20K 
 ```
-
+#### 3. Capacitor
+Type String:
+```
+"C" or "c"
+```
+Input Format:
+```
+c Name PositiveNode NegativeNode Capcitance
+```
+Input Example:
+```
+c Capacitor1 Node1 Ground 20u
+```
+#### 4. Inductor
+Type String:
+```
+"L" or "l"
+```
+Input Format:
+```
+L Name PositiveNode NegativeNode Inductance
+```
+Input Example:
+```
+L Inductor1 Node1 Ground 20m
+```
 #### 5. Voltage Source
 Type String:
 ```
@@ -114,6 +187,71 @@ vs Name PositiveNode NegativeNode SupplyVoltage [InternalImpedance = 0]
 Input Example:
 ```
 vs Battery Positive Ground 9 
+```
+#### 6. Current Source
+Type String:
+```
+"CS", "Cs", "cS", or "cs"
+```
+Input Format:
+```
+cs Name PositiveNode NegativeNode SupplyCurrent [InternalAdmittance = 0]
+```
+Input Example:
+```
+cs currentSource Positive Ground 5 
+```
+#### 7. Voltage Controlled Voltage Source
+Type String:
+```
+"VCVS", "vcvs", "VCvs", or "vcVS", ..etc
+```
+Input Format:
+```
+vcvs Name PositiveNode NegativeNode voltageFactor controlPositiveNode controlNegativeNode [InternalImpedance = 0]
+```
+Input Example:
+```
+vcvs controlled1 Positive Ground 5 Positive1 Negative1  
+```
+#### 8. Voltage Controlled Current Source
+Type String:
+```
+"VCCS", "vccs", "VCcs", or "vcCS", ..etc
+```
+Input Format:
+```
+vccs Name PositiveNode NegativeNode currentFactor controlPositiveNode controlNegativeNode [InternalAdmittance = 0]
+```
+Input Example:
+```
+vccs controlled1 Positive Ground 5 Positive1 Negative1  
+```
+#### 9. Current Controlled Voltage Source
+Type String:
+```
+"CCVS", "ccvs", "CCvs", or "ccVS", ..etc
+```
+Input Format:
+```
+ccvs Name PositiveNode NegativeNode voltageFactor controlElementType controlElementName [InternalImpedance = 0]
+```
+Input Example:
+```
+vcvs controlled1 Positive Ground 5 vs Battery   
+```
+#### 10. Current Controlled Current Source
+Type String:
+```
+"CCCS", "cccs", "CCcs", or "ccCS", ..etc
+```
+Input Format:
+```
+cccs Name PositiveNode NegativeNode currentFactor controlElementType controlElementName [InternalAdmittance = 0]
+```
+Input Example:
+```
+vccs controlled1 Positive Ground 5 vs Battery   
 ```
 
 ---
@@ -173,4 +311,4 @@ mega   | M            |	<img src="https://render.githubusercontent.com/render/ma
 giga   | G            |	<img src="https://render.githubusercontent.com/render/math?math=10^{9}">
 tera   | T            |	<img src="https://render.githubusercontent.com/render/math?math=10^{12}">
 
-**Note:** kilo, mega, giga, and tera have capical abbreviations.
+**Note:** kilo, mega, giga, and tera have capital abbreviations.
