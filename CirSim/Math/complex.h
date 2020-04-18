@@ -17,10 +17,10 @@ private: //Memebers
 	double m_imag;
 
 public: //Constructors
-	Complex()							: m_real(0.0)			, m_imag(0.0) {}
-	Complex(double real)				: m_real(real)			, m_imag(0.0) {}
-	Complex(double real, double imag)	: m_real(real)			, m_imag(imag) {}
-	Complex(const Complex& complex)		: m_real(complex.m_real), m_imag(complex.m_imag) {}
+	Complex() : m_real(0.0), m_imag(0.0) {}
+	Complex(double real) : m_real(real), m_imag(0.0) {}
+	Complex(double real, double imag) : m_real(real), m_imag(imag) {}
+	Complex(const Complex& complex) : m_real(complex.m_real), m_imag(complex.m_imag) {}
 
 public: //Creators
 	static Complex polarToComplex(double magnitude, double phase)
@@ -38,19 +38,43 @@ public: //Creators
 		if (anglePos == std::string::npos) //Cartesian
 		{
 			size_t length = str.length();
+			double unit = 1.0;
 			if (length > 1)
 			{
 				switch (str.back())
 				{
 				case 'p':
-				case 'n':
-				case 'u':
-				case 'm':
-				case 'K':
-				case 'M':
-				case 'G':
-				case 'T':
+					unit = 1.0e-12;
 					length--;
+					break;
+				case 'n':
+					unit = 1.0e-9;
+					length--;
+					break;
+				case 'u':
+					unit = 1.0e-6;
+					length--;
+					break;
+				case 'm':
+					unit = 1.0e-3;
+					length--;
+					break;
+				case 'K':
+					unit = 1.0e3;
+					length--;
+					break;
+				case 'M':
+					unit = 1.0e6;
+					length--;
+					break;
+				case 'G':
+					unit = 1.0e9;
+					length--;
+					break;
+				case 'T':
+					unit = 1.0e12;
+					length--;
+					break;
 				}
 			}
 
@@ -60,7 +84,7 @@ public: //Creators
 
 			if (iPos == std::string::npos) //Only Real
 			{
-				complex.setCarts(stod(str.substr(0, length)), 0.0);
+				complex.setCarts(stod(str.substr(0, length)) * unit, 0.0);
 			}
 			else //Complex or Imaginary
 			{
@@ -119,7 +143,7 @@ public: //Creators
 							imag.erase(iPos, 1);
 						}
 					}
-					complex.setCarts(stod(real), stod(imag));
+					complex.setCarts(stod(real) * unit, stod(imag) * unit);
 				}
 				else
 				{
@@ -130,22 +154,24 @@ public: //Creators
 						if (iPos > subPos)
 						{
 							real = str.substr(0, subPos);
-							imag = str.substr(subPos + 1, length - subPos - 1);
-							imag.erase(iPos - subPos - 1, 1);
+							imag = str.substr(subPos, length - subPos);
+							imag.erase(iPos - subPos, 1);
+							complex.setCarts(stod(real) * unit, stod(imag) * unit);
 						}
 						else
 						{
 							imag = str.substr(0, subPos);
-							real = str.substr(subPos + 1, length - subPos - 1);
+							real = str.substr(subPos, length - subPos);
 							imag.erase(iPos, 1);
+							complex.setCarts(stod(real) * unit, stod(imag) * unit);
 						}
-						complex.setCarts(stod(real), stod(imag));
+
 					}
 					else //Only Imaginary
 					{
 						std::string imag = str.substr(0, length);
 						imag.erase(iPos, 1);
-						complex.setCarts(0.0, stod(imag));
+						complex.setCarts(0.0, stod(imag) * unit);
 					}
 				}
 			}
@@ -155,7 +181,7 @@ public: //Creators
 			std::string magSt = str.substr(0, anglePos);
 			double mag = 0.0;
 			if (magSt.length() > 1)
-			{ 
+			{
 				mag = stod(magSt.substr(0, anglePos - 1));
 				switch (magSt.back())
 				{
@@ -375,12 +401,12 @@ public: //Creators
 	}
 
 public: //Setters
-	inline void setCarts (double real, double imag)			{ m_real = real; m_imag = imag; }
-	inline void setReal	 (double real)						{ m_real = real; }
-	inline void setImag	 (double imag)						{ m_imag = imag; }
-	inline void setPolar (double magnitude, double phase)	{ m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
-	inline void setMag	 (double magnitude)					{ double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
-	inline void setPhase (double phase)						{ double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
+	inline void setCarts(double real, double imag) { m_real = real; m_imag = imag; }
+	inline void setReal(double real) { m_real = real; }
+	inline void setImag(double imag) { m_imag = imag; }
+	inline void setPolar(double magnitude, double phase) { m_real = magnitude * cos(phase); m_imag = magnitude * sin(phase); }
+	inline void setMag(double magnitude) { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { double ratio = magnitude / mag; m_real *= ratio; m_imag *= ratio; } }
+	inline void setPhase(double phase) { double mag = getMagnitude(); if (mag >= DBL_EPSILON) { m_real = mag * cos(phase); m_imag = mag * sin(phase); } }
 
 public: //Getters
 	inline double  getReal()		 const { return m_real; }
@@ -402,8 +428,8 @@ public: //Methods
 public: //Logic
 	inline bool operator!=(const Complex& rhs) const { return (rhs.m_real != m_real || rhs.m_imag != m_imag); }
 	inline bool operator==(const Complex& rhs) const { return (rhs.m_real == m_real && rhs.m_imag == m_imag); }
-	inline bool operator> (const Complex& rhs) const { return (getMagnitude() >  rhs.getMagnitude());  }
-	inline bool operator< (const Complex& rhs) const { return (getMagnitude() <  rhs.getMagnitude());  }
+	inline bool operator> (const Complex& rhs) const { return (getMagnitude() > rhs.getMagnitude()); }
+	inline bool operator< (const Complex& rhs) const { return (getMagnitude() < rhs.getMagnitude()); }
 	inline bool operator>=(const Complex& rhs) const { return (getMagnitude() >= rhs.getMagnitude()); }
 	inline bool operator<=(const Complex& rhs) const { return (getMagnitude() <= rhs.getMagnitude()); }
 
@@ -472,7 +498,7 @@ Complex Complex::operator-(const Complex& rhs) const
 Complex Complex::operator*(const Complex& rhs) const
 {
 	return Complex((m_real * rhs.m_real) - (m_imag * rhs.m_imag)
-				 , (m_real * rhs.m_imag) + (m_imag * rhs.m_real));
+		, (m_real * rhs.m_imag) + (m_imag * rhs.m_real));
 }
 Complex Complex::operator*(double rhs) const
 {

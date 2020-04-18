@@ -118,8 +118,12 @@ Node* Node::createNode(const std::string& nodeName)
 
 void Node::deleteAllNodes()
 {
-	for (std::map<std::string, Node*>::iterator it = nodesMap.begin(); it != nodesMap.end(); it++)
+	std::map<std::string, Node*>::iterator it = nodesMap.begin();
+	while (it != nodesMap.end())
+	{
 		delete it->second;
+		it = nodesMap.begin();
+	}
 }
 
 void Node::fillAllNodesFromVector(const Complex* vector, const std::map<std::string, size_t>& nodeIndexMap)
