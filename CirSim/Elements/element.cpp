@@ -107,8 +107,12 @@ ElementType Element::stringToElementType(const std::string& typeStr)
 
 void Element::deleteAllElements()
 {
-	for (std::map<std::string, Element*>::iterator it = elementsMap.begin(); it != elementsMap.end(); it++)
+	std::map<std::string, Element*>::iterator it = elementsMap.begin();
+	while (it != elementsMap.end())
+	{
 		delete it->second;
+		it = elementsMap.begin();
+	}
 }
 
 void Element::loadAllElementsIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency)
