@@ -164,13 +164,13 @@ Input Example:
 
 Prefix | Abbreviation | Scale
 ------ | ------------ | -----
-pico   | p            |	$10^{-12}$
-nano   | n            |	$10^{-9}$
-micro  | u            |	$10^{-6}$
-milli  | m            |	$10^{-3}$
-kilo   | K            |	$10^{3}$
-mega   | M            |	$10^{6}$
-giga   | G            |	$10^{9}$
-tera   | T            |	$10^{12}$
+pico   | p            |	<img src="https://render.githubusercontent.com/render/math?math=10^{-12}">
+nano   | n            |	<img src="https://render.githubusercontent.com/render/math?math=10^{-9}">
+micro  | u            |	<img src="https://render.githubusercontent.com/render/math?math=10^{-6}">
+milli  | m            |	<img src="https://render.githubusercontent.com/render/math?math=10^{-3}">
+kilo   | K            |	<img src="https://render.githubusercontent.com/render/math?math=10^{3}">
+mega   | M            |	<img src="https://render.githubusercontent.com/render/math?math=10^{6}">
+giga   | G            |	<img src="https://render.githubusercontent.com/render/math?math=10^{9}">
+tera   | T            |	<img src="https://render.githubusercontent.com/render/math?math=10^{12}">
 
 **Note:** kilo, mega, giga, and tera have capical abbreviations.
