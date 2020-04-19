@@ -27,6 +27,7 @@
     <ClCompile Include="Elements\element.cpp" />
     <ClCompile Include="Elements\inductor.cpp" />
     <ClCompile Include="Elements\resistor.cpp" />
+    <ClCompile Include="Elements\short.cpp" />
     <ClCompile Include="Elements\vccs.cpp" />
     <ClCompile Include="Elements\vcvs.cpp" />
     <ClCompile Include="Elements\voltagesource.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="Elements\element.h" />
     <ClInclude Include="Elements\inductor.h" />
     <ClInclude Include="Elements\resistor.h" />
+    <ClInclude Include="Elements\short.h" />
     <ClInclude Include="Elements\vccs.h" />
     <ClInclude Include="Elements\vcvs.h" />
     <ClInclude Include="Elements\voltagesource.h" />

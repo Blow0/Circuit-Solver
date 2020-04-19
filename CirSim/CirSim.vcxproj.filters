@@ -51,6 +51,9 @@
     <ClCompile Include="Elements\vcvs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Elements\short.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Elements\capacitor.h">
@@ -90,6 +93,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cirsimdef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Elements\short.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
