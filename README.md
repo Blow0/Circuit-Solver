@@ -341,10 +341,10 @@ tera   | T            |	<img src="https://render.githubusercontent.com/render/ma
 
 ## ScreenShots
 
-![Program at first run](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot1.png)
+![Program at first run](CirSim/Gallery/Screenshot1.png)
 
-![Circuit Input](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot2.png)
+![Circuit Input](CirSim/Gallery/Screenshot2.png)
 
-![Program after building the circuit](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot3.png)
+![Program after building the circuit](CirSim/Gallery/Screenshot3.png)
 
-![Circuit Solution](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot4.png)
+![Circuit Solution]/CirSim/Gallery/Screenshot4.png)
