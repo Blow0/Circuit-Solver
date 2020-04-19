@@ -347,4 +347,4 @@ tera   | T            |	<img src="https://render.githubusercontent.com/render/ma
 
 ![Program after building the circuit](CirSim/Gallery/Screenshot3.png)
 
-![Circuit Solution]/CirSim/Gallery/Screenshot4.png)
+![Circuit Solution](CirSim/Gallery/Screenshot4.png)
