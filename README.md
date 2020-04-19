@@ -19,6 +19,7 @@ which means it calculates:
 - Resistor
 - Capacitor
 - Inductor 
+- Short Circuit
 - Voltage Source
 - Current Source
 - Voltage Controlled Voltage Source
@@ -40,6 +41,7 @@ Before you insert the circuit you wish to solve, make sure that you name every e
 ```
 OperationType ElementType ElementName [ElementData]
 ```
+**Note:** OperationType, ElementType, ElementName, and any string input in ElementData are converted to lowercase letters.<br/>
 
 ***3. 2. Insertion Operation***<br/>
 **Circuit-Solver** have three insertion-related operations:
@@ -49,8 +51,7 @@ OperationType ElementType ElementName [ElementData]
 - **end:** Ends the insertion and saves the net list.
 
 ***3. 3. Element Input***<br/>
-**Circuit-Solver** have a lot of elements but one thing in common any element input starts with a string indicating its type and then is followed by the name of the element and then the element data which depends on the type of element and operation type.<br/>
-**Note:** Element type and name are converted to lowercase letters.
+**Circuit-Solver** have many elements but any element input starts with a string indicating its type and then is followed by the name of the element and then the element data which depends on the type of element and operation type.<br/>
 
 **Insertion Input Example**
 ```
@@ -67,10 +68,10 @@ end
 
 #### Notes
 - You must end your input with **end** operation.
-- For more details on each operation input check the documentation of the program.
-- For details on each element input form check the documentation of the program.
+- For more details on each operation input, check the documentation of the program.
+- For details on each element input form, check the documentation of the program.
 - You aren't required to input nodes individually, you can input only elements and **Circuit-Solver** will create the needed nodes for you.
-- If you wish for a certain node to be the **ground**, let its name be "gnd", otherwise the program will make the firs source's negative node be the ground. If there's no source in the circuit, the program will take the ground as the first node entered.
+- If you wish for a certain node to be the **ground**, let its name be "ground", otherwise the program will make the first source negative node be ground. If there's no source in the circuit, the program will take the ground as the first node entered.
 - You can **edit** the circuit you have entered and change the ground node, or the input frequency.
 
 ## Documentation
@@ -80,11 +81,11 @@ end
 #### 1. Add
 Operation String:
 ```
-"ADD" or "add"
+"add"
 ```
 Input Form:
 ```
-add elementType elementName [elementData]
+add ElementType ElementName ElementData
 ```
 Input Example:
 ```
@@ -93,11 +94,11 @@ add C C1 1 2 20u
 #### 2. Edit
 Operation String:
 ```
-"EDT" or "edt"
+"edt"
 ```
 Input Form:
 ```
-edt elementType elementName [elementNewData]
+edt ElementType ElementName ElementNewData
 ```
 Input Example:
 ```
@@ -107,16 +108,16 @@ or
 ```
 edt C C1 2 3 40u
 ```
-**Note:** You can change any element data (e.g: PositiveNode, elementValue, controlElement..etc) by entering new data.
+**Note:** You can change any element data (e.g: PositiveNode, ElementValue, ControlElement, etc.) by entering new data.
 
 #### 3. Remove
 Operation String:
 ```
-"RMV" or "rmv"
+"rmv"
 ```
 Input Form:
 ```
-rmv elementType elementName
+rmv ElementType ElementName
 ```
 Input Example:
 ```
@@ -127,7 +128,7 @@ rmv C C1
 #### 1. Node
 Element Type String:
 ```
-"N" or "n"
+"n"
 ```
 Element Input Format:
 ```
@@ -141,7 +142,7 @@ n Node1
 #### 2. Resistor
 Type String:
 ```
-"R" or "r"
+"r"
 ```
 Input Format:
 ```
@@ -151,36 +152,53 @@ Input Example:
 ```
 r Resistor1 Node1 Ground 20K 
 ```
+
 #### 3. Capacitor
 Type String:
 ```
-"C" or "c"
+"c"
 ```
 Input Format:
 ```
-c Name PositiveNode NegativeNode Capcitance
+c Name PositiveNode NegativeNode Capacitance
 ```
 Input Example:
 ```
 c Capacitor1 Node1 Ground 20u
 ```
+
 #### 4. Inductor
 Type String:
 ```
-"L" or "l"
+"l"
 ```
 Input Format:
 ```
-L Name PositiveNode NegativeNode Inductance
+l Name PositiveNode NegativeNode Inductance
 ```
 Input Example:
 ```
-L Inductor1 Node1 Ground 20m
+l Inductor1 Node1 Ground 20m
 ```
-#### 5. Voltage Source
+
+#### 5. Short Circuit
 Type String:
 ```
-"VS", "Vs", "vS", or "vs"
+"sc"
+```
+Input Format:
+```
+sc Name PositiveNode NegativeNode
+```
+Input Example:
+```
+sc Short1 Node1 Ground 
+```
+
+#### 6. Voltage Source
+Type String:
+```
+"vs"
 ```
 Input Format:
 ```
@@ -190,10 +208,11 @@ Input Example:
 ```
 vs Battery Positive Ground 9 
 ```
-#### 6. Current Source
+
+#### 7. Current Source
 Type String:
 ```
-"CS", "Cs", "cS", or "cs"
+"cs"
 ```
 Input Format:
 ```
@@ -201,59 +220,63 @@ cs Name PositiveNode NegativeNode SupplyCurrent [InternalAdmittance = 0]
 ```
 Input Example:
 ```
-cs currentSource Positive Ground 5 
+cs Current1 Positive Ground 5 
 ```
-#### 7. Voltage Controlled Voltage Source
+
+#### 8. Voltage Controlled Voltage Source
 Type String:
 ```
-"VCVS", "vcvs", "VCvs", or "vcVS", ..etc
+"vcvs"
 ```
 Input Format:
 ```
-vcvs Name PositiveNode NegativeNode voltageFactor controlPositiveNode controlNegativeNode [InternalImpedance = 0]
+vcvs Name PositiveNode NegativeNode VoltageFactor ControlPositiveNode ControlNegativeNode [InternalImpedance = 0]
 ```
 Input Example:
 ```
-vcvs controlled1 Positive Ground 5 Positive1 Negative1  
+vcvs VolConVol1 Positive Ground 5 Positive1 Negative1  
 ```
-#### 8. Voltage Controlled Current Source
+
+#### 9. Voltage Controlled Current Source
 Type String:
 ```
-"VCCS", "vccs", "VCcs", or "vcCS", ..etc
+"vccs"
 ```
 Input Format:
 ```
-vccs Name PositiveNode NegativeNode currentFactor controlPositiveNode controlNegativeNode [InternalAdmittance = 0]
+vccs Name PositiveNode NegativeNode VoltageFactor ControlPositiveNode ControlNegativeNode [InternalAdmittance = 0]
 ```
 Input Example:
 ```
-vccs controlled1 Positive Ground 5 Positive1 Negative1  
+vccs VolConCur1 Positive Ground 5 Positive1 Negative1  
 ```
-#### 9. Current Controlled Voltage Source
+
+#### 10. Current Controlled Voltage Source
 Type String:
 ```
-"CCVS", "ccvs", "CCvs", or "ccVS", ..etc
+"ccvs"
 ```
 Input Format:
 ```
-ccvs Name PositiveNode NegativeNode voltageFactor controlElementType controlElementName [InternalImpedance = 0]
+ccvs Name PositiveNode NegativeNode CurrentFactor ControlElementType ControlElementName [InternalImpedance = 0]
 ```
 Input Example:
 ```
-vcvs controlled1 Positive Ground 5 vs Battery   
+vcvs CurConVol1 Positive Ground 5 vs Battery   
 ```
-#### 10. Current Controlled Current Source
+
+#### 11. Current Controlled Current Source
 Type String:
 ```
-"CCCS", "cccs", "CCcs", or "ccCS", ..etc
+"cccs"
 ```
 Input Format:
 ```
-cccs Name PositiveNode NegativeNode currentFactor controlElementType controlElementName [InternalAdmittance = 0]
+cccs Name PositiveNode NegativeNode CurrentFactor ControlElementType ControlElementName [InternalAdmittance = 0]
 ```
 Input Example:
 ```
-vccs controlled1 Positive Ground 5 vs Battery   
+vccs CurConCur1 Positive Ground 5 vs Battery   
 ```
 
 ---
@@ -316,12 +339,12 @@ tera   | T            |	<img src="https://render.githubusercontent.com/render/ma
 **Note:** kilo, mega, giga, and tera have capital abbreviations.
 
 
-### ScreenShots
+## ScreenShots
 
-![Program at first run](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot1.png)
+![Program at first run](CirSim/Gallery/Screenshot1.png)
 
-![Circuit Input](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot2.png)
+![Circuit Input](CirSim/Gallery/Screenshot2.png)
 
-![Program after building the circuit](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot3.png)
+![Program after building the circuit](CirSim/Gallery/Screenshot3.png)
 
-![Circuit Solution](https://raw.githubusercontent.com/Blow0/Circuit-Solver/master/CirSim/gallery/Screenshot4.png)
+![Circuit Solution](CirSim/Gallery/Screenshot4.png)

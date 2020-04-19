@@ -9,6 +9,7 @@
 #include "Elements/inductor.h"
 #include "Elements/currentsource.h"
 #include "Elements/voltagesource.h"
+#include "Elements/short.h"
 #include "Elements/vcvs.h"
 #include "Elements/vccs.h"
 #include "Elements/cccs.h"

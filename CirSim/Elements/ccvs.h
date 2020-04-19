@@ -7,8 +7,8 @@
 class CCVS : public VoltageSource
 {
 private: //Members
-	std::string m_controlElementName;
 	ElementType m_controlElementType;
+	std::string m_controlElementName;
 	Complex m_currentFactor;
 
 public: //Static Current controlled Voltage Source creation
@@ -35,6 +35,8 @@ private: //Blocked Setters
 
 public: //Getters
 	inline Element* getControlElement() const { Element* element = Element::getElement(elementNameWithType(m_controlElementName, m_controlElementType)); if (element == nullptr) throw std::runtime_error("CCCS: Couldn't find ControlElement"); return element; }
+	inline ElementType getControlElementType() const { return m_controlElementType; }
+	inline const std::string& getControlElementName() const { return m_controlElementName; }
 	inline Complex getCurrentFactor() const { return m_currentFactor; }
 	Complex getControlCurrent(double angularFrequency) const;
 	inline Complex getSupplyVoltage(double angularFrequency) const { return m_currentFactor * getControlCurrent(angularFrequency); }

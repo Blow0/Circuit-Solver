@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include "../Math/complex.h"
 
-enum class ElementType { None, Resistor, Inductor, Capacitor, CS, VS, CCCS, CCVS, VCCS, VCVS };
+enum class ElementType { None, Node, Short, Resistor, Inductor, Capacitor, CS, VS, CCCS, CCVS, VCCS, VCVS };
 
 class CCVS;
 class CCCS;
@@ -41,9 +41,10 @@ public: //Static Elements Map Methods
 	static void loadAllElementsIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0);
 
 public: //Static Element Type Methods
-	static std::string elementTypeToString(ElementType type);
+	static std::string elementTypeToElementString(ElementType type);
+	static std::string elementTypeToInputString(ElementType type);
 	static ElementType stringToElementType(const std::string& typeStr);
-	static std::string elementNameWithType(const std::string& name, ElementType type) { return elementTypeToString(type) + name; }
+	static std::string elementNameWithType(const std::string& name, ElementType type) { return elementTypeToElementString(type) + name; }
 
 public: //Matrix Operations
 	virtual void injectIntoMatrix(Complex* matrix, size_t matrixWidth, const std::map<std::string, size_t>& nodeIndexMap, const std::map<std::string, size_t>& voltageIndexMap, double angularFrequency = 0.0) = 0;
@@ -54,7 +55,7 @@ public: //Logic
 	inline bool operator==(const Element& rhs) const { return (rhs.m_name == m_name); }
 	
 protected: //Setters
-	inline void setName(const std::string& elementName) { std::string type = elementTypeToString(m_type); elementsMap.erase(type + m_name); m_name = elementName; elementsMap.emplace(type + m_name, this); }
+	inline void setName(const std::string& elementName) { std::string type = elementTypeToElementString(m_type); elementsMap.erase(type + m_name); m_name = elementName; elementsMap.emplace(type + m_name, this); }
 
 public: //Getters
 	inline const std::string& getName() const { return m_name; }

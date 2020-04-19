@@ -36,8 +36,8 @@ private: //Blocked Setters
 public: //Getters
 	inline Node* getControlPosNode() const { Node* node = Node::getNode(m_controlPosNodeName); if (node == nullptr) throw std::runtime_error("VCVS: Couldn't find ControlPosNode"); return node; }
 	inline Node* getControlNegNode() const { Node* node = Node::getNode(m_controlNegNodeName); if (node == nullptr) throw std::runtime_error("VCVS: Couldn't find ControlNegNode"); return node; }
-	inline Node* getControlPosNodeName() const { m_controlPosNodeName; }
-	inline Node* getControlNegNodeName() const { m_controlNegNodeName; }
+	inline const std::string& getControlPosNodeName() const { return m_controlPosNodeName; }
+	inline const std::string& getControlNegNodeName() const { return m_controlNegNodeName; }
 	inline Complex getVoltageFactor() const { return m_voltageFactor; }
 	inline Complex getControlVoltage() const { return getControlPosNode()->getNodalVoltage() - getControlNegNode()->getNodalVoltage(); }
 	inline Complex getCurrent() const { return (getSupplyCurrent() - getVoltageDiff() * m_internalAdmittance); }
