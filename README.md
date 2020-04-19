@@ -181,7 +181,7 @@ Input Example:
 l Inductor1 Node1 Ground 20m
 ```
 
-#### 2. Short Circuit
+#### 5. Short Circuit
 Type String:
 ```
 "sc"
@@ -212,7 +212,7 @@ vs Battery Positive Ground 9
 #### 7. Current Source
 Type String:
 ```
-"CS", "Cs", "cS", or "cs"
+"cs"
 ```
 Input Format:
 ```
